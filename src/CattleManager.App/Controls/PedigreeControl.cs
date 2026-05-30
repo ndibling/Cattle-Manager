@@ -38,13 +38,28 @@ public class PedigreeControl : Canvas
         if (RootNode is null) return;
 
         double totalHeight = CalculateTotalHeight(RootNode);
-        double startY = totalHeight / 2 - NodeHeight / 2;
-        RenderNode(RootNode, 0, startY, totalHeight);
 
-        double canvasW = 5 * (NodeWidth + HGap);
-        double canvasH = totalHeight + 20;
-        Width = canvasW;
-        Height = canvasH;
+        // startY = 0 so RenderNode places the root at totalHeight/2 (centre).
+        // Previously this was totalHeight/2 - NodeHeight/2, which caused a
+        // double-offset: RenderNode adds height/2 internally, so the root
+        // landed at totalHeight - NodeHeight (near the bottom) and ancestors
+        // spilled past the canvas boundary.
+        RenderNode(RootNode, 0, 0, totalHeight);
+
+        Width = 5 * (NodeWidth + HGap);
+        Height = totalHeight + NodeHeight;
+        InvalidateMeasure();
+    }
+
+    // Canvas measures itself as (0,0) by default, which means the ScrollViewer
+    // never learns the real size. Report our explicit dimensions so scrollbars
+    // are sized correctly.
+    protected override Size MeasureOverride(Size constraint)
+    {
+        base.MeasureOverride(constraint);
+        return new Size(
+            double.IsNaN(Width) ? 0 : Width,
+            double.IsNaN(Height) ? 0 : Height);
     }
 
     private double CalculateTotalHeight(PedigreeNodeDto node)
