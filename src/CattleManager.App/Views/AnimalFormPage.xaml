@@ -10,6 +10,7 @@
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
         <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
         <conv:PathToImageConverter x:Key="PathToImage"/>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
     </Page.Resources>
 
     <DockPanel>

@@ -9,6 +9,7 @@
         <local:StatusToBrushConverter x:Key="StatusToBrush"/>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
         <local:OverdueToBrushConverter x:Key="OverdueToBrush"/>
+        <local:GenderToBrushConverter x:Key="GenderToBrush"/>
     </Page.Resources>
 
     <DockPanel>

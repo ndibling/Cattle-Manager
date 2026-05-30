@@ -1,13 +1,40 @@
 <Application x:Class="CattleManager.App.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ui="http://schemas.modernwpf.com/2019">
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:conv="clr-namespace:CattleManager.App.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources />
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Global converters (available to all pages) -->
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+            <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
+            <conv:StatusToBrushConverter x:Key="StatusToBrush"/>
+            <conv:GenderToBrushConverter x:Key="GenderToBrush"/>
+            <conv:GenderToBorderBrushConverter x:Key="GenderToBorder"/>
+            <conv:GenderToSymbolConverter x:Key="GenderToSymbol"/>
+            <conv:OverdueToBrushConverter x:Key="OverdueToBrush"/>
+            <conv:CountToWarningColorConverter x:Key="CountToWarningColor"/>
+            <conv:PathToImageConverter x:Key="PathToImage"/>
+            <conv:IsInHerdToOpacityConverter x:Key="IsInHerdToOpacity"/>
+
+            <!-- Nav button style (used in MainWindow sidebar) -->
+            <Style x:Key="NavButtonStyle" TargetType="Button">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Padding" Value="16,10"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                <Setter Property="Margin" Value="0,2"/>
+                <Setter Property="Cursor" Value="Hand"/>
+            </Style>
 
             <!-- Status colors -->
             <SolidColorBrush x:Key="StatusHealthyBrush" Color="#2E7D32"/>
