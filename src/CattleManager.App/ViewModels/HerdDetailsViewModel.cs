@@ -62,6 +62,7 @@ public partial class HerdDetailsViewModel : ObservableObject
             BreedOptions = new[] { "All" }.Concat(breeds).ToList();
 
             _viewSource.Source = _allAnimals;
+            _viewSource.Filter -= ApplyFilters;
             _viewSource.Filter += ApplyFilters;
             AnimalsView = _viewSource.View;
             RefreshCount();

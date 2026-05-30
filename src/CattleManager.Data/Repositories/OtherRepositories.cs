@@ -16,9 +16,11 @@ public class HerdRepository : IHerdRepository
         return e is null ? null : Map(e);
     }
 
-    public async Task<IReadOnlyList<HerdDto>> GetAllAsync()
+    public async Task<IReadOnlyList<HerdDto>> GetAllAsync(bool includeInactive = false)
     {
-        var list = await _db.Herds.Where(h => h.IsActive).OrderBy(h => h.HerdName).ToListAsync();
+        var query = _db.Herds.AsQueryable();
+        if (!includeInactive) query = query.Where(h => h.IsActive);
+        var list = await query.OrderBy(h => h.HerdName).ToListAsync();
         return list.Select(Map).ToList();
     }
 
@@ -49,7 +51,26 @@ public class HerdRepository : IHerdRepository
     public async Task DeleteAsync(int id)
     {
         var e = await _db.Herds.FindAsync(id);
-        if (e is not null) { _db.Herds.Remove(e); await _db.SaveChangesAsync(); }
+        if (e is null) return;
+
+        // BreedingRecord.SireId/DamId have DeleteBehavior.Restrict, so they block
+        // the cascade-delete of herd animals. Remove breeding records referencing
+        // animals in this herd before EF attempts to cascade-delete them.
+        var animalIds = await _db.Animals
+            .Where(a => a.HerdId == id)
+            .Select(a => a.AnimalId)
+            .ToListAsync();
+
+        if (animalIds.Count > 0)
+        {
+            var affectedBreedingRecords = await _db.BreedingRecords
+                .Where(b => animalIds.Contains(b.SireId) || animalIds.Contains(b.DamId))
+                .ToListAsync();
+            _db.BreedingRecords.RemoveRange(affectedBreedingRecords);
+        }
+
+        _db.Herds.Remove(e);
+        await _db.SaveChangesAsync();
     }
 
     private static HerdDto Map(Herd e) => new()

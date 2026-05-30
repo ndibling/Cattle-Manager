@@ -25,6 +25,7 @@ public partial class AnimalProfileViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<BreedingRecordDto> _breedingHistory = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _offspring = [];
     [ObservableProperty] private ObservableCollection<string> _upcomingTasks = [];
+    [ObservableProperty] private bool _hasNoUpcomingTasks = true;
     [ObservableProperty] private bool _isEditMode;
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string? _editPhotoPath;
@@ -68,6 +69,7 @@ public partial class AnimalProfileViewModel : ObservableObject
 
             var tasks = _healthService.GetUpcomingTasks(Animal);
             UpcomingTasks = new ObservableCollection<string>(tasks);
+            HasNoUpcomingTasks = tasks.Count == 0;
         }
         finally
         {

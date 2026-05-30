@@ -18,7 +18,7 @@ public interface IAnimalRepository
 public interface IHerdRepository
 {
     Task<HerdDto?> GetByIdAsync(int herdId);
-    Task<IReadOnlyList<HerdDto>> GetAllAsync();
+    Task<IReadOnlyList<HerdDto>> GetAllAsync(bool includeInactive = false);
     Task<HerdDto> AddAsync(HerdDto herd);
     Task<HerdDto> UpdateAsync(HerdDto herd);
     Task DeleteAsync(int herdId);

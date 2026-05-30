@@ -100,7 +100,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             <TextBlock Text="No tasks due" FontSize="12" Foreground="Gray"
-                                       Visibility="{Binding UpcomingTasks.Count, Converter={StaticResource NullToVisibility}}"/>
+                                       Visibility="{Binding HasNoUpcomingTasks, Converter={StaticResource BoolToVisibility}}"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

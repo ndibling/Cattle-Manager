@@ -38,6 +38,6 @@ public class BreedingService
     public async Task<int> CountOffspringInHerdAsync(IAnimalRepository repository, int herdId, int sireId)
     {
         var animals = await repository.GetByHerdAsync(herdId);
-        return animals.Count(a => a.SireId == sireId || a.DamId == sireId);
+        return animals.Count(a => a.SireId == sireId);
     }
 }
