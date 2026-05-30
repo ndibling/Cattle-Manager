@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-release:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
       - name: Checkout
@@ -38,18 +41,72 @@ jobs:
             -p:PublishSingleFile=false `
             -p:Version=$version
 
+      - name: Install WiX v4
+        run: |
+          dotnet tool install --global wix --version 4.0.5
+          wix extension add WixToolset.UI.wixext/4.0.5 --global
+
+      - name: Generate WiX file fragment from publish output
+        run: |
+          $publishPath = (Resolve-Path ./publish).Path
+          $files = Get-ChildItem -Path $publishPath -Recurse -File
+          $ns = 'http://wixtoolset.org/schemas/v4/wxs'
+
+          $settings = [System.Xml.XmlWriterSettings]::new()
+          $settings.Indent = $true
+          $settings.Encoding = [System.Text.Encoding]::UTF8
+
+          $fragmentPath = 'installer/CattleManager.Installer/PublishFiles.wxs'
+          $writer = [System.Xml.XmlWriter]::Create($fragmentPath, $settings)
+
+          $writer.WriteStartDocument()
+          $writer.WriteStartElement('Wix', $ns)
+          $writer.WriteStartElement('Fragment', $ns)
+          $writer.WriteStartElement('ComponentGroup', $ns)
+          $writer.WriteAttributeString('Id', 'PublishFiles')
+          $writer.WriteAttributeString('Directory', 'INSTALLFOLDER')
+
+          $id = 0
+          foreach ($file in $files) {
+            $compId = "Pub$id"
+            $fileId = "PubFile$id"
+            $guid   = [System.Guid]::NewGuid().ToString('B').ToUpper()
+
+            $writer.WriteStartElement('Component', $ns)
+            $writer.WriteAttributeString('Id', $compId)
+            $writer.WriteAttributeString('Guid', $guid)
+
+            $writer.WriteStartElement('File', $ns)
+            $writer.WriteAttributeString('Id', $fileId)
+            $writer.WriteAttributeString('Source', $file.FullName)
+            $writer.WriteAttributeString('KeyPath', 'yes')
+            $writer.WriteEndElement() # File
+
+            $writer.WriteEndElement() # Component
+            $id++
+          }
+
+          $writer.WriteEndElement() # ComponentGroup
+          $writer.WriteEndElement() # Fragment
+          $writer.WriteEndElement() # Wix
+          $writer.WriteEndDocument()
+          $writer.Close()
+
+          Write-Host "Generated fragment with $id file components."
+
       - name: Build MSI
         run: |
-          $version = "${{ github.ref_name }}" -replace '^v', ''
+          $version  = "${{ github.ref_name }}" -replace '^v', ''
           $publishPath = (Resolve-Path ./publish).Path
           New-Item -ItemType Directory -Force ./dist | Out-Null
-          dotnet build installer/CattleManager.Installer/CattleManager.Installer.wixproj `
-            --configuration Release `
-            -p:PublishDir="$publishPath\\" `
-            -p:ProductVersion=$version
-          $msi = Get-ChildItem -Recurse `
-            installer/CattleManager.Installer/bin -Filter "*.msi" | Select-Object -First 1
-          Copy-Item $msi.FullName ./dist/CattleManager-${{ github.ref_name }}.msi
+
+          wix build `
+            installer/CattleManager.Installer/Package.wxs `
+            installer/CattleManager.Installer/PublishFiles.wxs `
+            -ext WixToolset.UI.wixext `
+            -d ProductVersion=$version `
+            -d PublishDir=$publishPath `
+            -o ./dist/CattleManager-${{ github.ref_name }}.msi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
