@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-test:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
       - name: Checkout
@@ -25,14 +28,23 @@ jobs:
       - name: Build
         run: dotnet build CattleManager.sln --configuration Release --no-restore
 
-      - name: Run tests with coverage
+      - name: Run tests
         run: |
           dotnet test CattleManager.sln `
             --configuration Release `
             --no-build `
+            --logger "trx;LogFileName=test-results.trx" `
+            --logger "console;verbosity=normal" `
+            --results-directory ./test-results `
             --collect:"XPlat Code Coverage" `
-            --results-directory ./coverage `
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+            --results-directory ./coverage
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./test-results/*.trx
 
       - name: Install ReportGenerator
         run: dotnet tool install -g dotnet-reportgenerator-globaltool
@@ -54,7 +66,6 @@ jobs:
             Write-Error "Coverage $lineCoverage% is below the 80% threshold"
             exit 1
           }
-        shell: pwsh
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
