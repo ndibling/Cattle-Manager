@@ -54,7 +54,7 @@ public class HerdServiceTests
     public async Task GetAllHerdsAsync_DelegatesToRepository()
     {
         var herds = new[] { new HerdDto { HerdId = 1 }, new HerdDto { HerdId = 2 } };
-        _herds.Setup(h => h.GetAllAsync()).ReturnsAsync(herds);
+        _herds.Setup(h => h.GetAllAsync(It.IsAny<bool>())).ReturnsAsync(herds);
 
         var result = await CreateSut().GetAllHerdsAsync();
         result.Should().HaveCount(2);
