@@ -42,15 +42,25 @@ public partial class App : Application
         };
 
         // Create / verify the database schema from the current EF Core model.
-        // EnsureCreatedAsync is used instead of MigrateAsync because the migration
-        // files were hand-authored for v1.0.0 and produce incorrect SQL on SQLite.
-        // Future versions with real schema changes should switch to MigrateAsync
-        // after generating migrations with `dotnet ef migrations add`.
+        // EnsureCreatedAsync only acts when the database file does not exist.
+        // If it returns false (file already existed), probe core tables and
+        // delete + recreate if any are missing — handles broken databases left
+        // behind by the hand-authored v1.0.0 migration files.
         try
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<CattleDbContext>();
-            await db.Database.EnsureCreatedAsync();
+            bool created = await db.Database.EnsureCreatedAsync();
+            if (!created)
+            {
+                bool schemaOk = await DatabaseSchemaIsValidAsync(db);
+                if (!schemaOk)
+                {
+                    Log.Warning("Existing database is missing required tables — recreating schema.");
+                    await db.Database.EnsureDeletedAsync();
+                    await db.Database.EnsureCreatedAsync();
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -135,6 +145,26 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log.Warning(ex, "Sample data seeding failed");
+        }
+    }
+
+    private static async Task<bool> DatabaseSchemaIsValidAsync(CattleDbContext db)
+    {
+        try
+        {
+            // Probe each required table; any missing table throws an exception
+            _ = await db.Animals.AnyAsync();
+            _ = await db.Herds.AnyAsync();
+            _ = await db.Farms.AnyAsync();
+            _ = await db.Breeds.AnyAsync();
+            _ = await db.HealthRecords.AnyAsync();
+            _ = await db.BreedingRecords.AnyAsync();
+            _ = await db.AppSettings.AnyAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 
