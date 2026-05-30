@@ -41,16 +41,20 @@ public partial class App : Application
             ex.Handled = true;
         };
 
-        // Run DB migrations
+        // Create / verify the database schema from the current EF Core model.
+        // EnsureCreatedAsync is used instead of MigrateAsync because the migration
+        // files were hand-authored for v1.0.0 and produce incorrect SQL on SQLite.
+        // Future versions with real schema changes should switch to MigrateAsync
+        // after generating migrations with `dotnet ef migrations add`.
         try
         {
             using var scope = Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<CattleDbContext>();
-            await db.Database.MigrateAsync();
+            await db.Database.EnsureCreatedAsync();
         }
         catch (Exception ex)
         {
-            Log.Fatal(ex, "Database migration failed");
+            Log.Fatal(ex, "Database initialization failed");
             MessageBox.Show($"Failed to initialize the database:\n{ex.Message}",
                 "Cattle Manager — Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
