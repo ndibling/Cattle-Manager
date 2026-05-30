@@ -4,6 +4,8 @@
     <Platform>x64</Platform>
     <Platforms>x64</Platforms>
     <InstallerPlatform>x64</InstallerPlatform>
+    <!-- Bridge MSBuild properties to WiX $(var.xxx) preprocessor variables -->
+    <DefineConstants>ProductVersion=$(ProductVersion)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
