@@ -4,11 +4,13 @@ using CsvHelper.Configuration;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 
 namespace CattleManager.Core.Services;
 
+[ExcludeFromCodeCoverage(Justification = "PDF/CSV generation requires real filesystem and rendering engine")]
 public class ExportService
 {
     static ExportService()

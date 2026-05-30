@@ -5,12 +5,15 @@
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <!-- Exclude the WPF App layer — Views, ViewModels, and Converters
-               require a live WPF dispatcher and cannot be unit-tested in CI. -->
-          <Exclude>[CattleManager.App]*</Exclude>
-          <!-- Exclude compiler-generated code (CommunityToolkit.Mvvm
-               source generators, EF Core proxies, etc.) -->
-          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <Exclude>
+            <!-- WPF layer: requires live dispatcher, cannot run in headless CI -->
+            [CattleManager.App]*,
+            <!-- EF Core migration classes: never executed by InMemory tests -->
+            [CattleManager.Data]CattleManager.Data.Migrations.*,
+            <!-- ExportService: PDF/CSV generation requires real filesystem renderer -->
+            [CattleManager.Core]CattleManager.Core.Services.ExportService
+          </Exclude>
+          <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
         </Configuration>
       </DataCollector>
     </DataCollectors>
