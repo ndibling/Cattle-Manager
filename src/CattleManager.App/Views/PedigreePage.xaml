@@ -1,0 +1,46 @@
+<Page x:Class="CattleManager.App.Views.PedigreePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:conv="clr-namespace:CattleManager.App.Converters"
+      xmlns:controls="clr-namespace:CattleManager.App.Controls"
+      Title="Pedigree">
+
+    <Page.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Page.Resources>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="16,10"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="← Back" Command="{Binding GoBackCommand}" Padding="12,6"/>
+                <TextBlock Grid.Column="1" Text="Pedigree Diagram" FontSize="22" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Margin="16,0"/>
+                <Button Grid.Column="2" Content="🖨 Print Pedigree" Click="PrintPedigree_Click" Padding="12,6"/>
+            </Grid>
+        </Border>
+
+        <!-- Loading indicator -->
+        <Border DockPanel.Dock="Top" Padding="16"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="Loading pedigree..." HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Pedigree canvas in scrollable area -->
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                      Padding="24">
+            <controls:PedigreeControl x:Name="PedigreeCanvas"
+                                      RootNode="{Binding Root}"
+                                      NodeClicked="PedigreeCanvas_NodeClicked"/>
+        </ScrollViewer>
+    </DockPanel>
+</Page>

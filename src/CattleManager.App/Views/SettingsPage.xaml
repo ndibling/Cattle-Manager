@@ -1,0 +1,117 @@
+<Page x:Class="CattleManager.App.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:conv="clr-namespace:CattleManager.App.Converters"
+      Title="Settings">
+
+    <Page.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
+    </Page.Resources>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="16,10"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Settings" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="#2E7D32"
+                               VerticalAlignment="Center" Margin="0,0,16,0"
+                               Visibility="{Binding StatusMessage, Converter={StaticResource NullToVisibility}}"/>
+                    <Button Content="Save Settings" Command="{Binding SaveCommand}"
+                            Style="{StaticResource PrimaryButton}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24,16">
+
+                <!-- Farm Information -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Farm Information" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Farm Name *" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox Text="{Binding FarmName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Padding="8,6" MaxWidth="400" HorizontalAlignment="Left" Margin="0,0,0,8"/>
+                        <TextBlock Text="Address" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox Text="{Binding FarmAddress, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Padding="8,6" MaxWidth="400" HorizontalAlignment="Left" Margin="0,0,0,8"/>
+                        <TextBlock Text="Contact Info" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox Text="{Binding ContactInfo, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Padding="8,6" MaxWidth="400" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Measurement Preferences -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Measurement Preferences" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,32,0">
+                                <TextBlock Text="Weight Unit" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding WeightUnitOptions}"
+                                          SelectedItem="{Binding WeightUnit}" Width="180" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Height Unit" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding HeightUnitOptions}"
+                                          SelectedItem="{Binding HeightUnit}" Width="180" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Application Preferences -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Application Preferences" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,32,0">
+                                <TextBlock Text="Color Theme" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding ThemeModeOptions}"
+                                          SelectedItem="{Binding ThemeMode}" Width="180" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Auto Backup" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding AutoBackupOptions}"
+                                          SelectedItem="{Binding AutoBackup}" Width="180" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Data Backup -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Data Backup &amp; Restore" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Create a backup copy of your database or restore from a previous backup."
+                                   FontSize="13" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Margin="0,0,0,12" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="💾 Backup Now" Command="{Binding BackupNowCommand}"
+                                    Padding="16,8" Margin="0,0,12,0" Style="{StaticResource PrimaryButton}"/>
+                            <Button Content="📂 Restore from Backup" Command="{Binding RestoreCommand}"
+                                    Padding="16,8"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Page>

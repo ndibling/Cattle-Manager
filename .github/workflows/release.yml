@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore CattleManager.sln
+
+      - name: Build Release
+        run: dotnet build CattleManager.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test CattleManager.sln --configuration Release --no-build
+
+      - name: Publish self-contained
+        run: |
+          dotnet publish src/CattleManager.App/CattleManager.App.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --output ./publish `
+            -p:PublishSingleFile=false `
+            -p:Version=${{ github.ref_name }}
+
+      - name: Install WiX Toolset
+        run: dotnet tool install --global wix
+
+      - name: Build MSI
+        run: |
+          wix build installer/CattleManager.Installer/Package.wxs `
+            -d PublishDir=./publish `
+            -d ProductVersion=${{ github.ref_name }} `
+            -o ./dist/CattleManager-${{ github.ref_name }}.msi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Cattle Manager ${{ github.ref_name }}
+          body: |
+            ## Cattle Manager ${{ github.ref_name }}
+
+            ### Installation
+            Download `CattleManager-${{ github.ref_name }}.msi` and run it to install.
+
+            ### What's New
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+          files: ./dist/CattleManager-${{ github.ref_name }}.msi
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Cattle Manager"
+           Manufacturer="Cattle Manager"
+           Version="1.0.0"
+           UpgradeCode="6F8E9A2B-3C4D-5E6F-7A8B-9C0D1E2F3A4B"
+           Language="1033"
+           Codepage="1252">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Cattle Manager is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Install location -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Cattle Manager">
+        <Component Id="MainExecutable" Guid="A1B2C3D4-E5F6-7890-ABCD-EF1234567891">
+          <File Id="CattleManagerExe"
+                Source="$(var.PublishDir)\CattleManager.exe"
+                KeyPath="yes">
+            <Shortcut Id="StartMenuShortcut"
+                      Name="Cattle Manager"
+                      Directory="ProgramMenuFolder"
+                      WorkingDirectory="INSTALLFOLDER"
+                      Advertise="yes"/>
+            <Shortcut Id="DesktopShortcut"
+                      Name="Cattle Manager"
+                      Directory="DesktopFolder"
+                      WorkingDirectory="INSTALLFOLDER"
+                      Advertise="yes"/>
+          </File>
+        </Component>
+
+        <!-- All remaining published files -->
+        <Component Id="AppFiles" Guid="B2C3D4E5-F6A7-8901-BCDE-F12345678902">
+          <File Source="$(var.PublishDir)\CattleManager.dll" />
+          <File Source="$(var.PublishDir)\CattleManager.Core.dll" />
+          <File Source="$(var.PublishDir)\CattleManager.Data.dll" />
+          <File Source="$(var.PublishDir)\CattleManager.runtimeconfig.json" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Start Menu folder -->
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- Features -->
+    <Feature Id="ProductFeature" Title="Cattle Manager" Level="1">
+      <ComponentRef Id="MainExecutable" />
+      <ComponentRef Id="AppFiles" />
+    </Feature>
+
+    <!-- UI -->
+    <UIRef Id="WixUI_Minimal" />
+
+    <!-- License -->
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+  </Package>
+</Wix>

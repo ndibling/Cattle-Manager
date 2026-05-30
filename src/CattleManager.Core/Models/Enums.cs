@@ -1,0 +1,30 @@
+namespace CattleManager.Core.Models;
+
+public enum Gender { Male, Female }
+
+public enum AnimalStatus
+{
+    Healthy,
+    BreedingFemale,
+    BreedingMale,
+    Pregnant,
+    Weaned,
+    ForSale,
+    Inactive
+}
+
+public enum MaleBreedingStatus { Active, Retired, Incapacitated }
+
+public enum HealthRecordType
+{
+    Worming,
+    Vaccination,
+    HealthCheck,
+    Injury,
+    MedicalTreatment
+}
+
+public enum WeightUnit { Pounds, Kilograms }
+public enum HeightUnit { Inches, Hands, Centimeters }
+public enum ThemeMode { Light, Dark }
+public enum AutoBackupFrequency { Never, Daily, Weekly }

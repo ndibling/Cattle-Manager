@@ -1,0 +1,25 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+coverage/
+publish/
+dist/
+
+## SQLite local DB (user data, not to be committed)
+*.db
+*.db-wal
+*.db-shm
+
+## NuGet
+*.nupkg
+packages/
+project.lock.json
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/
