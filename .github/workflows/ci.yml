@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: dotnet build CattleManager.sln --configuration Release --no-restore
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           dotnet test CattleManager.sln `
             --configuration Release `
@@ -36,15 +36,14 @@ jobs:
             --logger "trx;LogFileName=test-results.trx" `
             --logger "console;verbosity=normal" `
             --results-directory ./test-results `
-            --collect:"XPlat Code Coverage" `
-            --results-directory ./coverage
+            --collect:"XPlat Code Coverage"
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: ./test-results/*.trx
+          path: ./test-results/**
 
       - name: Install ReportGenerator
         run: dotnet tool install -g dotnet-reportgenerator-globaltool
@@ -52,7 +51,7 @@ jobs:
       - name: Generate coverage report
         run: |
           reportgenerator `
-            -reports:"./coverage/**/coverage.cobertura.xml" `
+            -reports:"./test-results/**/coverage.cobertura.xml" `
             -targetdir:"./coverage/report" `
             -reporttypes:"HtmlInline_AzurePipelines;Cobertura" `
             -title:"Cattle Manager Coverage"
