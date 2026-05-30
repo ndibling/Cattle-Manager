@@ -127,7 +127,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Birth Date" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.BirthDate, StringFormat=MMMM d, yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="{Binding Animal.BirthDate, StringFormat='MMMM d, yyyy'}" Style="{StaticResource FieldValueStyle}"/>
                                     <TextBlock Text="Age" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.AgeDisplay}" Style="{StaticResource FieldValueStyle}"/>
                                     <TextBlock Text="Gender" Style="{StaticResource FieldLabelStyle}"/>

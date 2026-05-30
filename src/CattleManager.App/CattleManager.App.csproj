@@ -6,8 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <LangVersion>12</LangVersion>
-    <ApplicationIcon>Assets\cattle.ico</ApplicationIcon>
-    <AssemblyName>CattleManager</AssemblyName>
+<AssemblyName>CattleManager</AssemblyName>
     <RootNamespace>CattleManager.App</RootNamespace>
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
