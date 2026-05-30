@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- Exclude the WPF App layer — Views, ViewModels, and Converters
+               require a live WPF dispatcher and cannot be unit-tested in CI. -->
+          <Exclude>[CattleManager.App]*</Exclude>
+          <!-- Exclude compiler-generated code (CommunityToolkit.Mvvm
+               source generators, EF Core proxies, etc.) -->
+          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

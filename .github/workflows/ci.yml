@@ -33,6 +33,7 @@ jobs:
           dotnet test CattleManager.sln `
             --configuration Release `
             --no-build `
+            --settings coverlet.runsettings `
             --logger "trx;LogFileName=test-results.trx" `
             --logger "console;verbosity=normal" `
             --results-directory ./test-results `
