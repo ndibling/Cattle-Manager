@@ -81,7 +81,7 @@ public class SampleDataSeederTests : IDisposable
         await _seeder.SeedAsync();
         var bull = await _db.Animals.FirstOrDefaultAsync(a => a.BarnName == "Atlas");
         bull.Should().NotBeNull();
-        bull!.Gender.Should().Be(Core.Models.Gender.Male);
+        bull!.Gender.Should().Be(Gender.Male);
         bull.SireId.Should().NotBeNull();
         bull.DamId.Should().NotBeNull();
     }
