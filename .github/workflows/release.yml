@@ -104,6 +104,7 @@ jobs:
             installer/CattleManager.Installer/Package.wxs `
             installer/CattleManager.Installer/PublishFiles.wxs `
             -ext WixToolset.UI.wixext `
+            -b installer/CattleManager.Installer `
             -d ProductVersion=$version `
             -d PublishDir=$publishPath `
             -o ./dist/CattleManager-${{ github.ref_name }}.msi
