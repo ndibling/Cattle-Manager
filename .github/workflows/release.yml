@@ -38,21 +38,18 @@ jobs:
             -p:PublishSingleFile=false `
             -p:Version=$version
 
-      - name: Install WiX Toolset v4
-        run: |
-          dotnet tool install --global wix --version 4.0.5
-          wix extension add WixToolset.UI.wixext/4.0.5 --global
-
       - name: Build MSI
         run: |
           $version = "${{ github.ref_name }}" -replace '^v', ''
           $publishPath = (Resolve-Path ./publish).Path
           New-Item -ItemType Directory -Force ./dist | Out-Null
-          wix build installer/CattleManager.Installer/Package.wxs `
-            -ext WixToolset.UI.wixext `
-            -d PublishDir=$publishPath `
-            -d ProductVersion=$version `
-            -o ./dist/CattleManager-${{ github.ref_name }}.msi
+          dotnet build installer/CattleManager.Installer/CattleManager.Installer.wixproj `
+            --configuration Release `
+            -p:PublishDir="$publishPath\\" `
+            -p:ProductVersion=$version
+          $msi = Get-ChildItem -Recurse `
+            installer/CattleManager.Installer/bin -Filter "*.msi" | Select-Object -First 1
+          Copy-Item $msi.FullName ./dist/CattleManager-${{ github.ref_name }}.msi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

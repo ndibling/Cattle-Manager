@@ -1,0 +1,23 @@
+<Project Sdk="WixToolset.Sdk/4.0.5">
+  <PropertyGroup>
+    <OutputName>CattleManager</OutputName>
+    <Platform>x64</Platform>
+    <Platforms>x64</Platforms>
+    <InstallerPlatform>x64</InstallerPlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
+    <PackageReference Include="WixToolset.Harvest.wixext" Version="4.0.5" />
+  </ItemGroup>
+
+  <!-- Harvest all files from the self-contained publish output -->
+  <ItemGroup>
+    <HarvestDirectory Include="$(PublishDir)"
+                      DirectoryRefId="INSTALLFOLDER"
+                      ComponentGroupName="PublishFiles"
+                      SuppressRootDirectory="true"
+                      SuppressCom="true"
+                      SuppressRegistry="true" />
+  </ItemGroup>
+</Project>
