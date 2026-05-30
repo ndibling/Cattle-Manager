@@ -25,8 +25,10 @@ public class HerdServiceTests
             Animal(Gender.Male, AnimalStatus.BreedingMale, maleStatus: MaleBreedingStatus.Active),
             Animal(Gender.Male, AnimalStatus.BreedingMale, maleStatus: MaleBreedingStatus.Retired),
             Animal(Gender.Female, AnimalStatus.Healthy),
-            // Overdue for husbandry (no dates)
-            Animal(Gender.Female, AnimalStatus.Healthy, lastWorming: null, lastVaccination: null)
+            // Overdue for worming: last worming 100 days ago, threshold is 70 days
+            Animal(Gender.Female, AnimalStatus.Healthy,
+                lastWorming: DateTime.Today.AddDays(-100),
+                lastVaccination: DateTime.Today.AddDays(-10))
         });
 
         var result = await CreateSut().GetSummaryAsync(1);
