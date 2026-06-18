@@ -182,6 +182,8 @@
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Last Health Check" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.LastHealthCheckDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Last Hoof Trimming" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.LastHoofTrimmingDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
                                 </StackPanel>
                             </Grid>
                             <TextBlock Text="Health Notes" Style="{StaticResource FieldLabelStyle}"/>

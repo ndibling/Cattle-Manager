@@ -43,6 +43,7 @@ public partial class AnimalProfileViewModel : ObservableObject
     [ObservableProperty] private DateTime? _editLastWorming;
     [ObservableProperty] private DateTime? _editLastVaccination;
     [ObservableProperty] private DateTime? _editLastHealthCheck;
+    [ObservableProperty] private DateTime? _editLastHoofTrimming;
 
     // Bull exposure add form
     [ObservableProperty] private bool _isAddingExposure;
@@ -124,6 +125,7 @@ public partial class AnimalProfileViewModel : ObservableObject
         EditLastWorming = Animal.LastWormingDate;
         EditLastVaccination = Animal.LastVaccinationDate;
         EditLastHealthCheck = Animal.LastHealthCheckDate;
+        EditLastHoofTrimming = Animal.LastHoofTrimmingDate;
         EditPhotoPath = Animal.PhotoPath;
         IsEditMode = true;
     }
@@ -140,6 +142,7 @@ public partial class AnimalProfileViewModel : ObservableObject
         Animal.LastWormingDate = EditLastWorming;
         Animal.LastVaccinationDate = EditLastVaccination;
         Animal.LastHealthCheckDate = EditLastHealthCheck;
+        Animal.LastHoofTrimmingDate = EditLastHoofTrimming;
         Animal.PhotoPath = EditPhotoPath;
         await _animals.UpdateAsync(Animal);
         IsEditMode = false;
