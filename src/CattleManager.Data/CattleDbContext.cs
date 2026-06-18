@@ -124,6 +124,8 @@ public class CattleDbContext : DbContext
         {
             entity.HasKey(t => t.TransactionId);
             entity.Property(t => t.Amount).HasPrecision(10, 2);
+            entity.Property(t => t.TaxRate).HasPrecision(8, 6);
+            entity.Property(t => t.TaxAmount).HasPrecision(10, 2);
             entity.HasOne(t => t.LinkedAnimal)
                   .WithMany()
                   .HasForeignKey(t => t.LinkedAnimalId)

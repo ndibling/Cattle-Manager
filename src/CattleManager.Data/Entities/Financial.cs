@@ -15,6 +15,8 @@ public class Transaction
     public string? Notes { get; set; }
     public string? AttachmentPath { get; set; }
     public int? LinkedAnimalId { get; set; }
+    public decimal TaxRate { get; set; }
+    public decimal TaxAmount { get; set; }
     public bool IsSampleData { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime ModifiedDate { get; set; }

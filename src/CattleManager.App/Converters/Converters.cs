@@ -108,12 +108,16 @@ public class PathToImageConverter : IValueConverter
     {
         if (value is string path && System.IO.File.Exists(path))
         {
-            var img = new BitmapImage();
-            img.BeginInit();
-            img.UriSource = new Uri(path, UriKind.Absolute);
-            img.CacheOption = BitmapCacheOption.OnLoad;
-            img.EndInit();
-            return img;
+            try
+            {
+                var img = new BitmapImage();
+                img.BeginInit();
+                img.UriSource = new Uri(path, UriKind.Absolute);
+                img.CacheOption = BitmapCacheOption.OnLoad;
+                img.EndInit();
+                return img;
+            }
+            catch { return DependencyProperty.UnsetValue; }
         }
         return GetPlaceholder();
     }
@@ -142,6 +146,25 @@ public class GenderToSymbolConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         => value is Gender.Male ? "♂" : "♀";
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+public class TransactionTypeToBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is TransactionType type)
+            return type switch
+            {
+                TransactionType.Income => new SolidColorBrush(Color.FromRgb(46, 125, 50)),
+                TransactionType.Expense => new SolidColorBrush(Color.FromRgb(198, 40, 40)),
+                TransactionType.CapitalInflux => new SolidColorBrush(Color.FromRgb(21, 101, 192)),
+                _ => Brushes.Gray
+            };
+        return Brushes.Gray;
+    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

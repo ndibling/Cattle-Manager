@@ -40,6 +40,9 @@
                     <Button x:Name="BtnAddAnimal" Content="➕  Add Animal"
                             Click="BtnAddAnimal_Click" Style="{StaticResource NavButtonStyle}"
                             Tag="Add"/>
+                    <Button x:Name="BtnFinancials" Content="💰  Financials"
+                            Click="BtnFinancials_Click" Style="{StaticResource NavButtonStyle}"
+                            Tag="Financials"/>
                     <Button x:Name="BtnSettings" Content="⚙️  Settings"
                             Click="BtnSettings_Click" Style="{StaticResource NavButtonStyle}"
                             Tag="Settings"/>

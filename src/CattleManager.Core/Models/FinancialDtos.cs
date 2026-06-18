@@ -14,6 +14,9 @@ public class TransactionDto
     public string? AttachmentPath { get; set; }
     public int? LinkedAnimalId { get; set; }
     public string? LinkedAnimalName { get; set; }
+    public decimal TaxRate { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal NetProceeds => Amount - TaxAmount;
     public bool IsSampleData { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime ModifiedDate { get; set; }

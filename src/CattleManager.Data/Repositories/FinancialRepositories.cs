@@ -53,6 +53,8 @@ public class TransactionRepository : ITransactionRepository
             Notes = dto.Notes,
             AttachmentPath = dto.AttachmentPath,
             LinkedAnimalId = dto.LinkedAnimalId,
+            TaxRate = dto.TaxRate,
+            TaxAmount = dto.TaxAmount,
             IsSampleData = dto.IsSampleData,
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
@@ -77,6 +79,8 @@ public class TransactionRepository : ITransactionRepository
         e.Notes = dto.Notes;
         e.AttachmentPath = dto.AttachmentPath;
         e.LinkedAnimalId = dto.LinkedAnimalId;
+        e.TaxRate = dto.TaxRate;
+        e.TaxAmount = dto.TaxAmount;
         e.ModifiedDate = DateTime.UtcNow;
         await _db.SaveChangesAsync();
         return dto;
@@ -109,6 +113,8 @@ public class TransactionRepository : ITransactionRepository
         AttachmentPath = e.AttachmentPath,
         LinkedAnimalId = e.LinkedAnimalId,
         LinkedAnimalName = e.LinkedAnimal?.BarnName,
+        TaxRate = e.TaxRate,
+        TaxAmount = e.TaxAmount,
         IsSampleData = e.IsSampleData,
         CreatedDate = e.CreatedDate,
         ModifiedDate = e.ModifiedDate

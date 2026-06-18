@@ -1,0 +1,192 @@
+<Page x:Class="CattleManager.App.Views.TransactionFormPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:conv="clr-namespace:CattleManager.App.Converters"
+      Title="Transaction Form">
+
+    <Page.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <conv:PathToImageConverter x:Key="PathToImage"/>
+    </Page.Resources>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="16,10"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding FormTitle}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding ValidationError}" Foreground="Red"
+                               VerticalAlignment="Center" Margin="0,0,16,0"
+                               Visibility="{Binding ValidationError, Converter={StaticResource NullToVisibility}}"/>
+                    <Button Content="Save" Command="{Binding SaveCommand}"
+                            Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                    <Button Content="Cancel" Command="{Binding CancelCommand}" Padding="16,8"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24,16" MaxWidth="900">
+
+                <!-- SECTION: Transaction Details -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Transaction Details" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Row 0 -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="Type *" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding TypeOptions}"
+                                          SelectedItem="{Binding TransactionTypeStr}"
+                                          FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,0">
+                                <TextBlock Text="Date *" Style="{StaticResource FieldLabelStyle}"/>
+                                <DatePicker SelectedDate="{Binding Date}" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="2">
+                                <TextBlock Text="Amount ($) *" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding AmountText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+
+                            <!-- Row 1 -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,12,0">
+                                <TextBlock Text="Category *" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding CategoryOptions}"
+                                          SelectedItem="{Binding SelectedCategory}"
+                                          DisplayMemberPath="Display"
+                                          FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,8,0,0">
+                                <TextBlock Text="Payment Method" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding PaymentMethod, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="e.g. Check, Card, Cash"/>
+                            </StackPanel>
+
+                            <!-- Row 2 -->
+                            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,8,0,0">
+                                <TextBlock Text="Description *" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="Brief description of this transaction"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Payee / Payer -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Payee / Payer" Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel>
+                            <TextBlock Text="Name" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox Text="{Binding PayeePayer, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Padding="8,6" MaxWidth="400" HorizontalAlignment="Left"
+                                     ui:ControlHelper.PlaceholderText="Vendor, buyer, or payer name"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Text="Notes" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Padding="8,6" AcceptsReturn="True"
+                                     TextWrapping="Wrap" MinHeight="60"
+                                     ui:ControlHelper.PlaceholderText="Optional notes or memo"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Receipt / Attachment -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Receipt / Attachment" Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Content="Browse..." Command="{Binding BrowseAttachmentCommand}"
+                                    Padding="12,6" Margin="0,0,8,0"/>
+                            <Button Content="Clear" Command="{Binding ClearAttachmentCommand}"
+                                    Padding="12,6"
+                                    Visibility="{Binding AttachmentPath, Converter={StaticResource NullToVisibility}}"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding AttachmentPath}"
+                                   FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   TextTrimming="CharacterEllipsis"
+                                   Visibility="{Binding AttachmentPath, Converter={StaticResource NullToVisibility}}"/>
+                        <Image Source="{Binding AttachmentPath, Converter={StaticResource PathToImage}}"
+                               MaxHeight="160" MaxWidth="240" HorizontalAlignment="Left" Margin="0,8,0,0"
+                               Stretch="Uniform"
+                               Visibility="{Binding IsImageAttachment, Converter={StaticResource BoolToVisibility}}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Animal Linkage -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Animal Linkage (Optional)" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Margin="0,0,0,8"
+                                   Text="Link this transaction to an animal. For livestock sales, this will update the animal's sale price and mark it as Sold."/>
+                        <StackPanel MaxWidth="320" HorizontalAlignment="Left">
+                            <TextBlock Text="Animal" Style="{StaticResource FieldLabelStyle}"/>
+                            <ComboBox ItemsSource="{Binding AnimalOptions}"
+                                      SelectedItem="{Binding LinkedAnimal}"
+                                      DisplayMemberPath="BarnName"
+                                      FontSize="14"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Tax Details -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Tax Details" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="140"/>
+                                <ColumnDefinition Width="Auto" MinWidth="140"/>
+                                <ColumnDefinition Width="Auto" MinWidth="140"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,24,0">
+                                <TextBlock Text="Tax Rate (%)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding TaxRateText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6" Width="120"
+                                         ui:ControlHelper.PlaceholderText="e.g. 4.5"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,24,0">
+                                <TextBlock Text="Tax Amount" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="{Binding TaxAmount, StringFormat=C}"
+                                           FontSize="16" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Net Proceeds" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="{Binding NetProceeds, StringFormat=C}"
+                                           FontSize="16" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Page>

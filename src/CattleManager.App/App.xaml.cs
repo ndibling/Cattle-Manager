@@ -124,6 +124,8 @@ public partial class App : Application
         services.AddTransient<AnimalFormViewModel>();
         services.AddTransient<PedigreeViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<TransactionListViewModel>();
+        services.AddTransient<TransactionFormViewModel>();
 
         services.AddSingleton<MainWindow>();
     }
@@ -182,6 +184,8 @@ public partial class App : Application
                         "Notes" TEXT,
                         "AttachmentPath" TEXT,
                         "LinkedAnimalId" INTEGER,
+                        "TaxRate" REAL NOT NULL DEFAULT 0.0,
+                        "TaxAmount" REAL NOT NULL DEFAULT 0.0,
                         "IsSampleData" INTEGER NOT NULL DEFAULT 0,
                         "CreatedDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
                         "ModifiedDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'
@@ -270,14 +274,7 @@ public partial class App : Application
         await conn.OpenAsync();
         try
         {
-            var existing = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "PRAGMA table_info(Animals)";
-                using var rdr = await cmd.ExecuteReaderAsync();
-                while (await rdr.ReadAsync()) existing.Add(rdr.GetString(1));
-            }
-            var toAdd = new System.Collections.Generic.Dictionary<string, string>
+            await EnsureTableColumnsAsync(conn, "Animals", new System.Collections.Generic.Dictionary<string, string>
             {
                 ["TagNumber"]                = "TEXT",
                 ["Chondro"]                  = "INTEGER NOT NULL DEFAULT 0",
@@ -286,21 +283,39 @@ public partial class App : Application
                 ["PastureLocation"]          = "TEXT",
                 ["PastureState"]             = "TEXT",
                 ["ExpectedHeightAtMaturity"] = "REAL",
-            };
-            foreach (var (col, def) in toAdd)
+            });
+            await EnsureTableColumnsAsync(conn, "Transactions", new System.Collections.Generic.Dictionary<string, string>
             {
-                if (!existing.Contains(col))
-                {
-                    using var cmd = conn.CreateCommand();
-                    cmd.CommandText = $"ALTER TABLE Animals ADD COLUMN {col} {def}";
-                    await cmd.ExecuteNonQueryAsync();
-                    Log.Information("Added column Animals.{Column}", col);
-                }
-            }
+                ["TaxRate"]   = "REAL NOT NULL DEFAULT 0.0",
+                ["TaxAmount"] = "REAL NOT NULL DEFAULT 0.0",
+            });
         }
         finally
         {
             await conn.CloseAsync();
+        }
+    }
+
+    private static async Task EnsureTableColumnsAsync(
+        System.Data.Common.DbConnection conn, string table,
+        System.Collections.Generic.Dictionary<string, string> columns)
+    {
+        var existing = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = $"PRAGMA table_info({table})";
+            using var rdr = await cmd.ExecuteReaderAsync();
+            while (await rdr.ReadAsync()) existing.Add(rdr.GetString(1));
+        }
+        foreach (var (col, def) in columns)
+        {
+            if (!existing.Contains(col))
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"ALTER TABLE {table} ADD COLUMN {col} {def}";
+                await cmd.ExecuteNonQueryAsync();
+                Log.Information("Added column {Table}.{Column}", table, col);
+            }
         }
     }
 

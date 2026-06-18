@@ -48,6 +48,14 @@ public partial class MainWindow : Window
         HighlightNav(BtnAddAnimal);
     }
 
+    private void BtnFinancials_Click(object sender, RoutedEventArgs e)
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<TransactionListViewModel>();
+        _nav.NavigateTo(new TransactionListPage(vm));
+        HighlightNav(BtnFinancials);
+    }
+
     private void BtnSettings_Click(object sender, RoutedEventArgs e)
     {
         _nav.ClearBack();
@@ -58,7 +66,7 @@ public partial class MainWindow : Window
 
     private void HighlightNav(Button active)
     {
-        foreach (var btn in new[] { BtnDashboard, BtnHerd, BtnAddAnimal, BtnSettings })
+        foreach (var btn in new[] { BtnDashboard, BtnHerd, BtnAddAnimal, BtnFinancials, BtnSettings })
         {
             btn.Tag = btn == active ? "Active" : btn.Name.Replace("Btn", "");
         }
