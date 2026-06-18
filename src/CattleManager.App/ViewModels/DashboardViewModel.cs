@@ -84,14 +84,20 @@ public partial class DashboardViewModel : ObservableObject
         PregnantAnimals = summary.PregnantAnimals;
     }
 
-    [RelayCommand]
-    private void ViewHerdDetails()
+    private void NavigateToHerd(string filterStatus = "All")
     {
         if (SelectedHerd is null) return;
         var vm = App.Services.GetRequiredService<HerdDetailsViewModel>();
         vm.HerdId = SelectedHerd.HerdId;
+        vm.FilterStatus = filterStatus;
         _nav.NavigateTo(new HerdDetailsPage(vm));
     }
+
+    [RelayCommand] private void ViewHerdDetails()      => NavigateToHerd();
+    [RelayCommand] private void ViewBreedingFemales()  => NavigateToHerd("Breeding Female");
+    [RelayCommand] private void ViewBreedingMales()    => NavigateToHerd("Breeding Male");
+    [RelayCommand] private void ViewPregnant()         => NavigateToHerd("Pregnant");
+    [RelayCommand] private void ViewDueForHusbandry()  => NavigateToHerd("Due for Husbandry");
 
     [RelayCommand]
     private void AddNewAnimal()

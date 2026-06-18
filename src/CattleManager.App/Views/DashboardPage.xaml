@@ -63,7 +63,8 @@
             <TextBlock Text="Herd Overview" Style="{StaticResource SectionHeaderStyle}"/>
             <WrapPanel Margin="0,0,0,24" Orientation="Horizontal">
                 <!-- Total Animals -->
-                <Border Style="{StaticResource StatCardStyle}">
+                <Button Style="{StaticResource StatCardButtonStyle}"
+                        Command="{Binding ViewHerdDetailsCommand}">
                     <StackPanel>
                         <TextBlock Text="{Binding TotalAnimals}" FontSize="40" FontWeight="Bold"
                                    Foreground="#2E7D32" HorizontalAlignment="Center"/>
@@ -71,9 +72,10 @@
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    Margin="0,4,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
                 <!-- Breeding Females -->
-                <Border Style="{StaticResource StatCardStyle}">
+                <Button Style="{StaticResource StatCardButtonStyle}"
+                        Command="{Binding ViewBreedingFemalesCommand}">
                     <StackPanel>
                         <TextBlock Text="{Binding BreedingFemales}" FontSize="40" FontWeight="Bold"
                                    Foreground="#AD1457" HorizontalAlignment="Center"/>
@@ -81,9 +83,10 @@
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    Margin="0,4,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
                 <!-- Breeding Males -->
-                <Border Style="{StaticResource StatCardStyle}">
+                <Button Style="{StaticResource StatCardButtonStyle}"
+                        Command="{Binding ViewBreedingMalesCommand}">
                     <StackPanel>
                         <TextBlock Text="{Binding BreedingMales}" FontSize="40" FontWeight="Bold"
                                    Foreground="#1565C0" HorizontalAlignment="Center"/>
@@ -91,9 +94,10 @@
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    Margin="0,4,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
                 <!-- Pregnant -->
-                <Border Style="{StaticResource StatCardStyle}">
+                <Button Style="{StaticResource StatCardButtonStyle}"
+                        Command="{Binding ViewPregnantCommand}">
                     <StackPanel>
                         <TextBlock Text="{Binding PregnantAnimals}" FontSize="40" FontWeight="Bold"
                                    Foreground="#6A1B9A" HorizontalAlignment="Center"/>
@@ -101,12 +105,13 @@
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    Margin="0,4,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
                 <!-- Due for Husbandry -->
-                <Border Style="{StaticResource StatCardStyle}" Margin="8">
-                    <Border.Background>
+                <Button Style="{StaticResource StatCardButtonStyle}"
+                        Command="{Binding ViewDueForHusbandryCommand}">
+                    <Button.Background>
                         <SolidColorBrush Color="{Binding DueForHusbandry, Converter={StaticResource CountToWarningColor}}"/>
-                    </Border.Background>
+                    </Button.Background>
                     <StackPanel>
                         <TextBlock Text="{Binding DueForHusbandry}" FontSize="40" FontWeight="Bold"
                                    Foreground="#F57F17" HorizontalAlignment="Center"/>
@@ -114,7 +119,7 @@
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                    Margin="0,4,0,0"/>
                     </StackPanel>
-                </Border>
+                </Button>
             </WrapPanel>
 
             <!-- Action Buttons -->
