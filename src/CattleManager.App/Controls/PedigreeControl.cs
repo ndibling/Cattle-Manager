@@ -35,6 +35,7 @@ public class PedigreeControl : Canvas
     private void Render()
     {
         Children.Clear();
+        Background = Brushes.Transparent;
         if (RootNode is null) return;
 
         double totalHeight = CalculateTotalHeight(RootNode);
@@ -46,9 +47,18 @@ public class PedigreeControl : Canvas
         // spilled past the canvas boundary.
         RenderNode(RootNode, 0, 0, totalHeight);
 
-        Width = 5 * (NodeWidth + HGap);
+        int maxGen = GetMaxGeneration(RootNode);
+        Width = (maxGen + 1) * (NodeWidth + HGap) + HGap;
         Height = totalHeight + NodeHeight;
         InvalidateMeasure();
+    }
+
+    private int GetMaxGeneration(PedigreeNodeDto node)
+    {
+        int max = node.Generation;
+        if (node.Sire is not null) max = Math.Max(max, GetMaxGeneration(node.Sire));
+        if (node.Dam is not null) max = Math.Max(max, GetMaxGeneration(node.Dam));
+        return max;
     }
 
     // Canvas measures itself as (0,0) by default, which means the ScrollViewer

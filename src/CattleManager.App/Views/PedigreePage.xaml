@@ -35,9 +35,14 @@
             <TextBlock Text="Loading pedigree..." HorizontalAlignment="Center"/>
         </Border>
 
-        <!-- Pedigree canvas in scrollable area -->
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                      Padding="24">
+        <!-- Pedigree canvas in scrollable area — drag background to pan, click a node to navigate -->
+        <ScrollViewer x:Name="PedigreeScroll"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                      Padding="24"
+                      MouseLeftButtonDown="Scroll_MouseDown"
+                      MouseMove="Scroll_MouseMove"
+                      MouseLeftButtonUp="Scroll_MouseUp"
+                      MouseLeave="Scroll_MouseLeave">
             <controls:PedigreeControl x:Name="PedigreeCanvas"
                                       RootNode="{Binding Root}"
                                       NodeClicked="PedigreeCanvas_NodeClicked"/>
