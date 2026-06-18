@@ -51,6 +51,20 @@ public class AssetDto
     public DateTime CreatedDate { get; set; }
 
     public bool IsActive => DisposedDate is null;
+
+    public string CategoryDisplay => Category switch
+    {
+        AssetCategory.MachineryEquipment => "Machinery & Equipment",
+        _ => Category.ToString()
+    };
+
+    public string DepreciationMethodDisplay => DepreciationMethod switch
+    {
+        DepreciationMethod.StraightLine => "Straight Line",
+        DepreciationMethod.DB150        => "150% Declining Balance",
+        DepreciationMethod.Section179   => "Section 179",
+        _                               => DepreciationMethod.ToString()
+    };
 }
 
 public class LoanDto

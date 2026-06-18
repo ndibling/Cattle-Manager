@@ -137,6 +137,14 @@ public partial class TransactionListViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void NavigateToAssets()
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<AssetListViewModel>();
+        _nav.NavigateTo(new AssetListPage(vm));
+    }
+
+    [RelayCommand]
     private void ClearFilters()
     {
         FilterType     = "All";

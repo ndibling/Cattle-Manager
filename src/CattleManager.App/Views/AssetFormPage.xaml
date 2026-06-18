@@ -1,0 +1,211 @@
+<Page x:Class="CattleManager.App.Views.AssetFormPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:conv="clr-namespace:CattleManager.App.Converters"
+      Title="Asset Form">
+
+    <Page.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+    </Page.Resources>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="16,10"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding FormTitle}" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding ValidationError}" Foreground="Red"
+                               VerticalAlignment="Center" Margin="0,0,16,0"
+                               Visibility="{Binding ValidationError, Converter={StaticResource NullToVisibility}}"/>
+                    <Button Content="Save" Command="{Binding SaveCommand}"
+                            Style="{StaticResource PrimaryButton}" Margin="0,0,8,0"/>
+                    <Button Content="Cancel" Command="{Binding CancelCommand}" Padding="16,8"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24,16" MaxWidth="900">
+
+                <!-- SECTION: Basic Info -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Basic Information" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Row 0 -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,12,0">
+                                <TextBlock Text="Asset Name *" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding AssetName, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="e.g. John Deere 5075E Tractor"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="2">
+                                <TextBlock Text="Category *" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding CategoryOptions}"
+                                          SelectedItem="{Binding SelectedCategory}"
+                                          DisplayMemberPath="Display" FontSize="14"/>
+                            </StackPanel>
+
+                            <!-- Row 1 -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,8,12,0">
+                                <TextBlock Text="Purchase Date" Style="{StaticResource FieldLabelStyle}"/>
+                                <DatePicker SelectedDate="{Binding PurchaseDate}" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,8,12,0">
+                                <TextBlock Text="Purchase Price ($) *" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding PurchasePriceText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="0.00"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,8,0,0">
+                                <TextBlock Text="Current Market Value ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding CurrentValueText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="Optional"/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Margin="0,8,0,0">
+                            <TextBlock Text="Notes" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Padding="8,6" AcceptsReturn="True"
+                                     TextWrapping="Wrap" MinHeight="48"
+                                     ui:ControlHelper.PlaceholderText="Optional notes"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Depreciation -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Depreciation" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="Depreciation Method" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding DepreciationMethodOptions}"
+                                          SelectedItem="{Binding SelectedDepreciation}"
+                                          DisplayMemberPath="Display" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,12,0"
+                                        Visibility="{Binding ShowDepreciationDetails, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="Useful Life (years)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding UsefulLifeYearsText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2"
+                                        Visibility="{Binding ShowDepreciationDetails, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Text="Salvage Value ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding SalvageValueText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Margin="0,8,0,0" FontSize="12"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Visibility="{Binding ShowDepreciationDetails, Converter={StaticResource InverseBoolToVisibility}}">
+                            Section 179 deducts the full purchase price in the first year of service.
+                            Useful life and salvage value do not apply.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Animal Linkage -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Animal Linkage (Optional)" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Margin="0,0,0,8"
+                                   Text="Link this asset to a specific animal (e.g., breeding bull entered in the asset register)."/>
+                        <StackPanel MaxWidth="320" HorizontalAlignment="Left">
+                            <TextBlock Text="Animal" Style="{StaticResource FieldLabelStyle}"/>
+                            <ComboBox ItemsSource="{Binding AnimalOptions}"
+                                      SelectedItem="{Binding LinkedAnimal}"
+                                      DisplayMemberPath="BarnName" FontSize="14"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Disposal — only shown when editing an active asset -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,16"
+                        Visibility="{Binding CanDispose, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Dispose Asset" Style="{StaticResource SectionHeaderStyle}"/>
+                            <Button Grid.Column="1" Command="{Binding ToggleDisposalCommand}"
+                                    Padding="12,4" FontSize="12">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Content" Value="▶ Mark as Disposed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDisposalExpanded}" Value="True">
+                                                <Setter Property="Content" Value="▼ Cancel Disposal"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                        <TextBlock FontSize="12" Margin="0,0,0,8"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Text="Record the sale or retirement of this asset. This will update its status to Disposed."/>
+
+                        <!-- Disposal fields - shown when expanded -->
+                        <Grid Visibility="{Binding IsDisposalExpanded, Converter={StaticResource BoolToVisibility}}"
+                              Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="Disposal Date" Style="{StaticResource FieldLabelStyle}"/>
+                                <DatePicker SelectedDate="{Binding DisposalDate}" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                <TextBlock Text="Disposal / Sale Price ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding DisposalPriceText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="0.00"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Gain / (Loss)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="{Binding GainOrLoss, StringFormat=C}"
+                                           FontSize="16" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Page>
