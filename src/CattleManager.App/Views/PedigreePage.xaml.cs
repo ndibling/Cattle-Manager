@@ -29,7 +29,7 @@ public partial class PedigreePage : Page
     {
         var dlg = new PrintDialog();
         if (dlg.ShowDialog() == true)
-            dlg.PrintVisual(PedigreeCanvas, "Cattle Manager — Pedigree");
+            dlg.PrintVisual(PedigreeCanvas, "Herd Master — Pedigree");
     }
 
     private void Scroll_MouseDown(object sender, MouseButtonEventArgs e)

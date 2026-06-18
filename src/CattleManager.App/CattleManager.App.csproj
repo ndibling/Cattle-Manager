@@ -11,8 +11,8 @@
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <Company>Cattle Manager</Company>
-    <Product>Cattle Manager</Product>
+    <Company>Herd Master</Company>
+    <Product>Herd Master</Product>
     <Description>Cattle herd management application</Description>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>

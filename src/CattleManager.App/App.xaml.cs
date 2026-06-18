@@ -37,7 +37,7 @@ public partial class App : Application
         {
             Log.Error(ex.Exception, "Unhandled UI exception");
             MessageBox.Show($"An unexpected error occurred:\n{ex.Exception.Message}\n\nDetails saved to log file.",
-                "Cattle Manager — Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Herd Master — Error", MessageBoxButton.OK, MessageBoxImage.Error);
             ex.Handled = true;
         };
 
@@ -70,7 +70,7 @@ public partial class App : Application
         {
             Log.Fatal(ex, "Database initialization failed");
             MessageBox.Show($"Failed to initialize the database:\n{ex.Message}",
-                "Cattle Manager — Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                "Herd Master — Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
             return;
         }

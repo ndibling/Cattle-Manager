@@ -55,7 +55,7 @@ jobs:
             -reports:"./test-results/**/coverage.cobertura.xml" `
             -targetdir:"./coverage/report" `
             -reporttypes:"HtmlInline_AzurePipelines;Cobertura" `
-            -title:"Cattle Manager Coverage"
+            -title:"Herd Master Coverage"
 
       - name: Check coverage threshold
         run: |

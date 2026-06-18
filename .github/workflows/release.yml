@@ -114,9 +114,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Cattle Manager ${{ github.ref_name }}
+          name: Herd Master ${{ github.ref_name }}
           body: |
-            ## Cattle Manager ${{ github.ref_name }}
+            ## Herd Master ${{ github.ref_name }}
 
             ### Installation
             Download `CattleManager-${{ github.ref_name }}.msi` and run it to install.

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="Cattle Manager" Icon="Assets/app.ico" Height="768" Width="1280"
+        Title="Herd Master" Icon="Assets/app.ico" Height="768" Width="1280"
         MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen">
 
@@ -22,7 +22,7 @@
                 <!-- Logo / App Name -->
                 <StackPanel DockPanel.Dock="Top" Margin="16,24,16,16">
                     <TextBlock Text="🐄" FontSize="32" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Cattle Manager" FontSize="18" FontWeight="Bold"
+                    <TextBlock Text="Herd Master" FontSize="18" FontWeight="Bold"
                                HorizontalAlignment="Center" Margin="0,8,0,0"
                                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 </StackPanel>

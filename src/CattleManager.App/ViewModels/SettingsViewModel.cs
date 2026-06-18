@@ -120,6 +120,6 @@ public partial class SettingsViewModel : ObservableObject
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "CattleManager", "CattleManager.db");
         File.Copy(srcPath, destPath, overwrite: true);
-        _dialog.ShowInfo("Restore complete. Please restart Cattle Manager.", "Restore Complete");
+        _dialog.ShowInfo("Restore complete. Please restart Herd Master.", "Restore Complete");
     }
 }

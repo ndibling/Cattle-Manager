@@ -4,28 +4,28 @@
 
   <Icon Id="AppIcon" SourceFile="..\..\src\CattleManager.App\Assets\app.ico" />
 
-  <Package Name="Cattle Manager"
-           Manufacturer="Cattle Manager"
+  <Package Name="Herd Master"
+           Manufacturer="Herd Master"
            Version="$(var.ProductVersion)"
            UpgradeCode="6F8E9A2B-3C4D-5E6F-7A8B-9C0D1E2F3A4B"
            Language="1033">
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of Cattle Manager is already installed." />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Herd Master is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
     <!-- Sets the icon shown in Add/Remove Programs -->
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
 
-    <!-- Install into Program Files\Cattle Manager -->
+    <!-- Install into Program Files\Herd Master -->
     <StandardDirectory Id="ProgramFiles6432Folder">
-      <Directory Id="INSTALLFOLDER" Name="Cattle Manager" />
+      <Directory Id="INSTALLFOLDER" Name="Herd Master" />
     </StandardDirectory>
 
     <!-- Start Menu shortcut -->
     <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="StartMenuShortcut" Guid="C3D4E5F6-A7B8-9012-CDEF-123456789013">
         <Shortcut Id="StartMenu"
-                  Name="Cattle Manager"
+                  Name="Herd Master"
                   Target="[INSTALLFOLDER]CattleManager.exe"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
@@ -39,7 +39,7 @@
       </Component>
     </StandardDirectory>
 
-    <Feature Id="ProductFeature" Title="Cattle Manager" Level="1">
+    <Feature Id="ProductFeature" Title="Herd Master" Level="1">
       <!-- PublishFiles is generated at build time from the publish directory -->
       <ComponentGroupRef Id="PublishFiles" />
       <ComponentRef Id="StartMenuShortcut" />
