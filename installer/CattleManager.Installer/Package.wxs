@@ -2,6 +2,8 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
+  <Icon Id="AppIcon" SourceFile="..\..\src\CattleManager.App\Assets\app.ico" />
+
   <Package Name="Cattle Manager"
            Manufacturer="Cattle Manager"
            Version="$(var.ProductVersion)"
@@ -10,6 +12,9 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Cattle Manager is already installed." />
     <MediaTemplate EmbedCab="yes" />
+
+    <!-- Sets the icon shown in Add/Remove Programs -->
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
 
     <!-- Install into Program Files\Cattle Manager -->
     <StandardDirectory Id="ProgramFiles6432Folder">
@@ -22,7 +27,8 @@
         <Shortcut Id="StartMenu"
                   Name="Cattle Manager"
                   Target="[INSTALLFOLDER]CattleManager.exe"
-                  WorkingDirectory="INSTALLFOLDER" />
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon" />
         <RemoveFolder Id="RemoveMenuFolder" On="uninstall" />
         <RegistryValue Root="HKCU"
                        Key="Software\CattleManager"

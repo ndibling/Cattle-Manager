@@ -14,6 +14,7 @@
     <Company>Cattle Manager</Company>
     <Product>Cattle Manager</Product>
     <Description>Cattle herd management application</Description>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
