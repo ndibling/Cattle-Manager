@@ -29,6 +29,9 @@ public class PedigreeNodeDto
     public string? PhotoPath { get; set; }
     public Gender? Gender { get; set; }
     public string? BreedName { get; set; }
+    public decimal? Height { get; set; }
+    public HeightUnit HeightUnit { get; set; }
+    public string? Coloring { get; set; }
     public bool IsInHerd { get; set; }
     public int Generation { get; set; }
     public string Role { get; set; } = string.Empty;

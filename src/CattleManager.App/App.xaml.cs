@@ -94,6 +94,9 @@ public partial class App : Application
         services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
         services.AddScoped<IBreedingRecordRepository, BreedingRecordRepository>();
         services.AddScoped<IAppSettingsRepository, AppSettingsRepository>();
+        services.AddScoped<IAnimalPhotoRepository, AnimalPhotoRepository>();
+        services.AddScoped<IAnimalAttachmentRepository, AnimalAttachmentRepository>();
+        services.AddScoped<IBullExposureRepository, BullExposureRepository>();
 
         services.AddScoped<HealthService>();
         services.AddScoped<HerdService>();
@@ -160,6 +163,9 @@ public partial class App : Application
             _ = await db.HealthRecords.AnyAsync();
             _ = await db.BreedingRecords.AnyAsync();
             _ = await db.AppSettings.AnyAsync();
+            _ = await db.AnimalPhotos.AnyAsync();
+            _ = await db.AnimalAttachments.AnyAsync();
+            _ = await db.BullExposureRecords.AnyAsync();
             return true;
         }
         catch

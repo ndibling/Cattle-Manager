@@ -23,6 +23,20 @@ public class AnimalDto
     public string? CurrentLocation { get; set; }
     public string? BreedersName { get; set; }
     public string? CurrentOwner { get; set; }
+
+    // Acquisition
+    public bool BornOnProperty { get; set; } = true;
+    public string? SellerName { get; set; }
+    public string? SellerAddress { get; set; }
+    public DateTime? PurchaseDate { get; set; }
+    public decimal? PurchasePrice { get; set; }
+
+    // Sale info
+    public decimal? AskingPrice { get; set; }
+    public decimal? SalePrice { get; set; }
+    public string? BuyerName { get; set; }
+    public string? BuyerAddress { get; set; }
+    public DateTime? SoldDate { get; set; }
     public int? SireId { get; set; }
     public string? SireBarnName { get; set; }
     public int? DamId { get; set; }
@@ -32,6 +46,7 @@ public class AnimalDto
     public DateTime? LastWormingDate { get; set; }
     public DateTime? LastVaccinationDate { get; set; }
     public DateTime? LastHealthCheckDate { get; set; }
+    public DateTime? LastHoofTrimmingDate { get; set; }
     public string? HealthNotes { get; set; }
     public bool IsBreeding { get; set; }
     public bool IsPregnant { get; set; }

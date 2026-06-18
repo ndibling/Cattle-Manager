@@ -10,7 +10,9 @@ public enum AnimalStatus
     Pregnant,
     Weaned,
     ForSale,
-    Inactive
+    Sold,
+    Inactive,
+    Deceased
 }
 
 public enum MaleBreedingStatus { Active, Retired, Incapacitated }
@@ -21,7 +23,8 @@ public enum HealthRecordType
     Vaccination,
     HealthCheck,
     Injury,
-    MedicalTreatment
+    MedicalTreatment,
+    HoofTrimming
 }
 
 public enum WeightUnit { Pounds, Kilograms }

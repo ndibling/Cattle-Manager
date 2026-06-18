@@ -268,3 +268,155 @@ public class AppSettingsRepository : IAppSettingsRepository
         await _db.SaveChangesAsync();
     }
 }
+
+public class AnimalPhotoRepository : IAnimalPhotoRepository
+{
+    private readonly CattleDbContext _db;
+    public AnimalPhotoRepository(CattleDbContext db) => _db = db;
+
+    public async Task<IReadOnlyList<AnimalPhotoDto>> GetByAnimalAsync(int animalId)
+    {
+        var list = await _db.AnimalPhotos
+            .Where(p => p.AnimalId == animalId)
+            .OrderBy(p => p.SortOrder)
+            .ToListAsync();
+        return list.Select(Map).ToList();
+    }
+
+    public async Task<AnimalPhotoDto> AddAsync(AnimalPhotoDto dto)
+    {
+        var e = new AnimalPhoto
+        {
+            AnimalId = dto.AnimalId, FilePath = dto.FilePath,
+            Caption = dto.Caption, SortOrder = dto.SortOrder,
+            IsSampleData = dto.IsSampleData
+        };
+        _db.AnimalPhotos.Add(e);
+        await _db.SaveChangesAsync();
+        dto.AnimalPhotoId = e.AnimalPhotoId;
+        return dto;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var e = await _db.AnimalPhotos.FindAsync(id);
+        if (e is not null) { _db.AnimalPhotos.Remove(e); await _db.SaveChangesAsync(); }
+    }
+
+    public async Task DeleteSampleDataAsync()
+    {
+        var records = await _db.AnimalPhotos.Where(p => p.IsSampleData).ToListAsync();
+        _db.AnimalPhotos.RemoveRange(records);
+        await _db.SaveChangesAsync();
+    }
+
+    private static AnimalPhotoDto Map(AnimalPhoto e) => new()
+    {
+        AnimalPhotoId = e.AnimalPhotoId, AnimalId = e.AnimalId,
+        FilePath = e.FilePath, Caption = e.Caption,
+        SortOrder = e.SortOrder, IsSampleData = e.IsSampleData
+    };
+}
+
+public class AnimalAttachmentRepository : IAnimalAttachmentRepository
+{
+    private readonly CattleDbContext _db;
+    public AnimalAttachmentRepository(CattleDbContext db) => _db = db;
+
+    public async Task<IReadOnlyList<AnimalAttachmentDto>> GetByAnimalAsync(int animalId)
+    {
+        var list = await _db.AnimalAttachments
+            .Where(a => a.AnimalId == animalId)
+            .OrderBy(a => a.FileName)
+            .ToListAsync();
+        return list.Select(Map).ToList();
+    }
+
+    public async Task<AnimalAttachmentDto> AddAsync(AnimalAttachmentDto dto)
+    {
+        var e = new AnimalAttachment
+        {
+            AnimalId = dto.AnimalId, FilePath = dto.FilePath,
+            FileName = dto.FileName, Description = dto.Description,
+            IsSampleData = dto.IsSampleData
+        };
+        _db.AnimalAttachments.Add(e);
+        await _db.SaveChangesAsync();
+        dto.AnimalAttachmentId = e.AnimalAttachmentId;
+        return dto;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var e = await _db.AnimalAttachments.FindAsync(id);
+        if (e is not null) { _db.AnimalAttachments.Remove(e); await _db.SaveChangesAsync(); }
+    }
+
+    public async Task DeleteSampleDataAsync()
+    {
+        var records = await _db.AnimalAttachments.Where(a => a.IsSampleData).ToListAsync();
+        _db.AnimalAttachments.RemoveRange(records);
+        await _db.SaveChangesAsync();
+    }
+
+    private static AnimalAttachmentDto Map(AnimalAttachment e) => new()
+    {
+        AnimalAttachmentId = e.AnimalAttachmentId, AnimalId = e.AnimalId,
+        FilePath = e.FilePath, FileName = e.FileName,
+        Description = e.Description, IsSampleData = e.IsSampleData
+    };
+}
+
+public class BullExposureRepository : IBullExposureRepository
+{
+    private readonly CattleDbContext _db;
+    public BullExposureRepository(CattleDbContext db) => _db = db;
+
+    public async Task<IReadOnlyList<BullExposureRecordDto>> GetByAnimalAsync(int animalId)
+    {
+        var list = await _db.BullExposureRecords
+            .Include(e => e.Sire)
+            .Where(e => e.DamId == animalId || e.SireId == animalId)
+            .OrderByDescending(e => e.StartDate)
+            .ToListAsync();
+        return list.Select(Map).ToList();
+    }
+
+    public async Task<BullExposureRecordDto> AddAsync(BullExposureRecordDto dto)
+    {
+        var e = new BullExposureRecord
+        {
+            DamId = dto.DamId, SireId = dto.SireId,
+            ExternalSireName = dto.ExternalSireName,
+            StartDate = dto.StartDate, EndDate = dto.EndDate,
+            Notes = dto.Notes, IsSampleData = dto.IsSampleData
+        };
+        _db.BullExposureRecords.Add(e);
+        await _db.SaveChangesAsync();
+        dto.ExposureRecordId = e.ExposureRecordId;
+        return dto;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var e = await _db.BullExposureRecords.FindAsync(id);
+        if (e is not null) { _db.BullExposureRecords.Remove(e); await _db.SaveChangesAsync(); }
+    }
+
+    public async Task DeleteSampleDataAsync()
+    {
+        var records = await _db.BullExposureRecords.Where(e => e.IsSampleData).ToListAsync();
+        _db.BullExposureRecords.RemoveRange(records);
+        await _db.SaveChangesAsync();
+    }
+
+    private static BullExposureRecordDto Map(BullExposureRecord e) => new()
+    {
+        ExposureRecordId = e.ExposureRecordId,
+        DamId = e.DamId, SireId = e.SireId,
+        SireBarnName = e.Sire?.BarnName,
+        ExternalSireName = e.ExternalSireName,
+        StartDate = e.StartDate, EndDate = e.EndDate,
+        Notes = e.Notes, IsSampleData = e.IsSampleData
+    };
+}

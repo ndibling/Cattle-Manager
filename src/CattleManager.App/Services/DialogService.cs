@@ -18,6 +18,12 @@ public class DialogService
     public void ShowInfo(string message, string title = "Information") =>
         MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 
+    public string? OpenAnyFile(string title = "Select File")
+    {
+        var dlg = new OpenFileDialog { Title = title, Multiselect = false };
+        return dlg.ShowDialog() == true ? dlg.FileName : null;
+    }
+
     public string? OpenImageFile()
     {
         var dlg = new OpenFileDialog

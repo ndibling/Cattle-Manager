@@ -69,3 +69,42 @@ public class AppSetting
     public string Key { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 }
+
+public class AnimalPhoto
+{
+    public int AnimalPhotoId { get; set; }
+    public int AnimalId { get; set; }
+    public string FilePath { get; set; } = string.Empty;
+    public string? Caption { get; set; }
+    public int SortOrder { get; set; }
+    public bool IsSampleData { get; set; }
+
+    public Animal Animal { get; set; } = null!;
+}
+
+public class AnimalAttachment
+{
+    public int AnimalAttachmentId { get; set; }
+    public int AnimalId { get; set; }
+    public string FilePath { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public bool IsSampleData { get; set; }
+
+    public Animal Animal { get; set; } = null!;
+}
+
+public class BullExposureRecord
+{
+    public int ExposureRecordId { get; set; }
+    public int DamId { get; set; }
+    public int? SireId { get; set; }
+    public string? ExternalSireName { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public string? Notes { get; set; }
+    public bool IsSampleData { get; set; }
+
+    public Animal Dam { get; set; } = null!;
+    public Animal? Sire { get; set; }
+}

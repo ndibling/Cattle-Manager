@@ -40,6 +40,20 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private string? _breedersName;
     [ObservableProperty] private string? _currentOwner;
     [ObservableProperty] private string? _photoPath;
+
+    // Acquisition
+    [ObservableProperty] private bool _bornOnProperty = true;
+    [ObservableProperty] private string? _sellerName;
+    [ObservableProperty] private string? _sellerAddress;
+    [ObservableProperty] private DateTime? _purchaseDate;
+    [ObservableProperty] private decimal? _purchasePrice;
+
+    // Sale
+    [ObservableProperty] private decimal? _askingPrice;
+    [ObservableProperty] private decimal? _salePrice;
+    [ObservableProperty] private string? _buyerName;
+    [ObservableProperty] private string? _buyerAddress;
+    [ObservableProperty] private DateTime? _soldDate;
     [ObservableProperty] private AnimalDto? _selectedSire;
     [ObservableProperty] private AnimalDto? _selectedDam;
     [ObservableProperty] private string? _externalSireName;
@@ -49,6 +63,7 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private DateTime? _lastWormingDate;
     [ObservableProperty] private DateTime? _lastVaccinationDate;
     [ObservableProperty] private DateTime? _lastHealthCheckDate;
+    [ObservableProperty] private DateTime? _lastHoofTrimmingDate;
     [ObservableProperty] private string? _healthNotes;
     [ObservableProperty] private bool _isBreeding;
     [ObservableProperty] private bool _isPregnant;
@@ -120,6 +135,10 @@ public partial class AnimalFormViewModel : ObservableObject
         Height = a.Height; HeightUnit = a.HeightUnit;
         CurrentLocation = a.CurrentLocation; BreedersName = a.BreedersName; CurrentOwner = a.CurrentOwner;
         PhotoPath = a.PhotoPath;
+        BornOnProperty = a.BornOnProperty; SellerName = a.SellerName; SellerAddress = a.SellerAddress;
+        PurchaseDate = a.PurchaseDate; PurchasePrice = a.PurchasePrice;
+        AskingPrice = a.AskingPrice; SalePrice = a.SalePrice;
+        BuyerName = a.BuyerName; BuyerAddress = a.BuyerAddress; SoldDate = a.SoldDate;
         SireInHerd = a.SireId.HasValue;
         if (a.SireId.HasValue) SelectedSire = AvailableAnimals.FirstOrDefault(x => x.AnimalId == a.SireId);
         ExternalSireName = a.ExternalSireName;
@@ -127,7 +146,8 @@ public partial class AnimalFormViewModel : ObservableObject
         if (a.DamId.HasValue) SelectedDam = AvailableAnimals.FirstOrDefault(x => x.AnimalId == a.DamId);
         ExternalDamName = a.ExternalDamName;
         LastWormingDate = a.LastWormingDate; LastVaccinationDate = a.LastVaccinationDate;
-        LastHealthCheckDate = a.LastHealthCheckDate; HealthNotes = a.HealthNotes;
+        LastHealthCheckDate = a.LastHealthCheckDate; LastHoofTrimmingDate = a.LastHoofTrimmingDate;
+        HealthNotes = a.HealthNotes;
         IsBreeding = a.IsBreeding; IsPregnant = a.IsPregnant;
         if (a.PregnancySireId.HasValue)
             PregnancySire = AvailableMales.FirstOrDefault(x => x.AnimalId == a.PregnancySireId);
@@ -199,12 +219,18 @@ public partial class AnimalFormViewModel : ObservableObject
         Height = Height, HeightUnit = HeightUnit,
         CurrentLocation = CurrentLocation, BreedersName = BreedersName, CurrentOwner = CurrentOwner,
         PhotoPath = PhotoPath,
+        BornOnProperty = BornOnProperty,
+        SellerName = BornOnProperty ? null : SellerName, SellerAddress = BornOnProperty ? null : SellerAddress,
+        PurchaseDate = BornOnProperty ? null : PurchaseDate, PurchasePrice = BornOnProperty ? null : PurchasePrice,
+        AskingPrice = AskingPrice, SalePrice = SalePrice,
+        BuyerName = BuyerName, BuyerAddress = BuyerAddress, SoldDate = SoldDate,
         SireId = SireInHerd ? SelectedSire?.AnimalId : null,
         ExternalSireName = SireInHerd ? null : ExternalSireName,
         DamId = DamInHerd ? SelectedDam?.AnimalId : null,
         ExternalDamName = DamInHerd ? null : ExternalDamName,
         LastWormingDate = LastWormingDate, LastVaccinationDate = LastVaccinationDate,
-        LastHealthCheckDate = LastHealthCheckDate, HealthNotes = HealthNotes,
+        LastHealthCheckDate = LastHealthCheckDate, LastHoofTrimmingDate = LastHoofTrimmingDate,
+        HealthNotes = HealthNotes,
         IsBreeding = IsBreeding, IsPregnant = IsPregnant,
         PregnancySireId = PregnancySire?.AnimalId,
         BreedingDate = BreedingDate, ExpectedDueDate = ExpectedDueDate,

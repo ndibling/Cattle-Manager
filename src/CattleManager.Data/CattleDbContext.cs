@@ -14,6 +14,9 @@ public class CattleDbContext : DbContext
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
     public DbSet<BreedingRecord> BreedingRecords => Set<BreedingRecord>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
+    public DbSet<AnimalPhoto> AnimalPhotos => Set<AnimalPhoto>();
+    public DbSet<AnimalAttachment> AnimalAttachments => Set<AnimalAttachment>();
+    public DbSet<BullExposureRecord> BullExposureRecords => Set<BullExposureRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,6 +52,9 @@ public class CattleDbContext : DbContext
 
             entity.Property(a => a.Weight).HasPrecision(10, 2);
             entity.Property(a => a.Height).HasPrecision(10, 2);
+            entity.Property(a => a.PurchasePrice).HasPrecision(10, 2);
+            entity.Property(a => a.AskingPrice).HasPrecision(10, 2);
+            entity.Property(a => a.SalePrice).HasPrecision(10, 2);
         });
 
         modelBuilder.Entity<BreedingRecord>(entity =>
@@ -74,6 +80,37 @@ public class CattleDbContext : DbContext
         modelBuilder.Entity<AppSetting>(entity =>
         {
             entity.HasKey(s => s.Key);
+        });
+
+        modelBuilder.Entity<AnimalPhoto>(entity =>
+        {
+            entity.HasKey(p => p.AnimalPhotoId);
+            entity.HasOne(p => p.Animal)
+                  .WithMany(a => a.Photos)
+                  .HasForeignKey(p => p.AnimalId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<AnimalAttachment>(entity =>
+        {
+            entity.HasKey(a => a.AnimalAttachmentId);
+            entity.HasOne(a => a.Animal)
+                  .WithMany(a => a.Attachments)
+                  .HasForeignKey(a => a.AnimalId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BullExposureRecord>(entity =>
+        {
+            entity.HasKey(e => e.ExposureRecordId);
+            entity.HasOne(e => e.Dam)
+                  .WithMany(a => a.BullExposuresAsDam)
+                  .HasForeignKey(e => e.DamId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Sire)
+                  .WithMany(a => a.BullExposuresAsSire)
+                  .HasForeignKey(e => e.SireId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         SeedBreeds(modelBuilder);

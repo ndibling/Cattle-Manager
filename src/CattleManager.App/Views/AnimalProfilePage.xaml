@@ -245,6 +245,151 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Photos -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="Photos" Style="{StaticResource SectionHeaderStyle}" Margin="0"/>
+                                <Button Content="+ Add Photo" Command="{Binding AddPhotoCommand}"
+                                        HorizontalAlignment="Right" Padding="12,4" FontSize="12"/>
+                            </Grid>
+                            <WrapPanel>
+                                <ItemsControl ItemsSource="{Binding AnimalPhotos}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="4">
+                                                <Border Width="120" Height="120" CornerRadius="6" ClipToBounds="True"
+                                                        BorderThickness="1" BorderBrush="#CCCCCC">
+                                                    <Image Source="{Binding FilePath, Converter={StaticResource PathToImage}}"
+                                                           Stretch="UniformToFill"/>
+                                                </Border>
+                                                <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                        Width="20" Height="20" Padding="0" FontSize="10"
+                                                        Background="#CC000000" Foreground="White" BorderThickness="0"
+                                                        Command="{Binding DataContext.DeletePhotoCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                        CommandParameter="{Binding}"/>
+                                                <TextBlock Text="{Binding Caption}" VerticalAlignment="Bottom"
+                                                           HorizontalAlignment="Center" FontSize="10"
+                                                           Foreground="Gray" TextWrapping="Wrap" MaxWidth="116"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Attachments -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="Attachments" Style="{StaticResource SectionHeaderStyle}" Margin="0"/>
+                                <Button Content="+ Add File" Command="{Binding AddAttachmentCommand}"
+                                        HorizontalAlignment="Right" Padding="12,4" FontSize="12"/>
+                            </Grid>
+                            <DataGrid ItemsSource="{Binding AnimalAttachments}" AutoGenerateColumns="False"
+                                      CanUserAddRows="False" IsReadOnly="True" MaxHeight="160"
+                                      GridLinesVisibility="Horizontal" FontSize="12">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="*" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                                    <DataGridTemplateColumn Width="60">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Remove" FontSize="10" Padding="4,2"
+                                                        Command="{Binding DataContext.DeleteAttachmentCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bull Exposure Records -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="Bull Exposure Records" Style="{StaticResource SectionHeaderStyle}" Margin="0"/>
+                                <Button Content="+ Log Exposure" Command="{Binding ShowAddExposureCommand}"
+                                        HorizontalAlignment="Right" Padding="12,4" FontSize="12"
+                                        Visibility="{Binding IsAddingExposure, Converter={StaticResource InverseBoolToVisibility}}"/>
+                            </Grid>
+                            <DataGrid ItemsSource="{Binding BullExposureRecords}" AutoGenerateColumns="False"
+                                      CanUserAddRows="False" IsReadOnly="True" MaxHeight="180"
+                                      GridLinesVisibility="Horizontal" FontSize="12">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Bull" Binding="{Binding BullDisplay}" Width="120" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate, StringFormat=MM/dd/yyyy}" Width="90"/>
+                                    <DataGridTextColumn Header="End Date" Binding="{Binding EndDate, StringFormat=MM/dd/yyyy}" Width="90"/>
+                                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
+                                    <DataGridTemplateColumn Width="60">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Remove" FontSize="10" Padding="4,2"
+                                                        Command="{Binding DataContext.DeleteExposureCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- Inline Add Exposure Form -->
+                            <Border Margin="0,12,0,0" Padding="12"
+                                    Background="{DynamicResource SystemControlBackgroundChromeLowBrush}"
+                                    CornerRadius="6"
+                                    Visibility="{Binding IsAddingExposure, Converter={StaticResource BoolToVisibility}}">
+                                <StackPanel>
+                                    <TextBlock Text="Log New Exposure" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <CheckBox Content="Bull is in herd" IsChecked="{Binding NewExposureSireInHerd}"
+                                                  FontSize="13" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                        <ComboBox ItemsSource="{Binding AvailableSires}"
+                                                  SelectedItem="{Binding NewExposureSire}"
+                                                  DisplayMemberPath="BarnName" FontSize="13" Width="200"
+                                                  Visibility="{Binding NewExposureSireInHerd, Converter={StaticResource BoolToVisibility}}"/>
+                                        <TextBox Text="{Binding NewExposureExternalSireName, UpdateSourceTrigger=PropertyChanged}"
+                                                 FontSize="13" Padding="6,4" Width="200"
+                                                 ui:ControlHelper.PlaceholderText="Bull name (not in herd)"
+                                                 Visibility="{Binding NewExposureSireInHerd, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    </StackPanel>
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                            <TextBlock Text="Start Date" Style="{StaticResource FieldLabelStyle}"/>
+                                            <DatePicker SelectedDate="{Binding NewExposureStartDate}" FontSize="13"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="End Date" Style="{StaticResource FieldLabelStyle}"/>
+                                            <DatePicker SelectedDate="{Binding NewExposureEndDate}" FontSize="13"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Margin="0,0,0,8">
+                                        <TextBlock Text="Notes" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox Text="{Binding NewExposureNotes, UpdateSourceTrigger=PropertyChanged}"
+                                                 FontSize="13" Padding="6,4" Height="54"
+                                                 TextWrapping="Wrap" AcceptsReturn="True"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Save" Command="{Binding SaveExposureCommand}"
+                                                Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" Padding="16,6"/>
+                                        <Button Content="Cancel" Command="{Binding CancelAddExposureCommand}" Padding="16,6"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
                 </StackPanel>
             </Grid>
         </ScrollViewer>

@@ -57,3 +57,27 @@ public interface IAppSettingsRepository
     Task<string?> GetAsync(string key);
     Task SetAsync(string key, string value);
 }
+
+public interface IAnimalPhotoRepository
+{
+    Task<IReadOnlyList<AnimalPhotoDto>> GetByAnimalAsync(int animalId);
+    Task<AnimalPhotoDto> AddAsync(AnimalPhotoDto photo);
+    Task DeleteAsync(int photoId);
+    Task DeleteSampleDataAsync();
+}
+
+public interface IAnimalAttachmentRepository
+{
+    Task<IReadOnlyList<AnimalAttachmentDto>> GetByAnimalAsync(int animalId);
+    Task<AnimalAttachmentDto> AddAsync(AnimalAttachmentDto attachment);
+    Task DeleteAsync(int attachmentId);
+    Task DeleteSampleDataAsync();
+}
+
+public interface IBullExposureRepository
+{
+    Task<IReadOnlyList<BullExposureRecordDto>> GetByAnimalAsync(int animalId);
+    Task<BullExposureRecordDto> AddAsync(BullExposureRecordDto record);
+    Task DeleteAsync(int exposureId);
+    Task DeleteSampleDataAsync();
+}

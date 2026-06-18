@@ -47,6 +47,8 @@ public class StatusToBrushConverter : IValueConverter
                 AnimalStatus.Pregnant => new SolidColorBrush(Color.FromRgb(106, 27, 154)),
                 AnimalStatus.Weaned => new SolidColorBrush(Color.FromRgb(0, 131, 143)),
                 AnimalStatus.ForSale => new SolidColorBrush(Color.FromRgb(230, 81, 0)),
+                AnimalStatus.Sold => new SolidColorBrush(Color.FromRgb(66, 66, 66)),
+                AnimalStatus.Deceased => new SolidColorBrush(Color.FromRgb(97, 97, 97)),
                 AnimalStatus.Inactive => new SolidColorBrush(Color.FromRgb(117, 117, 117)),
                 _ => Brushes.Gray
             };

@@ -116,11 +116,17 @@ public class AnimalRepository : IAnimalRepository
         Coloring = e.Coloring, PhotoPath = e.PhotoPath,
         BirthDate = e.BirthDate, DateAcquired = e.DateAcquired,
         CurrentLocation = e.CurrentLocation, BreedersName = e.BreedersName, CurrentOwner = e.CurrentOwner,
+        BornOnProperty = e.BornOnProperty,
+        SellerName = e.SellerName, SellerAddress = e.SellerAddress,
+        PurchaseDate = e.PurchaseDate, PurchasePrice = e.PurchasePrice,
+        AskingPrice = e.AskingPrice, SalePrice = e.SalePrice,
+        BuyerName = e.BuyerName, BuyerAddress = e.BuyerAddress, SoldDate = e.SoldDate,
         SireId = e.SireId, SireBarnName = e.Sire?.BarnName,
         DamId = e.DamId, DamBarnName = e.Dam?.BarnName,
         ExternalSireName = e.ExternalSireName, ExternalDamName = e.ExternalDamName,
         LastWormingDate = e.LastWormingDate, LastVaccinationDate = e.LastVaccinationDate,
-        LastHealthCheckDate = e.LastHealthCheckDate, HealthNotes = e.HealthNotes,
+        LastHealthCheckDate = e.LastHealthCheckDate, LastHoofTrimmingDate = e.LastHoofTrimmingDate,
+        HealthNotes = e.HealthNotes,
         IsBreeding = e.IsBreeding, IsPregnant = e.IsPregnant,
         PregnancySireId = e.PregnancySireId, ExpectedDueDate = e.ExpectedDueDate,
         BreedingDate = e.BreedingDate, ReproductionNotes = e.ReproductionNotes,
@@ -147,10 +153,16 @@ public class AnimalRepository : IAnimalRepository
         e.BirthDate = dto.BirthDate; e.DateAcquired = dto.DateAcquired;
         e.CurrentLocation = dto.CurrentLocation; e.BreedersName = dto.BreedersName;
         e.CurrentOwner = dto.CurrentOwner;
+        e.BornOnProperty = dto.BornOnProperty;
+        e.SellerName = dto.SellerName; e.SellerAddress = dto.SellerAddress;
+        e.PurchaseDate = dto.PurchaseDate; e.PurchasePrice = dto.PurchasePrice;
+        e.AskingPrice = dto.AskingPrice; e.SalePrice = dto.SalePrice;
+        e.BuyerName = dto.BuyerName; e.BuyerAddress = dto.BuyerAddress; e.SoldDate = dto.SoldDate;
         e.SireId = dto.SireId; e.DamId = dto.DamId;
         e.ExternalSireName = dto.ExternalSireName; e.ExternalDamName = dto.ExternalDamName;
         e.LastWormingDate = dto.LastWormingDate; e.LastVaccinationDate = dto.LastVaccinationDate;
-        e.LastHealthCheckDate = dto.LastHealthCheckDate; e.HealthNotes = dto.HealthNotes;
+        e.LastHealthCheckDate = dto.LastHealthCheckDate; e.LastHoofTrimmingDate = dto.LastHoofTrimmingDate;
+        e.HealthNotes = dto.HealthNotes;
         e.IsBreeding = dto.IsBreeding; e.IsPregnant = dto.IsPregnant;
         e.PregnancySireId = dto.PregnancySireId; e.ExpectedDueDate = dto.ExpectedDueDate;
         e.BreedingDate = dto.BreedingDate; e.ReproductionNotes = dto.ReproductionNotes;
