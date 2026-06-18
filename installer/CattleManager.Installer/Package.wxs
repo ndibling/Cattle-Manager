@@ -2,13 +2,13 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
-  <Icon Id="AppIcon" SourceFile="..\..\src\CattleManager.App\Assets\app.ico" />
-
   <Package Name="Herd Master"
            Manufacturer="Herd Master"
            Version="$(var.ProductVersion)"
            UpgradeCode="6F8E9A2B-3C4D-5E6F-7A8B-9C0D1E2F3A4B"
            Language="1033">
+
+    <Icon Id="AppIcon" SourceFile="..\..\src\CattleManager.App\Assets\app.ico" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Herd Master is already installed." />
     <MediaTemplate EmbedCab="yes" />
