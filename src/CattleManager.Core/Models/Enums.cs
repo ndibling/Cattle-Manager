@@ -27,6 +27,7 @@ public enum HealthRecordType
     HoofTrimming
 }
 
+public enum ChondroStatus { NotTested, NonCarrier, NeedsTesting, Yes }
 public enum WeightUnit { Pounds, Kilograms }
 public enum HeightUnit { Inches, Hands, Centimeters }
 public enum ThemeMode { Light, Dark }

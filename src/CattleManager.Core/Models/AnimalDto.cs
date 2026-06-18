@@ -37,6 +37,16 @@ public class AnimalDto
     public string? BuyerName { get; set; }
     public string? BuyerAddress { get; set; }
     public DateTime? SoldDate { get; set; }
+
+    // Additional attributes
+    public string? TagNumber { get; set; }
+    public ChondroStatus Chondro { get; set; }
+    public bool? Horns { get; set; }
+    public bool? IsGoodMother { get; set; }
+    public string? PastureLocation { get; set; }
+    public string? PastureState { get; set; }
+    public decimal? ExpectedHeightAtMaturity { get; set; }
+
     public int? SireId { get; set; }
     public string? SireBarnName { get; set; }
     public int? DamId { get; set; }
@@ -85,4 +95,17 @@ public class AnimalDto
             _ => $"{Height:0.#} in"
         }
         : string.Empty;
+
+    public string ExpectedHeightAtMaturityDisplay => ExpectedHeightAtMaturity.HasValue
+        ? HeightUnit switch
+        {
+            HeightUnit.Hands => $"{ExpectedHeightAtMaturity:0.#} hh",
+            HeightUnit.Centimeters => $"{ExpectedHeightAtMaturity:0.#} cm",
+            _ => $"{ExpectedHeightAtMaturity:0.#} in"
+        }
+        : string.Empty;
+
+    public string HornsDisplay => Horns == true ? "Yes" : Horns == false ? "No" : "Unknown";
+
+    public string IsGoodMotherDisplay => IsGoodMother == true ? "Yes" : IsGoodMother == false ? "No" : "Unknown";
 }

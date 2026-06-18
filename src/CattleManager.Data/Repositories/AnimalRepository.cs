@@ -121,6 +121,9 @@ public class AnimalRepository : IAnimalRepository
         PurchaseDate = e.PurchaseDate, PurchasePrice = e.PurchasePrice,
         AskingPrice = e.AskingPrice, SalePrice = e.SalePrice,
         BuyerName = e.BuyerName, BuyerAddress = e.BuyerAddress, SoldDate = e.SoldDate,
+        TagNumber = e.TagNumber, Chondro = e.Chondro, Horns = e.Horns,
+        IsGoodMother = e.IsGoodMother, PastureLocation = e.PastureLocation,
+        PastureState = e.PastureState, ExpectedHeightAtMaturity = e.ExpectedHeightAtMaturity,
         SireId = e.SireId, SireBarnName = e.Sire?.BarnName,
         DamId = e.DamId, DamBarnName = e.Dam?.BarnName,
         ExternalSireName = e.ExternalSireName, ExternalDamName = e.ExternalDamName,
@@ -158,6 +161,9 @@ public class AnimalRepository : IAnimalRepository
         e.PurchaseDate = dto.PurchaseDate; e.PurchasePrice = dto.PurchasePrice;
         e.AskingPrice = dto.AskingPrice; e.SalePrice = dto.SalePrice;
         e.BuyerName = dto.BuyerName; e.BuyerAddress = dto.BuyerAddress; e.SoldDate = dto.SoldDate;
+        e.TagNumber = dto.TagNumber; e.Chondro = dto.Chondro; e.Horns = dto.Horns;
+        e.IsGoodMother = dto.IsGoodMother; e.PastureLocation = dto.PastureLocation;
+        e.PastureState = dto.PastureState; e.ExpectedHeightAtMaturity = dto.ExpectedHeightAtMaturity;
         e.SireId = dto.SireId; e.DamId = dto.DamId;
         e.ExternalSireName = dto.ExternalSireName; e.ExternalDamName = dto.ExternalDamName;
         e.LastWormingDate = dto.LastWormingDate; e.LastVaccinationDate = dto.LastVaccinationDate;

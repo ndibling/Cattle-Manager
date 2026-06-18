@@ -119,11 +119,22 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="Barn Name" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.BarnName}" Style="{StaticResource FieldValueStyle}" FontWeight="SemiBold" FontSize="16"/>
+                                    <TextBlock Text="{Binding Animal.BarnName}" Style="{StaticResource FieldValueStyle}" FontWeight="SemiBold" FontSize="16"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditBarnName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                     <TextBlock Text="Registered Name" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.RegisteredName}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="{Binding Animal.RegisteredName}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditRegisteredName, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                     <TextBlock Text="Breed" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.BreedName}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Tag Number" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.TagNumber}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditTagNumber, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Birth Date" Style="{StaticResource FieldLabelStyle}"/>
@@ -132,6 +143,76 @@
                                     <TextBlock Text="{Binding Animal.AgeDisplay}" Style="{StaticResource FieldValueStyle}"/>
                                     <TextBlock Text="Gender" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.Gender}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Chondro" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.Chondro}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <ComboBox ItemsSource="{Binding ChondroOptions}" SelectedItem="{Binding EditChondro}" FontSize="13" Margin="0,0,0,4"
+                                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Location -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Location" Style="{StaticResource SectionHeaderStyle}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Current Location" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.CurrentLocation}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                    <TextBlock Text="Pasture Location" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.PastureLocation}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditPastureLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Pasture State" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.PastureState}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <ComboBox ItemsSource="{Binding StateOptions}" SelectedItem="{Binding EditPastureState}" FontSize="13" Margin="0,0,0,4"
+                                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Purchase & Sale Details -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Purchase &amp; Sale Details" Style="{StaticResource SectionHeaderStyle}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Purchase Date" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.PurchaseDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Purchase Price" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.PurchasePrice, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Seller" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.SellerName}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Seller Address" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.SellerAddress}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Sale Date" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.SoldDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Sale Price" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.SalePrice, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Buyer" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.BuyerName}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Buyer Address" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.BuyerAddress}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -150,11 +231,24 @@
                                     <TextBlock Text="Weight" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.WeightDisplay}" Style="{StaticResource FieldValueStyle}"/>
                                     <TextBlock Text="Coloring/Markings" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.Coloring}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding Animal.Coloring}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditColoring, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                    <TextBlock Text="Horns" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.HornsDisplay}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding EditHornsSelection}" FontSize="13" Margin="0,0,0,4"
+                                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Height" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.HeightDisplay}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="Exp. Height at Maturity" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.ExpectedHeightAtMaturityDisplay}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <TextBox Text="{Binding EditExpectedHeightAtMaturity, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                     <TextBlock Text="Registration #" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.RegistrationNumber}" Style="{StaticResource FieldValueStyle}"/>
                                     <TextBlock Text="Reg. Organization" Style="{StaticResource FieldLabelStyle}"/>
@@ -175,19 +269,40 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="Last Worming" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.LastWormingDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="{Binding Animal.LastWormingDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <DatePicker SelectedDate="{Binding EditLastWorming}" FontSize="13" Margin="0,0,0,4"
+                                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                     <TextBlock Text="Last Vaccination" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.LastVaccinationDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="{Binding Animal.LastVaccinationDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <DatePicker SelectedDate="{Binding EditLastVaccination}" FontSize="13" Margin="0,0,0,4"
+                                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                    <TextBlock Text="Good Mother" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="{Binding Animal.IsGoodMotherDisplay}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding EditIsGoodMotherSelection}" FontSize="13" Margin="0,0,0,4"
+                                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Last Health Check" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.LastHealthCheckDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="{Binding Animal.LastHealthCheckDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <DatePicker SelectedDate="{Binding EditLastHealthCheck}" FontSize="13" Margin="0,0,0,4"
+                                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                     <TextBlock Text="Last Hoof Trimming" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.LastHoofTrimmingDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    <TextBlock Text="{Binding Animal.LastHoofTrimmingDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"
+                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                    <DatePicker SelectedDate="{Binding EditLastHoofTrimming}" FontSize="13" Margin="0,0,0,4"
+                                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
                                 </StackPanel>
                             </Grid>
                             <TextBlock Text="Health Notes" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBlock Text="{Binding Animal.HealthNotes}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding Animal.HealthNotes}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"
+                                       Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                            <TextBox Text="{Binding EditHealthNotes, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Height="60"
+                                     TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,0,0,4"
+                                     Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
 
                             <!-- Health History -->
                             <TextBlock Text="Health History" FontWeight="SemiBold" Margin="0,8,0,4"/>

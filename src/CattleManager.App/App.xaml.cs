@@ -60,6 +60,10 @@ public partial class App : Application
                     await db.Database.EnsureDeletedAsync();
                     await db.Database.EnsureCreatedAsync();
                 }
+                else
+                {
+                    await EnsureColumnsExistAsync(db);
+                }
             }
         }
         catch (Exception ex)
@@ -148,6 +152,46 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log.Warning(ex, "Sample data seeding failed");
+        }
+    }
+
+    private static async Task EnsureColumnsExistAsync(CattleDbContext db)
+    {
+        var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+        try
+        {
+            var existing = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "PRAGMA table_info(Animals)";
+                using var rdr = await cmd.ExecuteReaderAsync();
+                while (await rdr.ReadAsync()) existing.Add(rdr.GetString(1));
+            }
+            var toAdd = new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["TagNumber"]                = "TEXT",
+                ["Chondro"]                  = "INTEGER NOT NULL DEFAULT 0",
+                ["Horns"]                    = "INTEGER",
+                ["IsGoodMother"]             = "INTEGER",
+                ["PastureLocation"]          = "TEXT",
+                ["PastureState"]             = "TEXT",
+                ["ExpectedHeightAtMaturity"] = "REAL",
+            };
+            foreach (var (col, def) in toAdd)
+            {
+                if (!existing.Contains(col))
+                {
+                    using var cmd = conn.CreateCommand();
+                    cmd.CommandText = $"ALTER TABLE Animals ADD COLUMN {col} {def}";
+                    await cmd.ExecuteNonQueryAsync();
+                    Log.Information("Added column Animals.{Column}", col);
+                }
+            }
+        }
+        finally
+        {
+            await conn.CloseAsync();
         }
     }
 

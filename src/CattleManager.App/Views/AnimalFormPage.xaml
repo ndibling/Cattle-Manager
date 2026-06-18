@@ -52,6 +52,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,0">
@@ -80,6 +81,15 @@
                             <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,8,0,0">
                                 <TextBlock Text="Birth Date *" Style="{StaticResource FieldLabelStyle}"/>
                                 <DatePicker SelectedDate="{Binding BirthDate}" FontSize="14"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,8,12,0">
+                                <TextBlock Text="Tag Number" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding TagNumber, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,8,12,0">
+                                <TextBlock Text="Chondro Status" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding ChondroOptions}" SelectedItem="{Binding Chondro}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -131,6 +141,25 @@
                                 <TextBox Text="{Binding RegistrationOrganization, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
                         </Grid>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <TextBlock Text="Expected Height at Maturity" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding ExpectedHeightAtMaturity, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                <TextBlock Text="(same unit)" Style="{StaticResource FieldLabelStyle}" Foreground="Gray"/>
+                                <TextBlock Text="{Binding HeightUnit}" FontSize="13" Margin="0,8,0,0" Foreground="Gray"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Horns" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding HornsSelection}" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
@@ -157,10 +186,25 @@
                                 <TextBox Text="{Binding CurrentOwner, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
                         </Grid>
-                        <StackPanel Margin="0,8,0,0">
-                            <TextBlock Text="Date Acquired" Style="{StaticResource FieldLabelStyle}"/>
-                            <DatePicker SelectedDate="{Binding DateAcquired}" FontSize="14" HorizontalAlignment="Left" Width="200"/>
-                        </StackPanel>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="Pasture Location" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding PastureLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                <TextBlock Text="Pasture State" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding StateOptions}" SelectedItem="{Binding PastureState}" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Date Acquired" Style="{StaticResource FieldLabelStyle}"/>
+                                <DatePicker SelectedDate="{Binding DateAcquired}" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
@@ -322,6 +366,16 @@
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="Last Hoof Trimming Date" Style="{StaticResource FieldLabelStyle}"/>
                                 <DatePicker SelectedDate="{Binding LastHoofTrimmingDate}" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="Good Mother" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding IsGoodMotherSelection}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                         <StackPanel Margin="0,8,0,0">

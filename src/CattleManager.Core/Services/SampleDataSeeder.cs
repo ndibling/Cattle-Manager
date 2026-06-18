@@ -83,7 +83,10 @@ public class SampleDataSeeder
             coloring: "Solid black, no markings", location: "Bull Pen 1",
             maleBreedingStatus: MaleBreedingStatus.Active, isBreeding: true,
             lastWorming: today.AddDays(-45), lastVaccination: today.AddMonths(-3),
-            lastHealthCheck: today.AddMonths(-1));
+            lastHealthCheck: today.AddMonths(-1),
+            tagNumber: "A-007", chondro: ChondroStatus.NonCarrier, horns: false,
+            pastureLocation: "Bull Pen 1", pastureState: "Oklahoma",
+            expectedHeightAtMaturity: 60);
 
         // Breeding cows
         var cow1 = await AddAnimal(herd.HerdId, angus.BreedId, "Molly", "RHR Molly 010", Gender.Female,
@@ -91,38 +94,53 @@ public class SampleDataSeeder
             weight: 1150, weightUnit: WeightUnit.Pounds, height: 50, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture A", isBreeding: true,
             lastWorming: today.AddDays(-60), lastVaccination: today.AddMonths(-2),
-            lastHealthCheck: today.AddMonths(-2));
+            lastHealthCheck: today.AddMonths(-2),
+            tagNumber: "C-010", chondro: ChondroStatus.NonCarrier, horns: false,
+            isGoodMother: true, pastureLocation: "Pasture A", pastureState: "Oklahoma",
+            expectedHeightAtMaturity: 50);
 
         var cow2 = await AddAnimal(herd.HerdId, angus.BreedId, "Rosie", "RHR Rosie 011", Gender.Female,
             AnimalStatus.BreedingFemale, today.AddYears(-4), gSire.AnimalId, gDam.AnimalId,
             weight: 1100, weightUnit: WeightUnit.Pounds, height: 49, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture A", isBreeding: true,
             lastWorming: today.AddDays(-30), lastVaccination: today.AddMonths(-8),
-            lastHealthCheck: today.AddMonths(-3));
+            lastHealthCheck: today.AddMonths(-3),
+            tagNumber: "C-011", chondro: ChondroStatus.NonCarrier, horns: false,
+            isGoodMother: true, pastureLocation: "Pasture A", pastureState: "Oklahoma",
+            expectedHeightAtMaturity: 49);
 
         var cow3 = await AddAnimal(herd.HerdId, angus.BreedId, "Bessie", "RHR Bessie 012", Gender.Female,
             AnimalStatus.Healthy, today.AddYears(-3), null, null,
             weight: 1050, weightUnit: WeightUnit.Pounds, height: 48, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture B",
-            lastWorming: today.AddDays(-90), lastVaccination: today.AddMonths(-14));
+            lastWorming: today.AddDays(-90), lastVaccination: today.AddMonths(-14),
+            tagNumber: "C-012", chondro: ChondroStatus.NeedsTesting,
+            pastureLocation: "Pasture B", pastureState: "Oklahoma", expectedHeightAtMaturity: 48);
 
         var cow4 = await AddAnimal(herd.HerdId, angus.BreedId, "Buttercup", "RHR Buttercup 013", Gender.Female,
             AnimalStatus.BreedingFemale, today.AddYears(-6), null, parentDam.AnimalId,
             weight: 1200, weightUnit: WeightUnit.Pounds, height: 51, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture A", isBreeding: true,
-            lastWorming: today.AddDays(-100), lastVaccination: today.AddMonths(-2));
+            lastWorming: today.AddDays(-100), lastVaccination: today.AddMonths(-2),
+            tagNumber: "C-013", chondro: ChondroStatus.NonCarrier, horns: false,
+            isGoodMother: true, pastureLocation: "Pasture A", pastureState: "Oklahoma",
+            expectedHeightAtMaturity: 51);
 
         var cow5 = await AddAnimal(herd.HerdId, angus.BreedId, "Hazel", "RHR Hazel 014", Gender.Female,
             AnimalStatus.BreedingFemale, today.AddYears(-5), null, parentDam.AnimalId,
             weight: 1120, weightUnit: WeightUnit.Pounds, height: 50, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture B", isBreeding: true,
-            lastWorming: today.AddDays(-110), lastVaccination: today.AddMonths(-13));
+            lastWorming: today.AddDays(-110), lastVaccination: today.AddMonths(-13),
+            tagNumber: "C-014", chondro: ChondroStatus.NotTested,
+            pastureLocation: "Pasture B", pastureState: "Oklahoma", expectedHeightAtMaturity: 50);
 
         var cow6 = await AddAnimal(herd.HerdId, angus.BreedId, "Luna", "RHR Luna 015", Gender.Female,
             AnimalStatus.BreedingFemale, today.AddYears(-3), null, null,
             weight: 1000, weightUnit: WeightUnit.Pounds, height: 47, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture B", isBreeding: true,
-            lastWorming: today.AddDays(-85), lastVaccination: today.AddMonths(-1));
+            lastWorming: today.AddDays(-85), lastVaccination: today.AddMonths(-1),
+            tagNumber: "C-015", chondro: ChondroStatus.NotTested,
+            pastureLocation: "Pasture B", pastureState: "Oklahoma", expectedHeightAtMaturity: 47);
 
         // Pregnant cows
         var breedingDate1 = today.AddDays(-120);
@@ -148,32 +166,51 @@ public class SampleDataSeeder
             AnimalStatus.Healthy, today.AddMonths(-4), bull.AnimalId, cow1.AnimalId,
             weight: 380, weightUnit: WeightUnit.Pounds, height: 38, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Calf Pen",
-            lastWorming: today.AddDays(-30));
+            lastWorming: today.AddDays(-30),
+            tagNumber: "L-020", pastureState: "Oklahoma");
 
         var calf2 = await AddAnimal(herd.HerdId, angus.BreedId, "Dolly", "RHR Dolly 021", Gender.Female,
             AnimalStatus.Healthy, today.AddMonths(-5), bull.AnimalId, cow2.AnimalId,
             weight: 350, weightUnit: WeightUnit.Pounds, height: 36, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Calf Pen",
-            lastWorming: today.AddDays(-40));
+            lastWorming: today.AddDays(-40),
+            tagNumber: "L-021", pastureState: "Oklahoma");
 
         var calf3 = await AddAnimal(herd.HerdId, angus.BreedId, "Bucky", "RHR Bucky 022", Gender.Male,
             AnimalStatus.Healthy, today.AddMonths(-3), bull.AnimalId, cow4.AnimalId,
             weight: 320, weightUnit: WeightUnit.Pounds, height: 35, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Calf Pen",
-            lastWorming: today.AddDays(-20));
+            lastWorming: today.AddDays(-20),
+            tagNumber: "L-022", pastureState: "Oklahoma");
 
         // For Sale
         var forSale1 = await AddAnimal(herd.HerdId, angus.BreedId, "Duke", "RHR Duke 030", Gender.Male,
             AnimalStatus.ForSale, today.AddYears(-2), bull.AnimalId, cow5.AnimalId,
             weight: 950, weightUnit: WeightUnit.Pounds, height: 45, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Sale Pen",
-            lastWorming: today.AddDays(-120), lastVaccination: today.AddMonths(-16));
+            lastWorming: today.AddDays(-120), lastVaccination: today.AddMonths(-16),
+            tagNumber: "S-030", chondro: ChondroStatus.NonCarrier, horns: false,
+            pastureLocation: "Sale Pen", pastureState: "Oklahoma",
+            bornOnProperty: false,
+            purchaseDate: today.AddYears(-2).AddDays(45),
+            purchasePrice: 2800m,
+            sellerName: "Clearwater Cattle Co.",
+            sellerAddress: "8901 Clearwater Rd, Guthrie, OK 73044",
+            expectedHeightAtMaturity: 54);
 
         var forSale2 = await AddAnimal(herd.HerdId, angus.BreedId, "Penny", "RHR Penny 031", Gender.Female,
             AnimalStatus.ForSale, today.AddYears(-2), bull.AnimalId, cow6.AnimalId,
             weight: 900, weightUnit: WeightUnit.Pounds, height: 44, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Sale Pen",
-            lastWorming: today.AddDays(-130), lastVaccination: today.AddMonths(-15));
+            lastWorming: today.AddDays(-130), lastVaccination: today.AddMonths(-15),
+            tagNumber: "S-031", chondro: ChondroStatus.NonCarrier, horns: false,
+            pastureLocation: "Sale Pen", pastureState: "Oklahoma",
+            bornOnProperty: false,
+            purchaseDate: today.AddYears(-2).AddDays(45),
+            purchasePrice: 2200m,
+            sellerName: "Clearwater Cattle Co.",
+            sellerAddress: "8901 Clearwater Rd, Guthrie, OK 73044",
+            expectedHeightAtMaturity: 50);
 
         // Inactive/Retired
         var retired = await AddAnimal(herd.HerdId, angus.BreedId, "Old Buck", "RHR Old Buck 040", Gender.Male,
@@ -257,7 +294,14 @@ public class SampleDataSeeder
         MaleBreedingStatus? maleBreedingStatus = null,
         DateTime? lastWorming = null, DateTime? lastVaccination = null,
         DateTime? lastHealthCheck = null, string? healthNotes = null,
-        string? externalSire = null, string? externalDam = null)
+        string? externalSire = null, string? externalDam = null,
+        string? tagNumber = null, ChondroStatus chondro = ChondroStatus.NotTested,
+        bool? horns = null, bool? isGoodMother = null,
+        string? pastureLocation = null, string? pastureState = null,
+        decimal? expectedHeightAtMaturity = null,
+        DateTime? purchaseDate = null, decimal? purchasePrice = null,
+        string? sellerName = null, string? sellerAddress = null,
+        bool bornOnProperty = true, decimal? askingPrice = null)
     {
         return await _animals.AddAsync(new AnimalDto
         {
@@ -275,6 +319,12 @@ public class SampleDataSeeder
             MaleBreedingStatus = maleBreedingStatus,
             LastWormingDate = lastWorming, LastVaccinationDate = lastVaccination,
             LastHealthCheckDate = lastHealthCheck, HealthNotes = healthNotes,
+            TagNumber = tagNumber, Chondro = chondro, Horns = horns,
+            IsGoodMother = isGoodMother, PastureLocation = pastureLocation,
+            PastureState = pastureState, ExpectedHeightAtMaturity = expectedHeightAtMaturity,
+            BornOnProperty = bornOnProperty,
+            PurchaseDate = purchaseDate, PurchasePrice = purchasePrice,
+            SellerName = sellerName, SellerAddress = sellerAddress,
             IsSampleData = true,
             CreatedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow
         });

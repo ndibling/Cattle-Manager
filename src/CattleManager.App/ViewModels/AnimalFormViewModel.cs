@@ -53,6 +53,15 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private decimal? _salePrice;
     [ObservableProperty] private string? _buyerName;
     [ObservableProperty] private string? _buyerAddress;
+
+    // Additional attributes
+    [ObservableProperty] private string? _tagNumber;
+    [ObservableProperty] private ChondroStatus _chondro;
+    [ObservableProperty] private string _hornsSelection = "Unknown";
+    [ObservableProperty] private string _isGoodMotherSelection = "Unknown";
+    [ObservableProperty] private string? _pastureLocation;
+    [ObservableProperty] private string? _pastureState;
+    [ObservableProperty] private decimal? _expectedHeightAtMaturity;
     [ObservableProperty] private DateTime? _soldDate;
     [ObservableProperty] private AnimalDto? _selectedSire;
     [ObservableProperty] private AnimalDto? _selectedDam;
@@ -82,6 +91,19 @@ public partial class AnimalFormViewModel : ObservableObject
     public IReadOnlyList<WeightUnit> WeightUnitOptions { get; } = Enum.GetValues<WeightUnit>();
     public IReadOnlyList<HeightUnit> HeightUnitOptions { get; } = Enum.GetValues<HeightUnit>();
     public IReadOnlyList<MaleBreedingStatus> MaleBreedingStatusOptions { get; } = Enum.GetValues<MaleBreedingStatus>();
+    public IReadOnlyList<ChondroStatus> ChondroOptions { get; } = Enum.GetValues<ChondroStatus>();
+    public IReadOnlyList<string> YesNoUnknownOptions { get; } = ["Unknown", "Yes", "No"];
+    public IReadOnlyList<string> StateOptions { get; } =
+    [
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+        "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+        "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+        "Wisconsin", "Wyoming"
+    ];
 
     public AnimalFormViewModel(IAnimalRepository animals, IBreedRepository breeds,
         BreedingService breedingService, NavigationService nav, DialogService dialog)
@@ -139,6 +161,11 @@ public partial class AnimalFormViewModel : ObservableObject
         PurchaseDate = a.PurchaseDate; PurchasePrice = a.PurchasePrice;
         AskingPrice = a.AskingPrice; SalePrice = a.SalePrice;
         BuyerName = a.BuyerName; BuyerAddress = a.BuyerAddress; SoldDate = a.SoldDate;
+        TagNumber = a.TagNumber; Chondro = a.Chondro;
+        HornsSelection = a.Horns == true ? "Yes" : a.Horns == false ? "No" : "Unknown";
+        IsGoodMotherSelection = a.IsGoodMother == true ? "Yes" : a.IsGoodMother == false ? "No" : "Unknown";
+        PastureLocation = a.PastureLocation; PastureState = a.PastureState;
+        ExpectedHeightAtMaturity = a.ExpectedHeightAtMaturity;
         SireInHerd = a.SireId.HasValue;
         if (a.SireId.HasValue) SelectedSire = AvailableAnimals.FirstOrDefault(x => x.AnimalId == a.SireId);
         ExternalSireName = a.ExternalSireName;
@@ -224,6 +251,11 @@ public partial class AnimalFormViewModel : ObservableObject
         PurchaseDate = BornOnProperty ? null : PurchaseDate, PurchasePrice = BornOnProperty ? null : PurchasePrice,
         AskingPrice = AskingPrice, SalePrice = SalePrice,
         BuyerName = BuyerName, BuyerAddress = BuyerAddress, SoldDate = SoldDate,
+        TagNumber = TagNumber, Chondro = Chondro,
+        Horns = HornsSelection == "Yes" ? true : HornsSelection == "No" ? false : (bool?)null,
+        IsGoodMother = IsGoodMotherSelection == "Yes" ? true : IsGoodMotherSelection == "No" ? false : (bool?)null,
+        PastureLocation = PastureLocation, PastureState = PastureState,
+        ExpectedHeightAtMaturity = ExpectedHeightAtMaturity,
         SireId = SireInHerd ? SelectedSire?.AnimalId : null,
         ExternalSireName = SireInHerd ? null : ExternalSireName,
         DamId = DamInHerd ? SelectedDam?.AnimalId : null,

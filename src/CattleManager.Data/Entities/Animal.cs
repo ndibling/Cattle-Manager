@@ -39,6 +39,15 @@ public class Animal
     public string? BuyerAddress { get; set; }
     public DateTime? SoldDate { get; set; }
 
+    // Additional attributes
+    public string? TagNumber { get; set; }
+    public ChondroStatus Chondro { get; set; }
+    public bool? Horns { get; set; }
+    public bool? IsGoodMother { get; set; }
+    public string? PastureLocation { get; set; }
+    public string? PastureState { get; set; }
+    public decimal? ExpectedHeightAtMaturity { get; set; }
+
     public int? SireId { get; set; }
     public int? DamId { get; set; }
     public string? ExternalSireName { get; set; }

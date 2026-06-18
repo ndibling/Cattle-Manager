@@ -23,6 +23,20 @@ public partial class AnimalProfileViewModel : ObservableObject
 
     public int AnimalId { get; set; }
 
+    public IReadOnlyList<ChondroStatus> ChondroOptions { get; } = Enum.GetValues<ChondroStatus>();
+    public IReadOnlyList<string> YesNoUnknownOptions { get; } = ["Unknown", "Yes", "No"];
+    public IReadOnlyList<string> StateOptions { get; } =
+    [
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+        "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+        "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+        "Wisconsin", "Wyoming"
+    ];
+
     [ObservableProperty] private AnimalDto? _animal;
     [ObservableProperty] private ObservableCollection<HealthRecordDto> _healthHistory = [];
     [ObservableProperty] private ObservableCollection<BreedingRecordDto> _breedingHistory = [];
@@ -44,6 +58,15 @@ public partial class AnimalProfileViewModel : ObservableObject
     [ObservableProperty] private DateTime? _editLastVaccination;
     [ObservableProperty] private DateTime? _editLastHealthCheck;
     [ObservableProperty] private DateTime? _editLastHoofTrimming;
+
+    // Additional attribute inline edits
+    [ObservableProperty] private string? _editTagNumber;
+    [ObservableProperty] private ChondroStatus _editChondro;
+    [ObservableProperty] private string _editHornsSelection = "Unknown";
+    [ObservableProperty] private string _editIsGoodMotherSelection = "Unknown";
+    [ObservableProperty] private string? _editPastureLocation;
+    [ObservableProperty] private string? _editPastureState;
+    [ObservableProperty] private decimal? _editExpectedHeightAtMaturity;
 
     // Bull exposure add form
     [ObservableProperty] private bool _isAddingExposure;
@@ -126,6 +149,13 @@ public partial class AnimalProfileViewModel : ObservableObject
         EditLastVaccination = Animal.LastVaccinationDate;
         EditLastHealthCheck = Animal.LastHealthCheckDate;
         EditLastHoofTrimming = Animal.LastHoofTrimmingDate;
+        EditTagNumber = Animal.TagNumber;
+        EditChondro = Animal.Chondro;
+        EditHornsSelection = Animal.Horns == true ? "Yes" : Animal.Horns == false ? "No" : "Unknown";
+        EditIsGoodMotherSelection = Animal.IsGoodMother == true ? "Yes" : Animal.IsGoodMother == false ? "No" : "Unknown";
+        EditPastureLocation = Animal.PastureLocation;
+        EditPastureState = Animal.PastureState;
+        EditExpectedHeightAtMaturity = Animal.ExpectedHeightAtMaturity;
         EditPhotoPath = Animal.PhotoPath;
         IsEditMode = true;
     }
@@ -143,6 +173,13 @@ public partial class AnimalProfileViewModel : ObservableObject
         Animal.LastVaccinationDate = EditLastVaccination;
         Animal.LastHealthCheckDate = EditLastHealthCheck;
         Animal.LastHoofTrimmingDate = EditLastHoofTrimming;
+        Animal.TagNumber = EditTagNumber;
+        Animal.Chondro = EditChondro;
+        Animal.Horns = EditHornsSelection == "Yes" ? true : EditHornsSelection == "No" ? false : (bool?)null;
+        Animal.IsGoodMother = EditIsGoodMotherSelection == "Yes" ? true : EditIsGoodMotherSelection == "No" ? false : (bool?)null;
+        Animal.PastureLocation = EditPastureLocation;
+        Animal.PastureState = EditPastureState;
+        Animal.ExpectedHeightAtMaturity = EditExpectedHeightAtMaturity;
         Animal.PhotoPath = EditPhotoPath;
         await _animals.UpdateAsync(Animal);
         IsEditMode = false;
