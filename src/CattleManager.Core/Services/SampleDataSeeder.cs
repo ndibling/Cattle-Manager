@@ -11,11 +11,17 @@ public class SampleDataSeeder
     private readonly IHealthRecordRepository _healthRecords;
     private readonly IBreedingRecordRepository _breedingRecords;
     private readonly IAppSettingsRepository _settings;
+    private readonly ITransactionRepository _transactions;
+    private readonly IAssetRepository _assets;
+    private readonly ILoanRepository _loans;
+    private readonly IBudgetRepository _budget;
 
     public SampleDataSeeder(
         IAnimalRepository animals, IHerdRepository herds, IBreedRepository breeds,
         IFarmRepository farms, IHealthRecordRepository healthRecords,
-        IBreedingRecordRepository breedingRecords, IAppSettingsRepository settings)
+        IBreedingRecordRepository breedingRecords, IAppSettingsRepository settings,
+        ITransactionRepository transactions, IAssetRepository assets,
+        ILoanRepository loans, IBudgetRepository budget)
     {
         _animals = animals;
         _herds = herds;
@@ -24,6 +30,10 @@ public class SampleDataSeeder
         _healthRecords = healthRecords;
         _breedingRecords = breedingRecords;
         _settings = settings;
+        _transactions = transactions;
+        _assets = assets;
+        _loans = loans;
+        _budget = budget;
     }
 
     public async Task<bool> ShouldSeedAsync()
@@ -344,6 +354,12 @@ public class SampleDataSeeder
         var herds = await _herds.GetAllAsync();
         foreach (var herd in herds.Where(h => h.IsSampleData))
             await _herds.DeleteAsync(herd.HerdId);
+
+        // Clear financial sample data in FK-safe order (LoanPayments cascade-deleted with Loans)
+        await _loans.DeleteSampleDataAsync();
+        await _transactions.DeleteSampleDataAsync();
+        await _assets.DeleteSampleDataAsync();
+        await _budget.DeleteSampleDataAsync();
 
         await _settings.SetAsync("SampleDataCleared", "true");
     }

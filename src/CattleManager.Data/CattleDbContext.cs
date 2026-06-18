@@ -18,6 +18,13 @@ public class CattleDbContext : DbContext
     public DbSet<AnimalAttachment> AnimalAttachments => Set<AnimalAttachment>();
     public DbSet<BullExposureRecord> BullExposureRecords => Set<BullExposureRecord>();
 
+    // Financial tables
+    public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<Asset> Assets => Set<Asset>();
+    public DbSet<Loan> Loans => Set<Loan>();
+    public DbSet<LoanPayment> LoanPayments => Set<LoanPayment>();
+    public DbSet<BudgetEntry> BudgetEntries => Set<BudgetEntry>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>(entity =>
@@ -111,6 +118,56 @@ public class CattleDbContext : DbContext
                   .WithMany(a => a.BullExposuresAsSire)
                   .HasForeignKey(e => e.SireId)
                   .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.HasKey(t => t.TransactionId);
+            entity.Property(t => t.Amount).HasPrecision(10, 2);
+            entity.HasOne(t => t.LinkedAnimal)
+                  .WithMany()
+                  .HasForeignKey(t => t.LinkedAnimalId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Asset>(entity =>
+        {
+            entity.HasKey(a => a.AssetId);
+            entity.Property(a => a.PurchasePrice).HasPrecision(10, 2);
+            entity.Property(a => a.CurrentValue).HasPrecision(10, 2);
+            entity.Property(a => a.SalvageValue).HasPrecision(10, 2);
+            entity.Property(a => a.DisposalPrice).HasPrecision(10, 2);
+            entity.HasOne(a => a.LinkedAnimal)
+                  .WithMany()
+                  .HasForeignKey(a => a.LinkedAnimalId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Loan>(entity =>
+        {
+            entity.HasKey(l => l.LoanId);
+            entity.Property(l => l.OriginalPrincipal).HasPrecision(10, 2);
+            entity.Property(l => l.InterestRate).HasPrecision(8, 4);
+            entity.Property(l => l.PaymentAmount).HasPrecision(10, 2);
+        });
+
+        modelBuilder.Entity<LoanPayment>(entity =>
+        {
+            entity.HasKey(p => p.PaymentId);
+            entity.Property(p => p.TotalPayment).HasPrecision(10, 2);
+            entity.Property(p => p.PrincipalPortion).HasPrecision(10, 2);
+            entity.Property(p => p.InterestPortion).HasPrecision(10, 2);
+            entity.Property(p => p.RemainingBalance).HasPrecision(10, 2);
+            entity.HasOne(p => p.Loan)
+                  .WithMany(l => l.Payments)
+                  .HasForeignKey(p => p.LoanId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BudgetEntry>(entity =>
+        {
+            entity.HasKey(b => b.BudgetEntryId);
+            entity.Property(b => b.BudgetAmount).HasPrecision(10, 2);
         });
 
         SeedBreeds(modelBuilder);

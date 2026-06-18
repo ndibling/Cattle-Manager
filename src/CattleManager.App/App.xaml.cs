@@ -53,6 +53,7 @@ public partial class App : Application
             bool created = await db.Database.EnsureCreatedAsync();
             if (!created)
             {
+                await EnsureFinancialTablesExistAsync(db);
                 bool schemaOk = await DatabaseSchemaIsValidAsync(db);
                 if (!schemaOk)
                 {
@@ -101,8 +102,13 @@ public partial class App : Application
         services.AddScoped<IAnimalPhotoRepository, AnimalPhotoRepository>();
         services.AddScoped<IAnimalAttachmentRepository, AnimalAttachmentRepository>();
         services.AddScoped<IBullExposureRepository, BullExposureRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IAssetRepository, AssetRepository>();
+        services.AddScoped<ILoanRepository, LoanRepository>();
+        services.AddScoped<IBudgetRepository, BudgetRepository>();
 
         services.AddScoped<HealthService>();
+        services.AddScoped<FinancialService>();
         services.AddScoped<HerdService>();
         services.AddScoped<BreedingService>();
         services.AddScoped<PedigreeService>();
@@ -152,6 +158,109 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log.Warning(ex, "Sample data seeding failed");
+        }
+    }
+
+    private static async Task EnsureFinancialTablesExistAsync(CattleDbContext db)
+    {
+        var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+        try
+        {
+            var tables = new (string Name, string Ddl)[]
+            {
+                ("Transactions", """
+                    CREATE TABLE IF NOT EXISTS "Transactions" (
+                        "TransactionId" INTEGER NOT NULL CONSTRAINT "PK_Transactions" PRIMARY KEY AUTOINCREMENT,
+                        "TransactionType" INTEGER NOT NULL DEFAULT 0,
+                        "Category" TEXT NOT NULL DEFAULT '',
+                        "Date" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+                        "Amount" REAL NOT NULL DEFAULT 0.0,
+                        "Description" TEXT NOT NULL DEFAULT '',
+                        "PayeePayer" TEXT,
+                        "PaymentMethod" TEXT,
+                        "Notes" TEXT,
+                        "AttachmentPath" TEXT,
+                        "LinkedAnimalId" INTEGER,
+                        "IsSampleData" INTEGER NOT NULL DEFAULT 0,
+                        "CreatedDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+                        "ModifiedDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'
+                    )
+                    """),
+                ("Assets", """
+                    CREATE TABLE IF NOT EXISTS "Assets" (
+                        "AssetId" INTEGER NOT NULL CONSTRAINT "PK_Assets" PRIMARY KEY AUTOINCREMENT,
+                        "AssetName" TEXT NOT NULL DEFAULT '',
+                        "Category" INTEGER NOT NULL DEFAULT 0,
+                        "PurchaseDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+                        "PurchasePrice" REAL NOT NULL DEFAULT 0.0,
+                        "CurrentValue" REAL,
+                        "DepreciationMethod" INTEGER NOT NULL DEFAULT 0,
+                        "UsefulLifeYears" INTEGER NOT NULL DEFAULT 0,
+                        "SalvageValue" REAL NOT NULL DEFAULT 0.0,
+                        "LinkedAnimalId" INTEGER,
+                        "DisposedDate" TEXT,
+                        "DisposalPrice" REAL,
+                        "Notes" TEXT,
+                        "IsSampleData" INTEGER NOT NULL DEFAULT 0,
+                        "CreatedDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'
+                    )
+                    """),
+                ("Loans", """
+                    CREATE TABLE IF NOT EXISTS "Loans" (
+                        "LoanId" INTEGER NOT NULL CONSTRAINT "PK_Loans" PRIMARY KEY AUTOINCREMENT,
+                        "LenderName" TEXT NOT NULL DEFAULT '',
+                        "LoanType" INTEGER NOT NULL DEFAULT 0,
+                        "OriginalPrincipal" REAL NOT NULL DEFAULT 0.0,
+                        "InterestRate" REAL NOT NULL DEFAULT 0.0,
+                        "StartDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+                        "MaturityDate" TEXT,
+                        "PaymentFrequency" INTEGER NOT NULL DEFAULT 0,
+                        "PaymentAmount" REAL NOT NULL DEFAULT 0.0,
+                        "IsActive" INTEGER NOT NULL DEFAULT 1,
+                        "Notes" TEXT,
+                        "IsSampleData" INTEGER NOT NULL DEFAULT 0,
+                        "CreatedDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'
+                    )
+                    """),
+                ("LoanPayments", """
+                    CREATE TABLE IF NOT EXISTS "LoanPayments" (
+                        "PaymentId" INTEGER NOT NULL CONSTRAINT "PK_LoanPayments" PRIMARY KEY AUTOINCREMENT,
+                        "LoanId" INTEGER NOT NULL,
+                        "PaymentDate" TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+                        "TotalPayment" REAL NOT NULL DEFAULT 0.0,
+                        "PrincipalPortion" REAL NOT NULL DEFAULT 0.0,
+                        "InterestPortion" REAL NOT NULL DEFAULT 0.0,
+                        "RemainingBalance" REAL NOT NULL DEFAULT 0.0,
+                        "Notes" TEXT,
+                        "IsSampleData" INTEGER NOT NULL DEFAULT 0,
+                        CONSTRAINT "FK_LoanPayments_Loans_LoanId" FOREIGN KEY ("LoanId") REFERENCES "Loans" ("LoanId") ON DELETE CASCADE
+                    )
+                    """),
+                ("BudgetEntries", """
+                    CREATE TABLE IF NOT EXISTS "BudgetEntries" (
+                        "BudgetEntryId" INTEGER NOT NULL CONSTRAINT "PK_BudgetEntries" PRIMARY KEY AUTOINCREMENT,
+                        "FiscalYear" INTEGER NOT NULL DEFAULT 0,
+                        "Category" TEXT NOT NULL DEFAULT '',
+                        "TransactionType" INTEGER NOT NULL DEFAULT 0,
+                        "Month" INTEGER NOT NULL DEFAULT 0,
+                        "BudgetAmount" REAL NOT NULL DEFAULT 0.0,
+                        "IsSampleData" INTEGER NOT NULL DEFAULT 0
+                    )
+                    """)
+            };
+
+            foreach (var (name, ddl) in tables)
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = ddl;
+                await cmd.ExecuteNonQueryAsync();
+                Log.Information("Verified table {Table} exists", name);
+            }
+        }
+        finally
+        {
+            await conn.CloseAsync();
         }
     }
 
@@ -210,6 +319,11 @@ public partial class App : Application
             _ = await db.AnimalPhotos.AnyAsync();
             _ = await db.AnimalAttachments.AnyAsync();
             _ = await db.BullExposureRecords.AnyAsync();
+            _ = await db.Transactions.AnyAsync();
+            _ = await db.Assets.AnyAsync();
+            _ = await db.Loans.AnyAsync();
+            _ = await db.LoanPayments.AnyAsync();
+            _ = await db.BudgetEntries.AnyAsync();
             return true;
         }
         catch
