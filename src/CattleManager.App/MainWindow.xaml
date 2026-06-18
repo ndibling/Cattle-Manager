@@ -21,7 +21,7 @@
             <DockPanel>
                 <!-- Logo / App Name -->
                 <StackPanel DockPanel.Dock="Top" Margin="16,24,16,16">
-                    <TextBlock Text="🐄" FontSize="32" HorizontalAlignment="Center"/>
+                    <Image Source="/Assets/app.ico" Width="56" Height="56" HorizontalAlignment="Center"/>
                     <TextBlock Text="Herd Master" FontSize="18" FontWeight="Bold"
                                HorizontalAlignment="Center" Margin="0,8,0,0"
                                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
