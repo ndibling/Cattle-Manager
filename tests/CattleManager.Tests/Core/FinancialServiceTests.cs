@@ -27,9 +27,11 @@ public class FinancialServiceTests
         decimal salvageValue = 1_000m,
         int usefulLifeYears = 5,
         DepreciationMethod method = DepreciationMethod.StraightLine,
-        DateTime? purchaseDate = null) => new()
+        DateTime? purchaseDate = null,
+        AssetCategory category = AssetCategory.MachineryEquipment) => new()
     {
         AssetName = "Test Asset",
+        Category = category,
         PurchasePrice = purchasePrice,
         SalvageValue = salvageValue,
         UsefulLifeYears = usefulLifeYears,
