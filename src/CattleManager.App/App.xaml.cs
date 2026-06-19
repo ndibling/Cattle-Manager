@@ -174,7 +174,8 @@ public partial class App : Application
     private static async Task EnsureFinancialTablesExistAsync(CattleDbContext db)
     {
         var conn = db.Database.GetDbConnection();
-        await conn.OpenAsync();
+        bool wasOpen = conn.State == System.Data.ConnectionState.Open;
+        if (!wasOpen) await conn.OpenAsync();
         try
         {
             var tables = new (string Name, string Ddl)[]
@@ -272,14 +273,15 @@ public partial class App : Application
         }
         finally
         {
-            await conn.CloseAsync();
+            if (!wasOpen) await conn.CloseAsync();
         }
     }
 
     private static async Task EnsureColumnsExistAsync(CattleDbContext db)
     {
         var conn = db.Database.GetDbConnection();
-        await conn.OpenAsync();
+        bool wasOpen = conn.State == System.Data.ConnectionState.Open;
+        if (!wasOpen) await conn.OpenAsync();
         try
         {
             await EnsureTableColumnsAsync(conn, "Animals", new System.Collections.Generic.Dictionary<string, string>
@@ -301,7 +303,7 @@ public partial class App : Application
         }
         finally
         {
-            await conn.CloseAsync();
+            if (!wasOpen) await conn.CloseAsync();
         }
     }
 

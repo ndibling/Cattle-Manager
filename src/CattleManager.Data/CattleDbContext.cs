@@ -61,6 +61,7 @@ public class CattleDbContext : DbContext
             entity.Property(a => a.Height).HasPrecision(10, 2);
             entity.Property(a => a.PurchasePrice).HasPrecision(10, 2);
             entity.Property(a => a.AskingPrice).HasPrecision(10, 2);
+            entity.Property(a => a.CurrentValue).HasPrecision(10, 2);
             entity.Property(a => a.SalePrice).HasPrecision(10, 2);
         });
 

@@ -4,6 +4,7 @@ using CattleManager.Core.Models;
 using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -222,7 +223,9 @@ public partial class AnimalFormViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ValidationError = ex.Message;
+            Log.Error(ex, "Failed to save animal");
+            var inner = ex.InnerException?.Message ?? ex.Message;
+            ValidationError = inner == ex.Message ? ex.Message : $"{ex.Message}\n{inner}";
         }
         finally
         {
