@@ -25,10 +25,24 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string? _statusMessage;
 
+    // Financial settings
+    [ObservableProperty] private string _fiscalYearStartMonth = "January";
+    [ObservableProperty] private string _accountingMethod = "Cash";
+    [ObservableProperty] private string _stateOfOperation = string.Empty;
+    [ObservableProperty] private string _stateSalesTaxRate = "0";
+    [ObservableProperty] private string _stateIncomeTaxRate = "0";
+    [ObservableProperty] private string _federalIncomeTaxRate = "22";
+
     public IReadOnlyList<WeightUnit> WeightUnitOptions { get; } = Enum.GetValues<WeightUnit>();
     public IReadOnlyList<HeightUnit> HeightUnitOptions { get; } = Enum.GetValues<HeightUnit>();
     public IReadOnlyList<ThemeMode> ThemeModeOptions { get; } = Enum.GetValues<ThemeMode>();
     public IReadOnlyList<AutoBackupFrequency> AutoBackupOptions { get; } = Enum.GetValues<AutoBackupFrequency>();
+    public IReadOnlyList<string> AccountingMethodOptions { get; } = ["Cash", "Accrual"];
+
+    private static readonly IReadOnlyList<string> MonthNames =
+        ["January", "February", "March", "April", "May", "June",
+         "July", "August", "September", "October", "November", "December"];
+    public IReadOnlyList<string> FiscalMonthOptions { get; } = MonthNames;
 
     public SettingsViewModel(IFarmRepository farms, IHerdRepository herds,
         IBreedRepository breeds, IAppSettingsRepository settings, DialogService dialog)
@@ -61,6 +75,19 @@ public partial class SettingsViewModel : ObservableObject
 
             var ab = await _settings.GetAsync("AutoBackup");
             AutoBackup = Enum.TryParse<AutoBackupFrequency>(ab, out var abv) ? abv : AutoBackupFrequency.Never;
+
+            var fyStart = await _settings.GetAsync("FiscalYearStartMonth");
+            FiscalYearStartMonth = int.TryParse(fyStart, out var monthNum) && monthNum >= 1 && monthNum <= 12
+                ? MonthNames[monthNum - 1]
+                : "January";
+
+            var acctMethod = await _settings.GetAsync("AccountingMethod");
+            AccountingMethod = acctMethod is "Cash" or "Accrual" ? acctMethod : "Cash";
+
+            StateOfOperation   = await _settings.GetAsync("StateOfOperation")   ?? string.Empty;
+            StateSalesTaxRate  = await _settings.GetAsync("StateSalesTaxRate")  ?? "0";
+            StateIncomeTaxRate = await _settings.GetAsync("StateIncomeTaxRate") ?? "0";
+            FederalIncomeTaxRate = await _settings.GetAsync("FederalIncomeTaxRate") ?? "22";
         }
         finally
         {
@@ -82,6 +109,14 @@ public partial class SettingsViewModel : ObservableObject
             await _settings.SetAsync("HeightUnit", HeightUnit.ToString());
             await _settings.SetAsync("Theme", ThemeMode.ToString());
             await _settings.SetAsync("AutoBackup", AutoBackup.ToString());
+
+            var monthIdx = MonthNames.ToList().IndexOf(FiscalYearStartMonth) + 1;
+            await _settings.SetAsync("FiscalYearStartMonth", (monthIdx > 0 ? monthIdx : 1).ToString());
+            await _settings.SetAsync("AccountingMethod",    AccountingMethod);
+            await _settings.SetAsync("StateOfOperation",    StateOfOperation);
+            await _settings.SetAsync("StateSalesTaxRate",   StateSalesTaxRate);
+            await _settings.SetAsync("StateIncomeTaxRate",  StateIncomeTaxRate);
+            await _settings.SetAsync("FederalIncomeTaxRate", FederalIncomeTaxRate);
 
             ModernWpf.ThemeManager.Current.ApplicationTheme =
                 ThemeMode == ThemeMode.Dark

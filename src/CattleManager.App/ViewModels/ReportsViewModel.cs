@@ -198,4 +198,20 @@ public partial class ReportsViewModel : ObservableObject
         var vm = App.Services.GetRequiredService<LoanListViewModel>();
         _nav.NavigateTo(new LoanListPage(vm));
     }
+
+    [RelayCommand]
+    private void NavigateToDashboard()
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<FinancialDashboardViewModel>();
+        _nav.NavigateTo(new FinancialDashboardPage(vm));
+    }
+
+    [RelayCommand]
+    private void NavigateToBudget()
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<BudgetViewModel>();
+        _nav.NavigateTo(new BudgetPage(vm));
+    }
 }

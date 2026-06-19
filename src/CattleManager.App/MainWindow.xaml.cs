@@ -51,8 +51,8 @@ public partial class MainWindow : Window
     private void BtnFinancials_Click(object sender, RoutedEventArgs e)
     {
         _nav.ClearBack();
-        var vm = App.Services.GetRequiredService<TransactionListViewModel>();
-        _nav.NavigateTo(new TransactionListPage(vm));
+        var vm = App.Services.GetRequiredService<FinancialDashboardViewModel>();
+        _nav.NavigateTo(new FinancialDashboardPage(vm));
         HighlightNav(BtnFinancials);
     }
 

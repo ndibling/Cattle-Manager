@@ -95,6 +95,70 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Financial Settings -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Financial Settings" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Fiscal Year Start Month" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding FiscalMonthOptions}"
+                                          SelectedItem="{Binding FiscalYearStartMonth}"
+                                          Width="180" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Accounting Method" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding AccountingMethodOptions}"
+                                          SelectedItem="{Binding AccountingMethod}"
+                                          Width="180" FontSize="14"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="State of Operation" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding StateOfOperation, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="180" FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="e.g. Texas"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="State Sales Tax Rate %" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding StateSalesTaxRate, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="180" FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="e.g. 6.25"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="32"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="State Income Tax Rate %" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding StateIncomeTaxRate, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="180" FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="e.g. 5"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Est. Federal Income Tax Rate %" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding FederalIncomeTaxRate, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="180" FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="e.g. 22"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
                 <!-- Data Backup -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
