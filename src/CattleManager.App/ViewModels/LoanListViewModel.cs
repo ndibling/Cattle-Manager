@@ -178,4 +178,12 @@ public partial class LoanListViewModel : ObservableObject
         var vm = App.Services.GetRequiredService<AssetListViewModel>();
         _nav.NavigateTo(new AssetListPage(vm));
     }
+
+    [RelayCommand]
+    private void NavigateToReports()
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<ReportsViewModel>();
+        _nav.NavigateTo(new ReportsPage(vm));
+    }
 }

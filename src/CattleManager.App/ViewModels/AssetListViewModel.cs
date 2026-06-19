@@ -186,6 +186,14 @@ public partial class AssetListViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void NavigateToReports()
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<ReportsViewModel>();
+        _nav.NavigateTo(new ReportsPage(vm));
+    }
+
+    [RelayCommand]
     private void ClearFilters()
     {
         FilterCategory = "All";

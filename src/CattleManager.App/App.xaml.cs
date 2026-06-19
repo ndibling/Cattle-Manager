@@ -131,6 +131,7 @@ public partial class App : Application
         services.AddTransient<LoanListViewModel>();
         services.AddTransient<LoanFormViewModel>();
         services.AddTransient<LoanDetailViewModel>();
+        services.AddTransient<ReportsViewModel>();
 
         services.AddSingleton<MainWindow>();
     }
