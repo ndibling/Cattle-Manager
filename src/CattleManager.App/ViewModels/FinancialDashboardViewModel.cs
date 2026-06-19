@@ -21,7 +21,6 @@ public partial class FinancialDashboardViewModel : ObservableObject
 {
     private readonly FinancialService _financial;
     private readonly NavigationService _nav;
-    private readonly DialogService _dialog;
 
     [ObservableProperty] private FinancialKpiDto? _kpis;
     [ObservableProperty] private IReadOnlyList<MonthlyBarViewModel> _monthlyBars = [];
@@ -51,11 +50,10 @@ public partial class FinancialDashboardViewModel : ObservableObject
     partial void OnMonthlyBarsChanged(IReadOnlyList<MonthlyBarViewModel> _) =>
         OnPropertyChanged(nameof(HasMonthlyBars));
 
-    public FinancialDashboardViewModel(FinancialService financial, NavigationService nav, DialogService dialog)
+    public FinancialDashboardViewModel(FinancialService financial, NavigationService nav)
     {
         _financial = financial;
         _nav       = nav;
-        _dialog    = dialog;
     }
 
     public async Task LoadAsync()

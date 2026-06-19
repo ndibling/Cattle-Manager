@@ -140,7 +140,7 @@ public partial class SettingsViewModel : ObservableObject
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "CattleManager", "CattleManager.db");
         if (!File.Exists(srcPath)) { _dialog.ShowError("Database file not found."); return; }
-        File.Copy(srcPath, destPath, overwrite: true);
+        await Task.Run(() => File.Copy(srcPath, destPath, overwrite: true));
         StatusMessage = $"Backup saved to {destPath}";
     }
 
@@ -154,7 +154,7 @@ public partial class SettingsViewModel : ObservableObject
         var destPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "CattleManager", "CattleManager.db");
-        File.Copy(srcPath, destPath, overwrite: true);
+        await Task.Run(() => File.Copy(srcPath, destPath, overwrite: true));
         _dialog.ShowInfo("Restore complete. Please restart Herd Master.", "Restore Complete");
     }
 }

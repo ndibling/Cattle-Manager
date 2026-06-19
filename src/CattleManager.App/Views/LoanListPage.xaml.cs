@@ -50,6 +50,7 @@ public partial class LoanListPage : Page
         delete.Click += (_, _) => _vm.DeleteLoanCommand.Execute(item);
         menu.Items.Add(delete);
 
+        menu.PlacementTarget = btn;
         menu.IsOpen = true;
     }
 }

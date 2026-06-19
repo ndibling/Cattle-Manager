@@ -349,8 +349,8 @@ public class FinancialService
 
         var fedRateStr = await _settings.GetAsync("FederalIncomeTaxRate");
         var stateRateStr = await _settings.GetAsync("StateIncomeTaxRate");
-        var fedRate = decimal.TryParse(fedRateStr, out var fr) ? fr : 0.22m;
-        var stateRate = decimal.TryParse(stateRateStr, out var sr) ? sr : 0m;
+        var fedRate = decimal.TryParse(fedRateStr, out var fr) ? fr / 100m : 0.22m;
+        var stateRate = decimal.TryParse(stateRateStr, out var sr) ? sr / 100m : 0m;
         var estimatedFedTax = netFarmIncome > 0 ? Math.Round(netFarmIncome * fedRate, 2) : 0m;
         var estimatedStateTax = netFarmIncome > 0 ? Math.Round(netFarmIncome * stateRate, 2) : 0m;
 
