@@ -276,6 +276,144 @@ public class RepositoryTests : IDisposable
         all.Should().Contain(b => b.BreedName == "Custom Mix");
     }
 
+    // ── Full field round-trip ─────────────────────────────────────────────────
+    //
+    // MAINTENANCE: When you add a new column to the Animals table you MUST:
+    //   1. Add the property to Animal.cs (entity) and AnimalDto.cs
+    //   2. Map it in AnimalRepository.MapToDto AND MapToEntityExisting
+    //   3. Add it to EnsureColumnsExistAsync in App.xaml.cs (for existing DBs)
+    //   4. Set a non-default test value below and assert it survives the round-trip
+    //
+    // This test exists specifically to catch mapping omissions — fields that are
+    // added to the entity but accidentally left out of MapToDto or MapToEntityExisting.
+    [Fact]
+    public async Task Animal_FullFieldRoundTrip_AllAttributesPersist()
+    {
+        var (_, herdId, breedId) = await SetupBasicDataAsync();
+
+        // Create a second animal to use as sire so we can test SireId linkage
+        var sire = await _animals.AddAsync(new AnimalDto
+        {
+            HerdId = herdId, BreedId = breedId, BarnName = "TestSire",
+            Gender = Gender.Male, Status = AnimalStatus.Healthy,
+            BirthDate = new DateTime(2018, 3, 1),
+            CreatedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow
+        });
+
+        var purchaseDate = new DateTime(2021, 5, 10);
+        var soldDate     = new DateTime(2024, 1, 15);
+        var birthDate    = new DateTime(2020, 4, 20);
+
+        var input = new AnimalDto
+        {
+            HerdId     = herdId,
+            BreedId    = breedId,
+            BarnName   = "FullTest",
+            RegisteredName         = "RHR Full Test 001",
+            RegistrationNumber     = "REG-001",
+            RegistrationOrganization = "AHA",
+            Gender     = Gender.Female,
+            Status     = AnimalStatus.ForSale,
+            Weight     = 850.5m,
+            WeightUnit = WeightUnit.Pounds,
+            Height     = 48.25m,
+            HeightUnit = HeightUnit.Inches,
+            Coloring   = "Black with white star",
+            PhotoPath  = "/photos/test.jpg",
+            BirthDate  = birthDate,
+            DateAcquired  = purchaseDate,
+            CurrentLocation = "North Pasture",
+            BreedersName    = "Breeder Co.",
+            CurrentOwner    = "Owner Name",
+            BornOnProperty  = false,
+            SellerName      = "Seller Ranch",
+            SellerAddress   = "123 Ranch Rd, Guthrie, OK",
+            PurchaseDate    = purchaseDate,
+            PurchasePrice   = 3_500m,
+            AskingPrice     = 4_200m,
+            CurrentValue    = 4_000m,   // ← added v1.6; ensure this maps through
+            SalePrice       = 4_100m,
+            BuyerName       = "Buyer Farm",
+            BuyerAddress    = "456 Farm Ln, Enid, OK",
+            SoldDate        = soldDate,
+            TagNumber       = "T-099",
+            Chondro         = ChondroStatus.Carrier,
+            Horns           = false,
+            IsGoodMother    = true,
+            PastureLocation = "South Pen",
+            PastureState    = "Oklahoma",
+            ExpectedHeightAtMaturity = 54m,
+            SireId          = sire.AnimalId,
+            ExternalSireName = "External Bull",
+            ExternalDamName  = "External Cow",
+            LastWormingDate      = new DateTime(2024, 3, 1),
+            LastVaccinationDate  = new DateTime(2024, 2, 15),
+            LastHealthCheckDate  = new DateTime(2024, 4, 1),
+            LastHoofTrimmingDate = new DateTime(2024, 1, 10),
+            HealthNotes    = "Healthy overall",
+            IsBreeding     = true,
+            IsPregnant     = false,
+            ReproductionNotes = "Calved 2023",
+            MaleBreedingStatus = null,
+            IsSampleData   = true,
+            CreatedDate    = DateTime.UtcNow,
+            ModifiedDate   = DateTime.UtcNow,
+        };
+
+        var saved = await _animals.AddAsync(input);
+        var loaded = await _animals.GetByIdAsync(saved.AnimalId);
+
+        loaded.Should().NotBeNull();
+        loaded!.BarnName.Should().Be("FullTest");
+        loaded.RegisteredName.Should().Be("RHR Full Test 001");
+        loaded.RegistrationNumber.Should().Be("REG-001");
+        loaded.RegistrationOrganization.Should().Be("AHA");
+        loaded.Gender.Should().Be(Gender.Female);
+        loaded.Status.Should().Be(AnimalStatus.ForSale);
+        loaded.Weight.Should().Be(850.5m);
+        loaded.WeightUnit.Should().Be(WeightUnit.Pounds);
+        loaded.Height.Should().Be(48.25m);
+        loaded.HeightUnit.Should().Be(HeightUnit.Inches);
+        loaded.Coloring.Should().Be("Black with white star");
+        loaded.PhotoPath.Should().Be("/photos/test.jpg");
+        loaded.BirthDate.Should().Be(birthDate);
+        loaded.DateAcquired.Should().Be(purchaseDate);
+        loaded.CurrentLocation.Should().Be("North Pasture");
+        loaded.BreedersName.Should().Be("Breeder Co.");
+        loaded.CurrentOwner.Should().Be("Owner Name");
+        loaded.BornOnProperty.Should().BeFalse();
+        loaded.SellerName.Should().Be("Seller Ranch");
+        loaded.SellerAddress.Should().Be("123 Ranch Rd, Guthrie, OK");
+        loaded.PurchaseDate.Should().Be(purchaseDate);
+        loaded.PurchasePrice.Should().Be(3_500m);
+        loaded.AskingPrice.Should().Be(4_200m);
+        loaded.CurrentValue.Should().Be(4_000m);    // ← v1.6 field
+        loaded.SalePrice.Should().Be(4_100m);
+        loaded.BuyerName.Should().Be("Buyer Farm");
+        loaded.BuyerAddress.Should().Be("456 Farm Ln, Enid, OK");
+        loaded.SoldDate.Should().Be(soldDate);
+        loaded.TagNumber.Should().Be("T-099");
+        loaded.Chondro.Should().Be(ChondroStatus.Carrier);
+        loaded.Horns.Should().BeFalse();
+        loaded.IsGoodMother.Should().BeTrue();
+        loaded.PastureLocation.Should().Be("South Pen");
+        loaded.PastureState.Should().Be("Oklahoma");
+        loaded.ExpectedHeightAtMaturity.Should().Be(54m);
+        loaded.SireId.Should().Be(sire.AnimalId);
+        loaded.SireBarnName.Should().Be("TestSire");
+        loaded.ExternalSireName.Should().Be("External Bull");
+        loaded.ExternalDamName.Should().Be("External Cow");
+        loaded.LastWormingDate.Should().Be(new DateTime(2024, 3, 1));
+        loaded.LastVaccinationDate.Should().Be(new DateTime(2024, 2, 15));
+        loaded.LastHealthCheckDate.Should().Be(new DateTime(2024, 4, 1));
+        loaded.LastHoofTrimmingDate.Should().Be(new DateTime(2024, 1, 10));
+        loaded.HealthNotes.Should().Be("Healthy overall");
+        loaded.IsBreeding.Should().BeTrue();
+        loaded.IsPregnant.Should().BeFalse();
+        loaded.ReproductionNotes.Should().Be("Calved 2023");
+        loaded.IsSampleData.Should().BeTrue();
+    }
+
     private async Task<AnimalDto> AddAnimal(int herdId, int breedId, string barnName,
         int? sireId = null, int? damId = null) =>
         await _animals.AddAsync(new AnimalDto
