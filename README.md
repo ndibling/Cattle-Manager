@@ -11,8 +11,8 @@ A modern Windows desktop application for managing cattle herds. Track animals, h
 ### Herd Management
 - **Dashboard** — At-a-glance herd stats: total animals, breeding females/males, pregnant cows, and animals due for husbandry tasks
 - **Herd Details** — Sortable, filterable, searchable table of all animals with inline action menus
-- **Animal Profiles** — "Baseball card" view with photo, full health history, lineage, and reproduction info; inline edit mode
-- **Add / Edit Animals** — Tabbed form with validation, autocomplete sire/dam dropdowns, photo upload, and auto-calculated ages and due dates
+- **Animal Profiles** — "Baseball card" view with photo, full health history, lineage, and reproduction info; separate Purchase Details and Sale & Valuation sections showing asking price, current value, sale price, and buyer info; inline edit mode
+- **Add / Edit Animals** — Tabbed form with validation, autocomplete sire/dam dropdowns, photo upload, and auto-calculated ages and due dates; asking price and current value editable alongside sale info
 - **Pedigree Diagram** — Visual 4-generation ancestry tree with clickable nodes and print support
 - **Health & Husbandry Tracking** — Worming, vaccination, and health check dates with overdue alerts
 - **Breeding Management** — Pregnancy tracking with auto-calculated due dates (283-day gestation), calving records
@@ -20,10 +20,10 @@ A modern Windows desktop application for managing cattle herds. Track animals, h
 ### Financial Management
 - **Financial Dashboard** — KPI tiles for Net Farm Income, Total Revenue, Total Expenses, Debt-to-Asset Ratio, Average Cost/Head, and Break-Even Price; revenue vs. expense bar chart by month
 - **Transactions** — Income and expense ledger with category tagging, payee/payer, receipt attachments, and optional animal linkage; filterable by date, type, and category
-- **Asset Register** — Track equipment, land, buildings, vehicles, and breeding stock with purchase cost, current value, and automatic annual depreciation (Straight-Line, 150% DB, or Section 179)
+- **Asset Register** — Track equipment, land, buildings, vehicles, and breeding stock; animals automatically appear as livestock assets on save; current value tracks separately from cost basis; livestock assets are not depreciated (Straight-Line, 150% DB, or Section 179 for all other categories)
 - **Loan Tracking** — Full amortization schedules for all active loans; record actual payments with principal/interest breakdown; outstanding balance calculated to any date
 - **Financial Reports** — Profit & Loss, Balance Sheet, Cash Flow Statement, and Tax Summary (Schedule F mapping, SE tax estimate, capital gains); exportable to PDF
-- **Budget** — Annual budget by income/expense category with Actual vs. Budget variance and % used; editable per fiscal year
+- **Budget** — Monthly budget by income/expense category; add only the categories you need; expand each category to enter per-month amounts; Actual vs. Budget variance and annual totals computed automatically
 - **Financial Settings** — Fiscal year start month, accounting method (Cash/Accrual), state of operation, and tax rate inputs for estimated federal and state income tax calculations
 
 ### General
