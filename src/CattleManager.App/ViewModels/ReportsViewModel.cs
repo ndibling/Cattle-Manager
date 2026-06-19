@@ -12,7 +12,6 @@ public partial class ReportsViewModel : ObservableObject
 {
     private readonly FinancialService _financial;
     private readonly ExportService _export;
-    private readonly ITransactionRepository _transactions;
     private readonly IAnimalRepository _animals;
     private readonly IFarmRepository _farms;
     private readonly NavigationService _nav;
@@ -49,10 +48,9 @@ public partial class ReportsViewModel : ObservableObject
         Enumerable.Range(DateTime.Today.Year - 5, 7).Reverse().ToList();
 
     // ---- Bill of Sale ----
-    [ObservableProperty] private IReadOnlyList<TransactionDto> _saleTransactions = [];
-    [ObservableProperty] private TransactionDto? _selectedSale;
-    [ObservableProperty] private AnimalDto? _saleLinkedAnimal;
-    public bool HasSaleTransactions => SaleTransactions.Count > 0;
+    [ObservableProperty] private IReadOnlyList<AnimalDto> _saleAnimals = [];
+    [ObservableProperty] private AnimalDto? _selectedSaleAnimal;
+    public bool HasSaleAnimals => SaleAnimals.Count > 0;
 
     // ---- changed-propagation partial methods ----
     partial void OnPnlResultChanged(ProfitAndLossDto? _)    => OnPropertyChanged(nameof(HasPnlResult));
@@ -64,41 +62,28 @@ public partial class ReportsViewModel : ObservableObject
         OnPropertyChanged(nameof(HasScheduleF));
         OnPropertyChanged(nameof(HasCapitalGains));
     }
-    partial void OnSaleTransactionsChanged(IReadOnlyList<TransactionDto> _) =>
-        OnPropertyChanged(nameof(HasSaleTransactions));
-
-    partial void OnSelectedSaleChanged(TransactionDto? tx)
-    {
-        SaleLinkedAnimal = null;
-        if (tx?.LinkedAnimalId is int id)
-            _ = LoadSaleAnimalAsync(id);
-    }
+    partial void OnSaleAnimalsChanged(IReadOnlyList<AnimalDto> _) =>
+        OnPropertyChanged(nameof(HasSaleAnimals));
 
     public ReportsViewModel(FinancialService financial, ExportService export,
-        ITransactionRepository transactions, IAnimalRepository animals,
-        IFarmRepository farms, NavigationService nav, DialogService dialog)
+        IAnimalRepository animals, IFarmRepository farms,
+        NavigationService nav, DialogService dialog)
     {
-        _financial    = financial;
-        _export       = export;
-        _transactions = transactions;
-        _animals      = animals;
-        _farms        = farms;
-        _nav          = nav;
-        _dialog       = dialog;
+        _financial = financial;
+        _export    = export;
+        _animals   = animals;
+        _farms     = farms;
+        _nav       = nav;
+        _dialog    = dialog;
     }
 
     public async Task LoadAsync()
     {
-        var sales = await _transactions.GetByTypeAsync(TransactionType.Income);
-        SaleTransactions = sales
-            .Where(t => t.Category == "LivestockSales")
-            .OrderByDescending(t => t.Date)
+        var all = await _animals.GetAllAsync();
+        SaleAnimals = all
+            .Where(a => a.Status != AnimalStatus.Sold && a.Status != AnimalStatus.Deceased)
+            .OrderBy(a => a.BarnName)
             .ToList();
-    }
-
-    private async Task LoadSaleAnimalAsync(int animalId)
-    {
-        SaleLinkedAnimal = await _animals.GetByIdAsync(animalId);
     }
 
     [RelayCommand]
@@ -164,15 +149,21 @@ public partial class ReportsViewModel : ObservableObject
     [RelayCommand]
     private async Task GenerateBillOfSaleAsync()
     {
-        if (SelectedSale is null) { _dialog.ShowInfo("Select a livestock sale transaction first.", "No Selection"); return; }
+        if (SelectedSaleAnimal is null) { _dialog.ShowInfo("Select an animal first.", "No Selection"); return; }
         var farm     = await _farms.GetDefaultAsync();
         var farmName = farm?.FarmName ?? "Farm";
-        var path     = _dialog.SavePdfFile($"BillOfSale_{SelectedSale.Date:yyyy-MM-dd}");
+        var path     = _dialog.SavePdfFile($"BillOfSale_{SelectedSaleAnimal.BarnName}_{DateTime.Today:yyyy-MM-dd}");
         if (path is null) return;
-        var animal = SelectedSale.LinkedAnimalId.HasValue
-            ? await _animals.GetByIdAsync(SelectedSale.LinkedAnimalId.Value)
-            : null;
-        await Task.Run(() => _export.ExportBillOfSaleToPdf(SelectedSale, animal, farmName, path));
+        var sale = new TransactionDto
+        {
+            TransactionType = TransactionType.Income,
+            Category        = "LivestockSales",
+            Date            = DateTime.Today,
+            Amount          = SelectedSaleAnimal.AskingPrice ?? 0m,
+            Description     = $"Sale of {SelectedSaleAnimal.BarnName}",
+            LinkedAnimalId  = SelectedSaleAnimal.AnimalId,
+        };
+        await Task.Run(() => _export.ExportBillOfSaleToPdf(sale, SelectedSaleAnimal, farmName, path));
     }
 
     [RelayCommand]

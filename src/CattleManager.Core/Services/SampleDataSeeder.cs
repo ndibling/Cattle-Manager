@@ -270,7 +270,168 @@ public class SampleDataSeeder
             OutcomeNotes = "Healthy bull calf.", IsSampleData = true
         });
 
+        await SeedFinancialDataAsync(bull.AnimalId, today);
+
         await _settings.SetAsync("SampleDataLoaded", "true");
+    }
+
+    private async Task SeedFinancialDataAsync(int bullAnimalId, DateTime today)
+    {
+        var year = today.Year;
+
+        // --- Transactions ---
+        var txs = new[]
+        {
+            // Expenses
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "FeedHay",
+                Date = new DateTime(year, 1, 15), Amount = 1_200m,
+                Description = "Coastal Bermuda hay — 10 round bales", PayeePayer = "Rolling Plains Hay",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "VeterinaryMedical",
+                Date = new DateTime(year, 2, 8), Amount = 450m,
+                Description = "Vet visit and pregnancy check", PayeePayer = "Dr. Sarah Mitchell DVM",
+                LinkedAnimalId = bullAnimalId, IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "BreedingFees",
+                Date = new DateTime(year, 3, 5), Amount = 300m,
+                Description = "AI breeding service — 3 cows", PayeePayer = "Central Plains AI Service",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "FuelOil",
+                Date = new DateTime(year, 3, 22), Amount = 180m,
+                Description = "Diesel fuel — tractor and truck", PayeePayer = "Tulsa Co-op",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "RepairsMaintenance",
+                Date = new DateTime(year, 4, 10), Amount = 650m,
+                Description = "Perimeter fence repair — south pasture", PayeePayer = "Ranch Hand Supply",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "Insurance",
+                Date = new DateTime(year, 1, 1), Amount = 1_800m,
+                Description = "Annual farm liability and livestock insurance", PayeePayer = "AgriGuard Insurance",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "MarketingAuction",
+                Date = new DateTime(year, 5, 18), Amount = 85m,
+                Description = "Auction commission — spring sale", PayeePayer = "Tulsa Livestock Auction",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "FeedHay",
+                Date = new DateTime(year, 6, 20), Amount = 980m,
+                Description = "Summer hay purchase — 8 round bales", PayeePayer = "Rolling Plains Hay",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Expense, Category = "VeterinaryMedical",
+                Date = new DateTime(year, 7, 14), Amount = 320m,
+                Description = "Herd vaccination — annual Clostridial + IBR/BVD", PayeePayer = "Dr. Sarah Mitchell DVM",
+                IsSampleData = true },
+            // Income
+            new TransactionDto { TransactionType = TransactionType.Income, Category = "LivestockSales",
+                Date = new DateTime(year, 5, 18), Amount = 2_800m,
+                Description = "Sale of Duke — yearling bull", PayeePayer = "Johnson Family Farm",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Income, Category = "HayCropSales",
+                Date = new DateTime(year, 8, 5), Amount = 600m,
+                Description = "Excess hay sale — 5 bales", PayeePayer = "Neighbor — T. Williams",
+                IsSampleData = true },
+            new TransactionDto { TransactionType = TransactionType.Income, Category = "GovernmentPayments",
+                Date = new DateTime(year, 9, 15), Amount = 1_200m,
+                Description = "USDA ARC-CO payment — prior crop year", PayeePayer = "USDA Farm Service Agency",
+                IsSampleData = true },
+        };
+        foreach (var tx in txs)
+            await _transactions.AddAsync(tx);
+
+        // --- Assets ---
+        var tractorAsset = await _assets.AddAsync(new AssetDto
+        {
+            AssetName = "2016 John Deere 5075E Tractor", Category = AssetCategory.MachineryEquipment,
+            PurchaseDate = new DateTime(year - 4, 3, 1), PurchasePrice = 42_000m,
+            DepreciationMethod = DepreciationMethod.StraightLine, UsefulLifeYears = 15, SalvageValue = 5_000m,
+            Notes = "75HP utility tractor, loader, 3-pt hitch", IsSampleData = true
+        });
+        await _assets.AddAsync(new AssetDto
+        {
+            AssetName = "Rolling Hills Ranch — 40 acres", Category = AssetCategory.Land,
+            PurchaseDate = new DateTime(year - 8, 6, 1), PurchasePrice = 120_000m,
+            DepreciationMethod = DepreciationMethod.StraightLine, UsefulLifeYears = 0, SalvageValue = 120_000m,
+            Notes = "40 acres deeded pasture, no depreciation", IsSampleData = true
+        });
+        await _assets.AddAsync(new AssetDto
+        {
+            AssetName = "Hay Barn", Category = AssetCategory.Building,
+            PurchaseDate = new DateTime(year - 5, 1, 1), PurchasePrice = 28_000m,
+            DepreciationMethod = DepreciationMethod.StraightLine, UsefulLifeYears = 20, SalvageValue = 2_000m,
+            Notes = "60x40 steel hay and equipment storage barn", IsSampleData = true
+        });
+        await _assets.AddAsync(new AssetDto
+        {
+            AssetName = "Atlas — Registered Angus Bull", Category = AssetCategory.Livestock,
+            PurchaseDate = today.AddYears(-4), PurchasePrice = 3_500m,
+            DepreciationMethod = DepreciationMethod.StraightLine, UsefulLifeYears = 7, SalvageValue = 800m,
+            LinkedAnimalId = bullAnimalId,
+            Notes = "Breeding bull — linked to animal record", IsSampleData = true
+        });
+        await _assets.AddAsync(new AssetDto
+        {
+            AssetName = "2019 Ford F-250 Pickup", Category = AssetCategory.Vehicle,
+            PurchaseDate = new DateTime(year - 3, 8, 1), PurchasePrice = 38_000m,
+            DepreciationMethod = DepreciationMethod.DB150, UsefulLifeYears = 5, SalvageValue = 8_000m,
+            Notes = "3/4 ton diesel, used for hauling and farm work", IsSampleData = true
+        });
+
+        // --- Loans ---
+        var mortgage = await _loans.AddAsync(new LoanDto
+        {
+            LenderName = "First Agriculture Bank", LoanType = LoanType.RealEstateLoan,
+            OriginalPrincipal = 95_000m, InterestRate = 0.065m,
+            StartDate = new DateTime(year - 3, 1, 1), PaymentFrequency = PaymentFrequency.Monthly,
+            PaymentAmount = 713m, IsActive = true,
+            Notes = "20-year land mortgage — Rolling Hills Ranch", IsSampleData = true
+        });
+        var mortgageStart = mortgage.StartDate;
+        for (int i = 0; i < 6; i++)
+        {
+            var pd = mortgageStart.AddMonths(i);
+            var balance = 95_000m - (i * 200m);
+            await _loans.AddPaymentAsync(new LoanPaymentDto
+            {
+                LoanId = mortgage.LoanId, PaymentDate = pd,
+                TotalPayment = 713m, PrincipalPortion = 200m, InterestPortion = 513m,
+                RemainingBalance = balance, IsSampleData = true
+            });
+        }
+
+        var equipLoan = await _loans.AddAsync(new LoanDto
+        {
+            LenderName = "AgriFinance LLC", LoanType = LoanType.EquipmentLoan,
+            OriginalPrincipal = 38_000m, InterestRate = 0.072m,
+            StartDate = new DateTime(year - 1, 6, 1), PaymentFrequency = PaymentFrequency.Monthly,
+            PaymentAmount = 753m, IsActive = true,
+            Notes = "5-year equipment loan — John Deere tractor", IsSampleData = true
+        });
+        var equipStart = equipLoan.StartDate;
+        for (int i = 0; i < 4; i++)
+        {
+            var pd = equipStart.AddMonths(i);
+            var balance = 38_000m - (i * 300m);
+            await _loans.AddPaymentAsync(new LoanPaymentDto
+            {
+                LoanId = equipLoan.LoanId, PaymentDate = pd,
+                TotalPayment = 753m, PrincipalPortion = 300m, InterestPortion = 453m,
+                RemainingBalance = balance, IsSampleData = true
+            });
+        }
+
+        // --- Annual budget ---
+        var budgetEntries = new[]
+        {
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Income,  Category = "LivestockSales",     Month = 0, BudgetAmount = 15_000m, IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Income,  Category = "HayCropSales",       Month = 0, BudgetAmount = 3_000m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Income,  Category = "GovernmentPayments", Month = 0, BudgetAmount = 2_000m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "FeedHay",            Month = 0, BudgetAmount = 8_000m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "VeterinaryMedical",  Month = 0, BudgetAmount = 2_500m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "FuelOil",            Month = 0, BudgetAmount = 3_000m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "Insurance",          Month = 0, BudgetAmount = 2_000m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "RepairsMaintenance", Month = 0, BudgetAmount = 1_500m,  IsSampleData = true },
+            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "BreedingFees",       Month = 0, BudgetAmount = 800m,    IsSampleData = true },
+        };
+        foreach (var b in budgetEntries)
+            await _budget.UpsertAsync(b);
     }
 
     private async Task AddHealthRecords(int animalId, DateTime today)
