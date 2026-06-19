@@ -337,7 +337,7 @@ public class RepositoryTests : IDisposable
             BuyerAddress    = "456 Farm Ln, Enid, OK",
             SoldDate        = soldDate,
             TagNumber       = "T-099",
-            Chondro         = ChondroStatus.Carrier,
+            Chondro         = ChondroStatus.Yes,
             Horns           = false,
             IsGoodMother    = true,
             PastureLocation = "South Pen",
@@ -393,7 +393,7 @@ public class RepositoryTests : IDisposable
         loaded.BuyerAddress.Should().Be("456 Farm Ln, Enid, OK");
         loaded.SoldDate.Should().Be(soldDate);
         loaded.TagNumber.Should().Be("T-099");
-        loaded.Chondro.Should().Be(ChondroStatus.Carrier);
+        loaded.Chondro.Should().Be(ChondroStatus.Yes);
         loaded.Horns.Should().BeFalse();
         loaded.IsGoodMother.Should().BeTrue();
         loaded.PastureLocation.Should().Be("South Pen");
