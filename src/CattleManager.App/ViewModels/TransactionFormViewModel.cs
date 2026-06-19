@@ -246,7 +246,7 @@ public partial class TransactionFormViewModel : ObservableObject
         var animal = await _animals.GetByIdAsync(dto.LinkedAnimalId.Value);
         if (animal is null) return;
 
-        if (dto.TransactionType == TransactionType.Expense)
+        if (dto.TransactionType == TransactionType.Expense && animal.PurchasePrice is null)
         {
             animal.PurchasePrice = dto.Amount;
             await _animals.UpdateAsync(animal);

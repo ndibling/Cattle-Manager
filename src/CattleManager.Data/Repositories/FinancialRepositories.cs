@@ -426,6 +426,15 @@ public class BudgetRepository : IBudgetRepository
         await _db.SaveChangesAsync();
     }
 
+    public async Task DeleteByCategoryAndYearAsync(string category, int year)
+    {
+        var records = await _db.BudgetEntries
+            .Where(b => b.FiscalYear == year && b.Category == category)
+            .ToListAsync();
+        _db.BudgetEntries.RemoveRange(records);
+        await _db.SaveChangesAsync();
+    }
+
     public async Task DeleteSampleDataAsync()
     {
         var records = await _db.BudgetEntries.Where(b => b.IsSampleData).ToListAsync();

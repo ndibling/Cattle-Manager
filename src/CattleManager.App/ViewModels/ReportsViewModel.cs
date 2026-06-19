@@ -150,6 +150,17 @@ public partial class ReportsViewModel : ObservableObject
     private async Task GenerateBillOfSaleAsync()
     {
         if (SelectedSaleAnimal is null) { _dialog.ShowInfo("Select an animal first.", "No Selection"); return; }
+
+        var price = SelectedSaleAnimal.AskingPrice;
+        if (price is null or 0m)
+        {
+            price = _dialog.PromptForDecimal(
+                $"Enter the sale price for {SelectedSaleAnimal.BarnName}:", "Sale Price");
+            if (price is null) return;
+            SelectedSaleAnimal.AskingPrice = price;
+            await _animals.UpdateAsync(SelectedSaleAnimal);
+        }
+
         var farm     = await _farms.GetDefaultAsync();
         var farmName = farm?.FarmName ?? "Farm";
         var path     = _dialog.SavePdfFile($"BillOfSale_{SelectedSaleAnimal.BarnName}_{DateTime.Today:yyyy-MM-dd}");
@@ -159,11 +170,14 @@ public partial class ReportsViewModel : ObservableObject
             TransactionType = TransactionType.Income,
             Category        = "LivestockSales",
             Date            = DateTime.Today,
-            Amount          = SelectedSaleAnimal.AskingPrice ?? 0m,
+            Amount          = price.Value,
             Description     = $"Sale of {SelectedSaleAnimal.BarnName}",
             LinkedAnimalId  = SelectedSaleAnimal.AnimalId,
         };
         await Task.Run(() => _export.ExportBillOfSaleToPdf(sale, SelectedSaleAnimal, farmName, path));
+        SelectedSaleAnimal.SalePrice = price;
+        SelectedSaleAnimal.SoldDate  = DateTime.Today;
+        await _animals.UpdateAsync(SelectedSaleAnimal);
     }
 
     [RelayCommand]

@@ -55,6 +55,7 @@ public class FinancialService
 
     public decimal CalculateAnnualDepreciation(AssetDto asset, int year)
     {
+        if (asset.Category == AssetCategory.Livestock) return 0m;
         if (year < 1 || asset.UsefulLifeYears <= 0) return 0m;
 
         var depreciableBase = asset.PurchasePrice - asset.SalvageValue;
@@ -192,10 +193,14 @@ public class FinancialService
             - allTransactions.Where(t => t.TransactionType == TransactionType.Expense).Sum(t => t.Amount)
             - allPayments.Sum(p => p.TotalPayment);
 
-        // Livestock inventory: sum purchase prices of all currently owned animals
-        var livestockValue = allAnimals
-            .Where(a => a.Status != AnimalStatus.Sold && a.Status != AnimalStatus.Deceased)
-            .Sum(a => a.PurchasePrice ?? 0m);
+        // Livestock inventory: use asset register current/purchase values for livestock assets;
+        // fall back to summing animal purchase prices when no livestock assets have been registered
+        var livestockAssets = allAssets.Where(a => a.Category == AssetCategory.Livestock && a.IsActive).ToList();
+        var livestockValue = livestockAssets.Count > 0
+            ? livestockAssets.Sum(a => a.CurrentValue ?? a.PurchasePrice)
+            : allAnimals
+                .Where(a => a.Status != AnimalStatus.Sold && a.Status != AnimalStatus.Deceased)
+                .Sum(a => a.CurrentValue ?? a.PurchasePrice ?? 0m);
 
         // Fixed assets with accumulated depreciation
         var assetLines = new List<AssetLineItem>();

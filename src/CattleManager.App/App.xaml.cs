@@ -291,6 +291,7 @@ public partial class App : Application
                 ["PastureLocation"]          = "TEXT",
                 ["PastureState"]             = "TEXT",
                 ["ExpectedHeightAtMaturity"] = "REAL",
+                ["CurrentValue"]             = "REAL",
             });
             await EnsureTableColumnsAsync(conn, "Transactions", new System.Collections.Generic.Dictionary<string, string>
             {

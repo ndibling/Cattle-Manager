@@ -95,9 +95,14 @@
                 </Border>
 
                 <!-- SECTION: Depreciation -->
-                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0"
+                        IsEnabled="{Binding IsDepreciable}">
                     <StackPanel>
                         <TextBlock Text="Depreciation" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Margin="0,0,0,8" FontSize="12" FontStyle="Italic"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Visibility="{Binding IsDepreciable, Converter={StaticResource InverseBoolToVisibility}}"
+                                   Text="Livestock assets are not depreciated. Their value is tracked via Current Value on the animal record."/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

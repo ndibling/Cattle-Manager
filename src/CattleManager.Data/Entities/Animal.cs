@@ -34,6 +34,7 @@ public class Animal
 
     // Sale info
     public decimal? AskingPrice { get; set; }
+    public decimal? CurrentValue { get; set; }
     public decimal? SalePrice { get; set; }
     public string? BuyerName { get; set; }
     public string? BuyerAddress { get; set; }

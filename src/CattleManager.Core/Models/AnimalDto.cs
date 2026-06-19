@@ -33,6 +33,7 @@ public class AnimalDto
 
     // Sale info
     public decimal? AskingPrice { get; set; }
+    public decimal? CurrentValue { get; set; }
     public decimal? SalePrice { get; set; }
     public string? BuyerName { get; set; }
     public string? BuyerAddress { get; set; }
@@ -104,6 +105,8 @@ public class AnimalDto
             _ => $"{ExpectedHeightAtMaturity:0.#} in"
         }
         : string.Empty;
+
+    public string GenderDisplay => Gender == Gender.Male ? "Male" : "Female";
 
     public string HornsDisplay => Horns == true ? "Yes" : Horns == false ? "No" : "Unknown";
 

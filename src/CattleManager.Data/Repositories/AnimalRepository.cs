@@ -119,7 +119,7 @@ public class AnimalRepository : IAnimalRepository
         BornOnProperty = e.BornOnProperty,
         SellerName = e.SellerName, SellerAddress = e.SellerAddress,
         PurchaseDate = e.PurchaseDate, PurchasePrice = e.PurchasePrice,
-        AskingPrice = e.AskingPrice, SalePrice = e.SalePrice,
+        AskingPrice = e.AskingPrice, CurrentValue = e.CurrentValue, SalePrice = e.SalePrice,
         BuyerName = e.BuyerName, BuyerAddress = e.BuyerAddress, SoldDate = e.SoldDate,
         TagNumber = e.TagNumber, Chondro = e.Chondro, Horns = e.Horns,
         IsGoodMother = e.IsGoodMother, PastureLocation = e.PastureLocation,
@@ -159,7 +159,7 @@ public class AnimalRepository : IAnimalRepository
         e.BornOnProperty = dto.BornOnProperty;
         e.SellerName = dto.SellerName; e.SellerAddress = dto.SellerAddress;
         e.PurchaseDate = dto.PurchaseDate; e.PurchasePrice = dto.PurchasePrice;
-        e.AskingPrice = dto.AskingPrice; e.SalePrice = dto.SalePrice;
+        e.AskingPrice = dto.AskingPrice; e.CurrentValue = dto.CurrentValue; e.SalePrice = dto.SalePrice;
         e.BuyerName = dto.BuyerName; e.BuyerAddress = dto.BuyerAddress; e.SoldDate = dto.SoldDate;
         e.TagNumber = dto.TagNumber; e.Chondro = dto.Chondro; e.Horns = dto.Horns;
         e.IsGoodMother = dto.IsGoodMother; e.PastureLocation = dto.PastureLocation;

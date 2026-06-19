@@ -43,5 +43,6 @@ public interface IBudgetRepository
     Task<IReadOnlyList<BudgetEntryDto>> GetByFiscalYearAsync(int year);
     Task<BudgetEntryDto> UpsertAsync(BudgetEntryDto dto);
     Task DeleteByYearAsync(int year);
+    Task DeleteByCategoryAndYearAsync(string category, int year);
     Task DeleteSampleDataAsync();
 }

@@ -58,8 +58,10 @@ public partial class AssetFormViewModel : ObservableObject
 
     public string FormTitle => IsNew ? "Add Asset" : $"Edit Asset — {AssetName}";
 
+    public bool IsDepreciable => SelectedCategory?.Key != "Livestock";
+
     public bool ShowDepreciationDetails =>
-        SelectedDepreciation?.Key is null or "StraightLine" or "DB150";
+        IsDepreciable && SelectedDepreciation?.Key is null or "StraightLine" or "DB150";
 
     public bool CanDispose => !IsNew && IsActive;
 
@@ -110,6 +112,12 @@ public partial class AssetFormViewModel : ObservableObject
         AnimalOptions = new ObservableCollection<AnimalDto>(list.OrderBy(a => a.BarnName));
         if (_pendingLinkedAnimalId.HasValue)
             LinkedAnimal = AnimalOptions.FirstOrDefault(a => a.AnimalId == _pendingLinkedAnimalId.Value);
+    }
+
+    partial void OnSelectedCategoryChanged(CategoryOption? value)
+    {
+        OnPropertyChanged(nameof(IsDepreciable));
+        OnPropertyChanged(nameof(ShowDepreciationDetails));
     }
 
     partial void OnSelectedDepreciationChanged(CategoryOption? value)

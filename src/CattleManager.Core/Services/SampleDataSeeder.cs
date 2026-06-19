@@ -417,21 +417,33 @@ public class SampleDataSeeder
             });
         }
 
-        // --- Annual budget ---
-        var budgetEntries = new[]
+        // --- Monthly budget (12 entries per category, spread evenly) ---
+        var budgetCats = new[]
         {
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Income,  Category = "LivestockSales",     Month = 0, BudgetAmount = 15_000m, IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Income,  Category = "HayCropSales",       Month = 0, BudgetAmount = 3_000m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Income,  Category = "GovernmentPayments", Month = 0, BudgetAmount = 2_000m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "FeedHay",            Month = 0, BudgetAmount = 8_000m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "VeterinaryMedical",  Month = 0, BudgetAmount = 2_500m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "FuelOil",            Month = 0, BudgetAmount = 3_000m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "Insurance",          Month = 0, BudgetAmount = 2_000m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "RepairsMaintenance", Month = 0, BudgetAmount = 1_500m,  IsSampleData = true },
-            new BudgetEntryDto { FiscalYear = year, TransactionType = TransactionType.Expense, Category = "BreedingFees",       Month = 0, BudgetAmount = 800m,    IsSampleData = true },
+            (Category: "LivestockSales",     Type: TransactionType.Income,  Annual: 15_000m),
+            (Category: "HayCropSales",       Type: TransactionType.Income,  Annual: 3_000m),
+            (Category: "GovernmentPayments", Type: TransactionType.Income,  Annual: 2_000m),
+            (Category: "FeedHay",            Type: TransactionType.Expense, Annual: 8_000m),
+            (Category: "VeterinaryMedical",  Type: TransactionType.Expense, Annual: 2_500m),
+            (Category: "FuelOil",            Type: TransactionType.Expense, Annual: 3_000m),
+            (Category: "Insurance",          Type: TransactionType.Expense, Annual: 2_000m),
+            (Category: "RepairsMaintenance", Type: TransactionType.Expense, Annual: 1_500m),
+            (Category: "BreedingFees",       Type: TransactionType.Expense, Annual: 800m),
         };
-        foreach (var b in budgetEntries)
-            await _budget.UpsertAsync(b);
+        foreach (var cat in budgetCats)
+        {
+            var monthly = Math.Round(cat.Annual / 12, 2);
+            for (int m = 1; m <= 12; m++)
+                await _budget.UpsertAsync(new BudgetEntryDto
+                {
+                    FiscalYear      = year,
+                    TransactionType = cat.Type,
+                    Category        = cat.Category,
+                    Month           = m,
+                    BudgetAmount    = monthly,
+                    IsSampleData    = true,
+                });
+        }
     }
 
     private async Task AddHealthRecords(int animalId, DateTime today)

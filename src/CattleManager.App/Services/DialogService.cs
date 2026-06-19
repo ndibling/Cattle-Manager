@@ -1,3 +1,4 @@
+using CattleManager.App.Views;
 using Microsoft.Win32;
 using System.Windows;
 
@@ -5,6 +6,14 @@ namespace CattleManager.App.Services;
 
 public class DialogService
 {
+    public decimal? PromptForDecimal(string message, string title, decimal? defaultValue = null)
+    {
+        var win = new InputDialogWindow(title, message, defaultValue?.ToString("F2") ?? string.Empty);
+        var result = win.ShowDialog();
+        if (result != true) return null;
+        return decimal.TryParse(win.InputValue, out var v) ? v : null;
+    }
+
     public bool Confirm(string message, string title = "Confirm")
     {
         var result = MessageBox.Show(message, title,

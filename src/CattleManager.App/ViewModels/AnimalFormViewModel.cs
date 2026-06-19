@@ -5,12 +5,14 @@ using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CattleManager.App.ViewModels;
 
 public partial class AnimalFormViewModel : ObservableObject
 {
     private readonly IAnimalRepository _animals;
+    private readonly IAssetRepository _assets;
     private readonly IBreedRepository _breeds;
     private readonly BreedingService _breedingService;
     private readonly NavigationService _nav;
@@ -50,6 +52,7 @@ public partial class AnimalFormViewModel : ObservableObject
 
     // Sale
     [ObservableProperty] private decimal? _askingPrice;
+    [ObservableProperty] private decimal? _currentValue;
     [ObservableProperty] private decimal? _salePrice;
     [ObservableProperty] private string? _buyerName;
     [ObservableProperty] private string? _buyerAddress;
@@ -105,11 +108,13 @@ public partial class AnimalFormViewModel : ObservableObject
         "Wisconsin", "Wyoming"
     ];
 
-    public AnimalFormViewModel(IAnimalRepository animals, IBreedRepository breeds,
-        BreedingService breedingService, NavigationService nav, DialogService dialog)
+    public AnimalFormViewModel(IAnimalRepository animals, IAssetRepository assets,
+        IBreedRepository breeds, BreedingService breedingService,
+        NavigationService nav, DialogService dialog)
     {
         _animals = animals;
-        _breeds = breeds;
+        _assets  = assets;
+        _breeds  = breeds;
         _breedingService = breedingService;
         _nav = nav;
         _dialog = dialog;
@@ -159,7 +164,7 @@ public partial class AnimalFormViewModel : ObservableObject
         PhotoPath = a.PhotoPath;
         BornOnProperty = a.BornOnProperty; SellerName = a.SellerName; SellerAddress = a.SellerAddress;
         PurchaseDate = a.PurchaseDate; PurchasePrice = a.PurchasePrice;
-        AskingPrice = a.AskingPrice; SalePrice = a.SalePrice;
+        AskingPrice = a.AskingPrice; CurrentValue = a.CurrentValue; SalePrice = a.SalePrice;
         BuyerName = a.BuyerName; BuyerAddress = a.BuyerAddress; SoldDate = a.SoldDate;
         TagNumber = a.TagNumber; Chondro = a.Chondro;
         HornsSelection = a.Horns == true ? "Yes" : a.Horns == false ? "No" : "Unknown";
@@ -206,11 +211,13 @@ public partial class AnimalFormViewModel : ObservableObject
         try
         {
             var dto = BuildDto();
+            AnimalDto saved;
             if (IsNewAnimal)
-                await _animals.AddAsync(dto);
+                saved = await _animals.AddAsync(dto);
             else
-                await _animals.UpdateAsync(dto);
+                saved = await _animals.UpdateAsync(dto);
 
+            await SyncAnimalAssetAsync(saved);
             _nav.GoBack();
         }
         catch (Exception ex)
@@ -220,6 +227,48 @@ public partial class AnimalFormViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task SyncAnimalAssetAsync(AnimalDto saved)
+    {
+        try
+        {
+            var existing = (await _assets.GetByAnimalAsync(saved.AnimalId)).FirstOrDefault();
+            var value = saved.CurrentValue ?? saved.PurchasePrice ?? 0m;
+
+            if (existing is null)
+            {
+                await _assets.AddAsync(new AssetDto
+                {
+                    AssetName          = saved.BarnName,
+                    Category           = AssetCategory.Livestock,
+                    PurchaseDate       = saved.PurchaseDate ?? saved.BirthDate,
+                    PurchasePrice      = saved.PurchasePrice ?? 0m,
+                    CurrentValue       = value,
+                    DepreciationMethod = DepreciationMethod.StraightLine,
+                    UsefulLifeYears    = 0,
+                    SalvageValue       = 0m,
+                    LinkedAnimalId     = saved.AnimalId,
+                });
+            }
+            else
+            {
+                existing.AssetName    = saved.BarnName;
+                existing.CurrentValue = value;
+                if (saved.PurchasePrice.HasValue)
+                    existing.PurchasePrice = saved.PurchasePrice.Value;
+                if (saved.Status == AnimalStatus.Sold && existing.DisposedDate is null)
+                {
+                    existing.DisposedDate  = saved.SoldDate ?? DateTime.Today;
+                    existing.DisposalPrice = saved.SalePrice;
+                }
+                await _assets.UpdateAsync(existing);
+            }
+        }
+        catch
+        {
+            // Asset sync is best-effort; don't block the animal save
         }
     }
 
@@ -249,7 +298,7 @@ public partial class AnimalFormViewModel : ObservableObject
         BornOnProperty = BornOnProperty,
         SellerName = BornOnProperty ? null : SellerName, SellerAddress = BornOnProperty ? null : SellerAddress,
         PurchaseDate = BornOnProperty ? null : PurchaseDate, PurchasePrice = BornOnProperty ? null : PurchasePrice,
-        AskingPrice = AskingPrice, SalePrice = SalePrice,
+        AskingPrice = AskingPrice, CurrentValue = CurrentValue, SalePrice = SalePrice,
         BuyerName = BuyerName, BuyerAddress = BuyerAddress, SoldDate = SoldDate,
         TagNumber = TagNumber, Chondro = Chondro,
         Horns = HornsSelection == "Yes" ? true : HornsSelection == "No" ? false : (bool?)null,

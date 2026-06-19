@@ -256,16 +256,21 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Margin="0,0,12,0">
                                 <TextBlock Text="Asking Price ($)" Style="{StaticResource FieldLabelStyle}"/>
                                 <TextBox Text="{Binding AskingPrice, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                <TextBlock Text="Current Value ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding CurrentValue, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Margin="0,0,12,0">
                                 <TextBlock Text="Sale Price ($)" Style="{StaticResource FieldLabelStyle}"/>
                                 <TextBox Text="{Binding SalePrice, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="2">
+                            <StackPanel Grid.Column="3">
                                 <TextBlock Text="Date Sold" Style="{StaticResource FieldLabelStyle}"/>
                                 <DatePicker SelectedDate="{Binding SoldDate}" FontSize="14"/>
                             </StackPanel>
