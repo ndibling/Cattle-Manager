@@ -145,6 +145,14 @@ public partial class TransactionListViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void NavigateToLoans()
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<LoanListViewModel>();
+        _nav.NavigateTo(new LoanListPage(vm));
+    }
+
+    [RelayCommand]
     private void ClearFilters()
     {
         FilterType     = "All";

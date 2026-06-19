@@ -86,10 +86,18 @@ public class LoanDto
     public string InterestRateDisplay => $"{InterestRate * 100:F2}%";
     public string LoanTypeDisplay => LoanType switch
     {
-        LoanType.OperatingLineOfCredit => "Operating Line",
-        LoanType.EquipmentLoan => "Equipment Loan",
-        LoanType.RealEstateLoan => "Real Estate",
-        _ => "Other"
+        LoanType.OperatingLineOfCredit => "Operating Line of Credit",
+        LoanType.EquipmentLoan         => "Equipment Loan",
+        LoanType.RealEstateLoan        => "Real Estate Loan",
+        _                              => "Other"
+    };
+    public string PaymentFrequencyDisplay => PaymentFrequency switch
+    {
+        PaymentFrequency.Monthly    => "Monthly",
+        PaymentFrequency.Quarterly  => "Quarterly",
+        PaymentFrequency.SemiAnnual => "Semi-Annual",
+        PaymentFrequency.Annual     => "Annual",
+        _                           => PaymentFrequency.ToString()
     };
 }
 

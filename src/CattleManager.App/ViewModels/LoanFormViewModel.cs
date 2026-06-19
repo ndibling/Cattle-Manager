@@ -1,0 +1,137 @@
+using CattleManager.App.Services;
+using CattleManager.Core.Models;
+using CattleManager.Core.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace CattleManager.App.ViewModels;
+
+public partial class LoanFormViewModel : ObservableObject
+{
+    private readonly ILoanRepository   _loans;
+    private readonly NavigationService _nav;
+    private readonly DialogService     _dialog;
+
+    private int  _loanId;
+    private bool _isNew;
+
+    // Backing lists (private static, one allocation for the lifetime of the process)
+    private static readonly IReadOnlyList<CategoryOption> _loanTypeOptions =
+    [
+        new("OperatingLineOfCredit", "Operating Line of Credit"),
+        new("EquipmentLoan",         "Equipment Loan"),
+        new("RealEstateLoan",        "Real Estate Loan"),
+        new("Other",                 "Other"),
+    ];
+
+    private static readonly IReadOnlyList<CategoryOption> _frequencyOptions =
+    [
+        new("Monthly",    "Monthly"),
+        new("Quarterly",  "Quarterly"),
+        new("SemiAnnual", "Semi-Annual"),
+        new("Annual",     "Annual"),
+    ];
+
+    // Public instance properties for XAML binding
+    public IReadOnlyList<CategoryOption> LoanTypeOptions  { get; } = _loanTypeOptions;
+    public IReadOnlyList<CategoryOption> FrequencyOptions { get; } = _frequencyOptions;
+
+    public string FormTitle => _isNew ? "Add Loan" : $"Edit Loan — {LenderName}";
+
+    [ObservableProperty] private string          _lenderName             = string.Empty;
+    [ObservableProperty] private CategoryOption? _selectedLoanType;
+    [ObservableProperty] private string          _originalPrincipalText  = string.Empty;
+    [ObservableProperty] private string          _interestRateText       = string.Empty;
+    [ObservableProperty] private DateTime        _startDate              = DateTime.Today;
+    [ObservableProperty] private DateTime?       _maturityDate;
+    [ObservableProperty] private CategoryOption? _selectedFrequency;
+    [ObservableProperty] private string          _paymentAmountText      = string.Empty;
+    [ObservableProperty] private bool            _isActive               = true;
+    [ObservableProperty] private string          _notes                  = string.Empty;
+    [ObservableProperty] private string          _errorText              = string.Empty;
+    [ObservableProperty] private bool            _isSaving;
+
+    public LoanFormViewModel(ILoanRepository loans, NavigationService nav, DialogService dialog)
+    {
+        _loans  = loans;
+        _nav    = nav;
+        _dialog = dialog;
+    }
+
+    public void InitNew()
+    {
+        _isNew             = true;
+        SelectedLoanType   = _loanTypeOptions[0];
+        SelectedFrequency  = _frequencyOptions[0];
+        IsActive           = true;
+        OnPropertyChanged(nameof(FormTitle));
+    }
+
+    public void InitEdit(LoanDto dto)
+    {
+        _isNew                = false;
+        _loanId               = dto.LoanId;
+        LenderName            = dto.LenderName;
+        OriginalPrincipalText = dto.OriginalPrincipal.ToString("F2");
+        // Store rate as percent text, e.g. 0.065 → "6.5"
+        InterestRateText      = (dto.InterestRate * 100m).ToString("G");
+        StartDate             = dto.StartDate;
+        MaturityDate          = dto.MaturityDate;
+        PaymentAmountText     = dto.PaymentAmount.ToString("F2");
+        IsActive              = dto.IsActive;
+        Notes                 = dto.Notes ?? string.Empty;
+        SelectedLoanType      = _loanTypeOptions.FirstOrDefault(o => o.Key == dto.LoanType.ToString())
+                                ?? _loanTypeOptions[0];
+        SelectedFrequency     = _frequencyOptions.FirstOrDefault(o => o.Key == dto.PaymentFrequency.ToString())
+                                ?? _frequencyOptions[0];
+        OnPropertyChanged(nameof(FormTitle));
+    }
+
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        ErrorText = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(LenderName))
+            { ErrorText = "Lender name is required."; return; }
+        if (SelectedLoanType is null)
+            { ErrorText = "Select a loan type."; return; }
+        if (!decimal.TryParse(OriginalPrincipalText, out var principal) || principal <= 0)
+            { ErrorText = "Enter a valid principal amount greater than zero."; return; }
+        if (!decimal.TryParse(InterestRateText, out var ratePercent) || ratePercent < 0)
+            { ErrorText = "Enter a valid interest rate (e.g. 6.5 for 6.5%)."; return; }
+        if (SelectedFrequency is null)
+            { ErrorText = "Select a payment frequency."; return; }
+        if (!decimal.TryParse(PaymentAmountText, out var payment) || payment <= 0)
+            { ErrorText = "Enter a valid payment amount greater than zero."; return; }
+
+        IsSaving = true;
+        try
+        {
+            var dto = new LoanDto
+            {
+                LoanId            = _loanId,
+                LenderName        = LenderName.Trim(),
+                LoanType          = Enum.Parse<LoanType>(SelectedLoanType.Key),
+                OriginalPrincipal = principal,
+                InterestRate      = ratePercent / 100m,
+                StartDate         = StartDate,
+                MaturityDate      = MaturityDate,
+                PaymentFrequency  = Enum.Parse<PaymentFrequency>(SelectedFrequency.Key),
+                PaymentAmount     = payment,
+                IsActive          = IsActive,
+                Notes             = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
+            };
+
+            if (_isNew) await _loans.AddAsync(dto);
+            else        await _loans.UpdateAsync(dto);
+
+            _nav.GoBack();
+        }
+        catch (Exception ex) { ErrorText = $"Save failed: {ex.Message}"; }
+        finally { IsSaving = false; }
+    }
+
+    [RelayCommand]
+    private void Cancel() => _nav.GoBack();
+}
