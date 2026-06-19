@@ -195,7 +195,7 @@
                 <DataGridTextColumn Header="Payee / Payer" Binding="{Binding PayeePayer}" Width="140"/>
                 <!-- Amount -->
                 <DataGridTextColumn Header="Amount" Binding="{Binding AmountDisplay}"
-                                    Width="100" ElementStyle="{x:Null}">
+                                    Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Right"/>

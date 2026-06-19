@@ -138,8 +138,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Lender"   Binding="{Binding LenderName}"    Width="160"/>
                 <DataGridTextColumn Header="Type"     Binding="{Binding LoanTypeDisplay}" Width="170"/>
-                <DataGridTextColumn Header="Principal" Binding="{Binding OriginalPrincipalDisplay}" Width="115"
-                                    ElementStyle="{x:Null}">
+                <DataGridTextColumn Header="Principal" Binding="{Binding OriginalPrincipalDisplay}" Width="115">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -147,8 +146,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Balance" Binding="{Binding CurrentBalanceDisplay}" Width="115"
-                                    ElementStyle="{x:Null}">
+                <DataGridTextColumn Header="Balance" Binding="{Binding CurrentBalanceDisplay}" Width="115">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Right"/>

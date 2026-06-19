@@ -28,8 +28,13 @@ public class SampleDataSeederTests : IDisposable
         var health = new HealthRecordRepository(_db);
         var breeding = new BreedingRecordRepository(_db);
         var settings = new AppSettingsRepository(_db);
+        var transactions = new TransactionRepository(_db);
+        var assets = new AssetRepository(_db);
+        var loans = new LoanRepository(_db);
+        var budget = new BudgetRepository(_db);
 
-        _seeder = new SampleDataSeeder(animals, herds, breeds, farms, health, breeding, settings);
+        _seeder = new SampleDataSeeder(animals, herds, breeds, farms, health, breeding, settings,
+            transactions, assets, loans, budget);
     }
 
     public void Dispose() => _db.Dispose();

@@ -583,7 +583,7 @@
                             <Grid Margin="0,4">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="Date:" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="{Binding SelectedSale.Date, StringFormat=MMMM d, yyyy}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SelectedSale.Date, StringFormat='MMMM d, yyyy'}"/>
                             </Grid>
                             <Grid Margin="0,4">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>

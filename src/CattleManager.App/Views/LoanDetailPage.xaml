@@ -79,8 +79,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="#"           Binding="{Binding PeriodNumber}"   Width="42"/>
                     <DataGridTextColumn Header="Date"        Binding="{Binding PaymentDateDisplay}" Width="110"/>
-                    <DataGridTextColumn Header="Payment"     Binding="{Binding PaymentDisplay}"  Width="100"
-                                        ElementStyle="{x:Null}">
+                    <DataGridTextColumn Header="Payment"     Binding="{Binding PaymentDisplay}"  Width="100">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -89,8 +88,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Principal"   Binding="{Binding PrincipalDisplay}" Width="100"
-                                        ElementStyle="{x:Null}">
+                    <DataGridTextColumn Header="Principal"   Binding="{Binding PrincipalDisplay}" Width="100">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -98,8 +96,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Interest"    Binding="{Binding InterestDisplay}" Width="100"
-                                        ElementStyle="{x:Null}">
+                    <DataGridTextColumn Header="Interest"    Binding="{Binding InterestDisplay}" Width="100">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -107,8 +104,7 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Remaining Balance" Binding="{Binding BalanceDisplay}" Width="*"
-                                        ElementStyle="{x:Null}">
+                    <DataGridTextColumn Header="Remaining Balance" Binding="{Binding BalanceDisplay}" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Right"/>
