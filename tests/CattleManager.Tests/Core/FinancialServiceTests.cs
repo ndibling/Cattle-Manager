@@ -192,6 +192,246 @@ public class FinancialServiceTests
         balance.Should().Be(9_000m);
     }
 
+    // --- Balance Sheet ---
+
+    [Fact]
+    public async Task GetBalanceSheetAsync_NoData_ReturnsZeroEquity()
+    {
+        var asOf = new DateTime(2025, 12, 31);
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(It.IsAny<DateTime>(), asOf)).ReturnsAsync([]);
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        var loanMock = new Mock<ILoanRepository>();
+        loanMock.Setup(r => r.GetActiveAsync()).ReturnsAsync([]);
+        loanMock.Setup(r => r.GetAllPaymentsInRangeAsync(It.IsAny<DateTime>(), asOf)).ReturnsAsync([]);
+        var animalMock = new Mock<IAnimalRepository>();
+        animalMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, loanMock.Object, animals: animalMock.Object);
+        var result = await sut.GetBalanceSheetAsync(asOf);
+
+        result.TotalAssets.Should().Be(0m);
+        result.TotalLiabilities.Should().Be(0m);
+        result.OwnersEquity.Should().Be(0m);
+    }
+
+    [Fact]
+    public async Task GetBalanceSheetAsync_WithActiveLoan_IncludesLiability()
+    {
+        var asOf = new DateTime(2025, 12, 31);
+        var loan = MakeLoan(principal: 50_000m, annualRate: 0.06m, payment: 500m,
+            startDate: new DateTime(2025, 1, 1));
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(It.IsAny<DateTime>(), asOf)).ReturnsAsync([]);
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        var loanMock = new Mock<ILoanRepository>();
+        loanMock.Setup(r => r.GetActiveAsync()).ReturnsAsync([loan]);
+        loanMock.Setup(r => r.GetAllPaymentsInRangeAsync(It.IsAny<DateTime>(), asOf)).ReturnsAsync([]);
+        var animalMock = new Mock<IAnimalRepository>();
+        animalMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, loanMock.Object, animals: animalMock.Object);
+        var result = await sut.GetBalanceSheetAsync(asOf);
+
+        result.TotalLiabilities.Should().BeGreaterThan(0m);
+        result.OwnersEquity.Should().Be(result.TotalAssets - result.TotalLiabilities);
+    }
+
+    [Fact]
+    public async Task GetBalanceSheetAsync_WithAssets_PopulatesFixedAssets()
+    {
+        var asOf = new DateTime(2025, 12, 31);
+        var asset = MakeAsset(purchasePrice: 40_000m, salvageValue: 5_000m,
+            usefulLifeYears: 10, purchaseDate: new DateTime(2024, 1, 1));
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(It.IsAny<DateTime>(), asOf))
+            .ReturnsAsync(new List<TransactionDto>
+            {
+                new() { TransactionType = TransactionType.Income, Category = "LivestockSales",
+                        Date = new DateTime(2025, 6, 1), Amount = 10_000m },
+            });
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([asset]);
+        var loanMock = new Mock<ILoanRepository>();
+        loanMock.Setup(r => r.GetActiveAsync()).ReturnsAsync([]);
+        loanMock.Setup(r => r.GetAllPaymentsInRangeAsync(It.IsAny<DateTime>(), asOf)).ReturnsAsync([]);
+        var animalMock = new Mock<IAnimalRepository>();
+        animalMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, loanMock.Object, animals: animalMock.Object);
+        var result = await sut.GetBalanceSheetAsync(asOf);
+
+        result.TotalAssets.Should().BeGreaterThan(0m);
+        result.OwnersEquity.Should().Be(result.TotalAssets - result.TotalLiabilities);
+        result.FixedAssets.Should().HaveCount(1);
+    }
+
+    // --- Cash Flow ---
+
+    [Fact]
+    public async Task GetCashFlowStatementAsync_WithIncomeAndExpenses_CorrectOperatingCash()
+    {
+        var from = new DateTime(2025, 1, 1);
+        var to   = new DateTime(2025, 12, 31);
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(from, to)).ReturnsAsync(new List<TransactionDto>
+        {
+            new() { TransactionType = TransactionType.Income,  Category = "LivestockSales",
+                    Date = new DateTime(2025, 3, 1), Amount = 5_000m },
+            new() { TransactionType = TransactionType.Expense, Category = "FeedHay",
+                    Date = new DateTime(2025, 4, 1), Amount = 2_000m },
+        });
+        var loanMock = new Mock<ILoanRepository>();
+        loanMock.Setup(r => r.GetAllPaymentsInRangeAsync(from, to)).ReturnsAsync([]);
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, loanMock.Object);
+        var result = await sut.GetCashFlowStatementAsync(from, to);
+
+        result.OperatingActivities.Should().Be(3_000m);
+        result.InvestingActivities.Should().Be(0m);
+        result.NetCashChange.Should().Be(3_000m);
+    }
+
+    [Fact]
+    public async Task GetCashFlowStatementAsync_WithAssetPurchaseAndLoanPayment_IncludesInvestingAndFinancing()
+    {
+        var from = new DateTime(2025, 1, 1);
+        var to   = new DateTime(2025, 12, 31);
+        var asset = MakeAsset(purchasePrice: 20_000m, salvageValue: 0m, usefulLifeYears: 5,
+            purchaseDate: new DateTime(2025, 3, 1));
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(from, to)).ReturnsAsync([]);
+        var loanMock = new Mock<ILoanRepository>();
+        loanMock.Setup(r => r.GetAllPaymentsInRangeAsync(from, to)).ReturnsAsync(
+        [
+            new LoanPaymentDto { PaymentDate = new DateTime(2025, 2, 1), PrincipalPortion = 500m,
+                                 InterestPortion = 200m, TotalPayment = 700m },
+        ]);
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([asset]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, loanMock.Object);
+        var result = await sut.GetCashFlowStatementAsync(from, to);
+
+        result.InvestingActivities.Should().Be(-20_000m);
+        result.FinancingActivities.Should().Be(-500m);
+    }
+
+    // --- Tax Summary ---
+
+    [Fact]
+    public async Task GetTaxSummaryAsync_WithLivestockIncome_ComputesTaxCorrectly()
+    {
+        var settingsMock = new Mock<IAppSettingsRepository>();
+        settingsMock.Setup(s => s.GetAsync("FiscalYearStartMonth")).ReturnsAsync("1");
+        settingsMock.Setup(s => s.GetAsync("FederalIncomeTaxRate")).ReturnsAsync("22");
+        settingsMock.Setup(s => s.GetAsync("StateIncomeTaxRate")).ReturnsAsync("5");
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new List<TransactionDto>
+            {
+                new() { TransactionType = TransactionType.Income, Category = "LivestockSales",
+                        Date = new DateTime(2025, 3, 1), Amount = 20_000m },
+                new() { TransactionType = TransactionType.Expense, Category = "FeedHay",
+                        Date = new DateTime(2025, 4, 1), Amount = 5_000m },
+            });
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, settings: settingsMock.Object);
+        var result = await sut.GetTaxSummaryAsync(2025);
+
+        result.NetFarmIncome.Should().Be(15_000m);
+        result.TotalGrossSales.Should().Be(20_000m);
+        result.TotalExpenses.Should().Be(5_000m);
+        result.SelfEmploymentTax.Should().BeGreaterThan(0m);
+        result.EstimatedFederalTax.Should().BeGreaterThan(0m);
+        result.EstimatedStateTax.Should().BeGreaterThan(0m);
+        result.ScheduleFItems.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetTaxSummaryAsync_NetLoss_ProducesZeroTax()
+    {
+        var settingsMock = new Mock<IAppSettingsRepository>();
+        settingsMock.Setup(s => s.GetAsync("FiscalYearStartMonth")).ReturnsAsync("1");
+        settingsMock.Setup(s => s.GetAsync("FederalIncomeTaxRate")).ReturnsAsync("22");
+        settingsMock.Setup(s => s.GetAsync("StateIncomeTaxRate")).ReturnsAsync("5");
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new List<TransactionDto>
+            {
+                new() { TransactionType = TransactionType.Income, Category = "LivestockSales",
+                        Date = new DateTime(2025, 3, 1), Amount = 1_000m },
+                new() { TransactionType = TransactionType.Expense, Category = "FeedHay",
+                        Date = new DateTime(2025, 4, 1), Amount = 10_000m },
+            });
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, settings: settingsMock.Object);
+        var result = await sut.GetTaxSummaryAsync(2025);
+
+        result.NetFarmIncome.Should().BeLessThan(0m);
+        result.SelfEmploymentTax.Should().Be(0m);
+        result.EstimatedFederalTax.Should().Be(0m);
+        result.EstimatedStateTax.Should().Be(0m);
+    }
+
+    // --- KPIs ---
+
+    [Fact]
+    public async Task GetKpisAsync_WithTransactions_ReturnsPopulatedMetrics()
+    {
+        var settingsMock = new Mock<IAppSettingsRepository>();
+        settingsMock.Setup(s => s.GetAsync("FiscalYearStartMonth")).ReturnsAsync("1");
+
+        var txMock = new Mock<ITransactionRepository>();
+        txMock.Setup(r => r.GetByDateRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new List<TransactionDto>
+            {
+                new() { TransactionType = TransactionType.Income,  Category = "LivestockSales",
+                        Date = DateTime.Today, Amount = 10_000m },
+                new() { TransactionType = TransactionType.Expense, Category = "FeedHay",
+                        Date = DateTime.Today, Amount = 4_000m },
+            });
+        var assetMock = new Mock<IAssetRepository>();
+        assetMock.Setup(r => r.GetAllAsync()).ReturnsAsync([]);
+        assetMock.Setup(r => r.GetActiveAsync()).ReturnsAsync([]);
+        var loanMock = new Mock<ILoanRepository>();
+        loanMock.Setup(r => r.GetActiveAsync()).ReturnsAsync([]);
+        loanMock.Setup(r => r.GetAllPaymentsInRangeAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync([]);
+        var animalMock = new Mock<IAnimalRepository>();
+        animalMock.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<AnimalDto>
+        {
+            new() { Status = AnimalStatus.Healthy },
+            new() { Status = AnimalStatus.Healthy },
+        });
+        var budgetMock = new Mock<IBudgetRepository>();
+        budgetMock.Setup(r => r.GetByFiscalYearAsync(It.IsAny<int>())).ReturnsAsync([]);
+
+        var sut = MakeSut(txMock.Object, assetMock.Object, loanMock.Object,
+                          budgetMock.Object, animalMock.Object, settingsMock.Object);
+        var result = await sut.GetKpisAsync();
+
+        result.TotalRevenue.Should().Be(10_000m);
+        result.TotalExpenses.Should().Be(4_000m);
+        result.NetFarmIncome.Should().BeGreaterThan(0m);
+        result.AvgCostPerHead.Should().Be(2_000m); // 4000 expenses / 2 animals
+        result.MonthlyData.Should().NotBeEmpty();
+    }
+
     // --- P&L ---
 
     [Fact]
