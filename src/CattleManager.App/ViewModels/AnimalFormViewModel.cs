@@ -13,7 +13,6 @@ namespace CattleManager.App.ViewModels;
 public partial class AnimalFormViewModel : ObservableObject
 {
     private readonly IAnimalRepository _animals;
-    private readonly IAssetRepository _assets;
     private readonly IBreedRepository _breeds;
     private readonly BreedingService _breedingService;
     private readonly NavigationService _nav;
@@ -109,12 +108,11 @@ public partial class AnimalFormViewModel : ObservableObject
         "Wisconsin", "Wyoming"
     ];
 
-    public AnimalFormViewModel(IAnimalRepository animals, IAssetRepository assets,
+    public AnimalFormViewModel(IAnimalRepository animals,
         IBreedRepository breeds, BreedingService breedingService,
         NavigationService nav, DialogService dialog)
     {
         _animals = animals;
-        _assets  = assets;
         _breeds  = breeds;
         _breedingService = breedingService;
         _nav = nav;
@@ -233,16 +231,21 @@ public partial class AnimalFormViewModel : ObservableObject
         }
     }
 
-    private async Task SyncAnimalAssetAsync(AnimalDto saved)
+    // Runs in its own DI scope so a failure cannot leave a stuck entity on
+    // the shared DbContext and corrupt subsequent animal saves.
+    private static async Task SyncAnimalAssetAsync(AnimalDto saved)
     {
         try
         {
-            var existing = (await _assets.GetByAnimalAsync(saved.AnimalId)).FirstOrDefault();
-            var value = saved.CurrentValue ?? saved.PurchasePrice ?? 0m;
+            using var scope = App.Services.CreateScope();
+            var assets = scope.ServiceProvider.GetRequiredService<IAssetRepository>();
+
+            var existing = (await assets.GetByAnimalAsync(saved.AnimalId)).FirstOrDefault();
+            var value    = saved.CurrentValue ?? saved.PurchasePrice ?? 0m;
 
             if (existing is null)
             {
-                await _assets.AddAsync(new AssetDto
+                await assets.AddAsync(new AssetDto
                 {
                     AssetName          = saved.BarnName,
                     Category           = AssetCategory.Livestock,
@@ -266,12 +269,12 @@ public partial class AnimalFormViewModel : ObservableObject
                     existing.DisposedDate  = saved.SoldDate ?? DateTime.Today;
                     existing.DisposalPrice = saved.SalePrice;
                 }
-                await _assets.UpdateAsync(existing);
+                await assets.UpdateAsync(existing);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Asset sync is best-effort; don't block the animal save
+            Log.Warning(ex, "Asset sync failed for animal {AnimalId} — non-fatal", saved.AnimalId);
         }
     }
 
