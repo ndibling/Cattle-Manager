@@ -35,7 +35,7 @@ public class HerdServiceTests
 
         result.TotalAnimals.Should().Be(6);
         result.BreedingFemales.Should().Be(2); // BreedingFemale + Pregnant
-        result.BreedingMales.Should().Be(1);   // only Active
+        result.BreedingMales.Should().Be(2);   // all males with Status==BreedingMale
         result.PregnantAnimals.Should().Be(1);
         result.DueForHusbandry.Should().BeGreaterThan(0);
     }
