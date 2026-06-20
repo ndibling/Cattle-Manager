@@ -207,6 +207,18 @@ public partial class AnimalFormViewModel : ObservableObject
             DateAcquired = value;
     }
 
+    partial void OnPurchaseDateChanged(DateTime? value)
+    {
+        if (IsNewAnimal && !BornOnProperty && DateAcquired != value)
+            DateAcquired = value;
+    }
+
+    partial void OnDateAcquiredChanged(DateTime? value)
+    {
+        if (IsNewAnimal && !BornOnProperty && PurchaseDate != value)
+            PurchaseDate = value;
+    }
+
     partial void OnStatusChanged(AnimalStatus value)
     {
         if (!IsBreedingAllowed && IsBreeding)
