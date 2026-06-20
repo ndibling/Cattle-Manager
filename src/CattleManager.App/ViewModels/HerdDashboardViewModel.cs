@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Input;
 
+
 namespace CattleManager.App.ViewModels;
 
 public class HerdDashboardViewModel
