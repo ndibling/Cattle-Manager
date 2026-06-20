@@ -4,7 +4,7 @@
       xmlns:ui="http://schemas.modernwpf.com/2019"
       Title="Dashboard">
 
-    <!-- Converters and NavButtonStyle are defined globally in App.xaml -->
+    <!-- Converters and styles are defined globally in App.xaml -->
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="32,24">
@@ -35,7 +35,7 @@
             </Border>
 
             <!-- Farm Header -->
-            <Grid Margin="0,0,0,24">
+            <Grid Margin="0,0,0,28">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -47,94 +47,124 @@
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                Margin="0,4,0,0"/>
                 </StackPanel>
-                <!-- Herd Selector -->
-                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
-                    <TextBlock Text="Active Herd" FontSize="12"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                               Margin="0,0,0,4"/>
-                    <ComboBox ItemsSource="{Binding Herds2}"
-                              SelectedItem="{Binding SelectedHerd}"
-                              DisplayMemberPath="HerdName"
-                              MinWidth="200" FontSize="14"/>
-                </StackPanel>
+                <Button Grid.Column="1" Content="Settings"
+                        Command="{Binding OpenSettingsCommand}"
+                        Padding="20,10" FontSize="14" VerticalAlignment="Center"/>
             </Grid>
 
-            <!-- Stat Cards -->
-            <TextBlock Text="Herd Overview" Style="{StaticResource SectionHeaderStyle}"/>
-            <WrapPanel Margin="0,0,0,24" Orientation="Horizontal">
-                <!-- Total Animals -->
-                <Button Style="{StaticResource StatCardButtonStyle}"
-                        Command="{Binding ViewHerdDetailsCommand}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding TotalAnimals}" FontSize="40" FontWeight="Bold"
-                                   Foreground="#2E7D32" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Total Animals" FontSize="13" HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Button>
-                <!-- Breeding Females -->
-                <Button Style="{StaticResource StatCardButtonStyle}"
-                        Command="{Binding ViewBreedingFemalesCommand}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding BreedingFemales}" FontSize="40" FontWeight="Bold"
-                                   Foreground="#AD1457" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Breeding Females" FontSize="13" HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Button>
-                <!-- Breeding Males -->
-                <Button Style="{StaticResource StatCardButtonStyle}"
-                        Command="{Binding ViewBreedingMalesCommand}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding BreedingMales}" FontSize="40" FontWeight="Bold"
-                                   Foreground="#1565C0" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Breeding Males" FontSize="13" HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Button>
-                <!-- Pregnant -->
-                <Button Style="{StaticResource StatCardButtonStyle}"
-                        Command="{Binding ViewPregnantCommand}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding PregnantAnimals}" FontSize="40" FontWeight="Bold"
-                                   Foreground="#6A1B9A" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Pregnant" FontSize="13" HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Button>
-                <!-- Due for Husbandry -->
-                <Button Style="{StaticResource StatCardButtonStyle}"
-                        Command="{Binding ViewDueForHusbandryCommand}">
-                    <Button.Background>
-                        <SolidColorBrush Color="{Binding DueForHusbandry, Converter={StaticResource CountToWarningColor}}"/>
-                    </Button.Background>
-                    <StackPanel>
-                        <TextBlock Text="{Binding DueForHusbandry}" FontSize="40" FontWeight="Bold"
-                                   Foreground="#F57F17" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Due for Husbandry" FontSize="13" HorizontalAlignment="Center"
-                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Button>
-            </WrapPanel>
+            <!-- No herds message -->
+            <TextBlock Text="No herds found. Create a herd to get started."
+                       FontSize="15" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       Visibility="{Binding HasNoHerds, Converter={StaticResource BoolToVisibility}}"
+                       Margin="0,0,0,24"/>
 
-            <!-- Action Buttons -->
-            <TextBlock Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}"/>
-            <WrapPanel Margin="0,0,0,0" Orientation="Horizontal">
-                <Button Content="View Herd Details"
-                        Command="{Binding ViewHerdDetailsCommand}"
-                        Style="{StaticResource PrimaryButton}" Margin="0,0,12,12"/>
-                <Button Content="Add New Animal"
-                        Command="{Binding AddNewAnimalCommand}"
-                        Padding="20,10" FontSize="14" Margin="0,0,12,12"/>
-                <Button Content="Settings"
-                        Command="{Binding OpenSettingsCommand}"
-                        Padding="20,10" FontSize="14" Margin="0,0,12,12"/>
-            </WrapPanel>
+            <!-- Per-herd stat cards -->
+            <ItemsControl ItemsSource="{Binding HerdCards}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,0,0,8">
+
+                            <!-- Herd name + Add Animal -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding HerdName}"
+                                           FontSize="20" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                                           VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" Content="+ Add Animal"
+                                        Command="{Binding AddNewAnimalCommand}"
+                                        Style="{StaticResource PrimaryButton}"/>
+                            </Grid>
+
+                            <!-- Stat cards -->
+                            <WrapPanel Orientation="Horizontal" Margin="0,0,0,20">
+
+                                <!-- Total Animals -->
+                                <Button Style="{StaticResource StatCardButtonStyle}"
+                                        Command="{Binding ViewHerdDetailsCommand}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TotalAnimals}" FontSize="40" FontWeight="Bold"
+                                                   Foreground="#2E7D32" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Total Animals" FontSize="13" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Active Animals -->
+                                <Button Style="{StaticResource StatCardButtonStyle}"
+                                        Command="{Binding ViewActiveAnimalsCommand}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ActiveAnimals}" FontSize="40" FontWeight="Bold"
+                                                   Foreground="#1B5E20" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Active Animals" FontSize="13" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Breeding Females -->
+                                <Button Style="{StaticResource StatCardButtonStyle}"
+                                        Command="{Binding ViewBreedingFemalesCommand}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding BreedingFemales}" FontSize="40" FontWeight="Bold"
+                                                   Foreground="#AD1457" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Breeding Females" FontSize="13" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Breeding Males -->
+                                <Button Style="{StaticResource StatCardButtonStyle}"
+                                        Command="{Binding ViewBreedingMalesCommand}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding BreedingMales}" FontSize="40" FontWeight="Bold"
+                                                   Foreground="#1565C0" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Breeding Males" FontSize="13" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Pregnant -->
+                                <Button Style="{StaticResource StatCardButtonStyle}"
+                                        Command="{Binding ViewPregnantCommand}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding PregnantAnimals}" FontSize="40" FontWeight="Bold"
+                                                   Foreground="#6A1B9A" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Pregnant" FontSize="13" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Due for Husbandry -->
+                                <Button Style="{StaticResource StatCardButtonStyle}"
+                                        Command="{Binding ViewDueForHusbandryCommand}">
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding DueForHusbandry, Converter={StaticResource CountToWarningColor}}"/>
+                                    </Button.Background>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding DueForHusbandry}" FontSize="40" FontWeight="Bold"
+                                                   Foreground="#F57F17" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Due for Husbandry" FontSize="13" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                   Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                            </WrapPanel>
+
+                            <Separator Background="{DynamicResource SystemControlForegroundBaseLowBrush}" Margin="0,0,0,20"/>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
         </StackPanel>
     </ScrollViewer>

@@ -36,7 +36,7 @@ public partial class HerdDetailsViewModel : ObservableObject
     [ObservableProperty] private IReadOnlyList<string> _genderOptions = ["All", "Male", "Female"];
     [ObservableProperty] private IReadOnlyList<string> _breedOptions = ["All"];
     [ObservableProperty] private IReadOnlyList<string> _statusOptions =
-        ["All", "Healthy", "Pregnant", "For Sale", "Sold", "Inactive", "Deceased", "Calf", "Breeding Female", "Breeding Male", "Due for Husbandry"];
+        ["All", "Active", "Healthy", "Pregnant", "For Sale", "Sold", "Inactive", "Deceased", "Calf", "Breeding Female", "Breeding Male", "Due for Husbandry"];
 
     public HerdDetailsViewModel(IAnimalRepository animals, IHerdRepository herds,
         HealthService healthService, NavigationService nav, DialogService dialog)
@@ -90,7 +90,12 @@ public partial class HerdDetailsViewModel : ObservableObject
         if (FilterBreed != "All" && a.BreedName != FilterBreed)
         { e.Accepted = false; return; }
 
-        if (FilterStatus == "Due for Husbandry")
+        if (FilterStatus == "Active")
+        {
+            if (a.Status == AnimalStatus.Deceased || a.Status == AnimalStatus.Inactive || a.Status == AnimalStatus.Sold)
+            { e.Accepted = false; return; }
+        }
+        else if (FilterStatus == "Due for Husbandry")
         {
             if (!IsOverdue(a)) { e.Accepted = false; return; }
         }

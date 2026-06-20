@@ -34,6 +34,7 @@ public class HerdServiceTests
         var result = await CreateSut().GetSummaryAsync(1);
 
         result.TotalAnimals.Should().Be(6);
+        result.ActiveAnimals.Should().Be(6);   // none are Deceased/Inactive/Sold
         result.BreedingFemales.Should().Be(2); // Healthy+IsBreeding female + Pregnant+IsBreeding female
         result.BreedingMales.Should().Be(2);   // both males: Healthy+IsBreeding
         result.PregnantAnimals.Should().Be(1);

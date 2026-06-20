@@ -25,6 +25,10 @@ public class HerdService
             HerdId = herdId,
             HerdName = herd?.HerdName ?? string.Empty,
             TotalAnimals = animals.Count,
+            ActiveAnimals = animals.Count(a =>
+                a.Status != AnimalStatus.Deceased &&
+                a.Status != AnimalStatus.Inactive &&
+                a.Status != AnimalStatus.Sold),
             BreedingFemales = animals.Count(a =>
                 a.IsBreeding && a.Gender == Gender.Female &&
                 (a.Status == AnimalStatus.Healthy || a.Status == AnimalStatus.Pregnant)),

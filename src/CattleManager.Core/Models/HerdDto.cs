@@ -16,6 +16,7 @@ public class HerdSummaryDto
     public int HerdId { get; set; }
     public string HerdName { get; set; } = string.Empty;
     public int TotalAnimals { get; set; }
+    public int ActiveAnimals { get; set; }
     public int BreedingFemales { get; set; }
     public int BreedingMales { get; set; }
     public int DueForHusbandry { get; set; }
