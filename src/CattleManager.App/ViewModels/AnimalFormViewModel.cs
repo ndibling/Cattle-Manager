@@ -30,7 +30,10 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private string? _registrationOrganization;
     [ObservableProperty] private BreedDto? _selectedBreed;
     [ObservableProperty] private ObservableCollection<BreedDto> _breeds2 = [];
-    [ObservableProperty] private Gender _gender;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFemale))]
+    private Gender _gender;
+    public bool IsFemale => Gender == Gender.Female;
     [ObservableProperty] private AnimalStatus _status;
     [ObservableProperty] private DateTime _birthDate = DateTime.Today;
     [ObservableProperty] private DateTime? _dateAcquired;

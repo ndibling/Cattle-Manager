@@ -37,7 +37,10 @@ public partial class AnimalProfileViewModel : ObservableObject
         "Wisconsin", "Wyoming"
     ];
 
-    [ObservableProperty] private AnimalDto? _animal;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFemale))]
+    private AnimalDto? _animal;
+    public bool IsFemale => Animal?.Gender == Gender.Female;
     [ObservableProperty] private ObservableCollection<HealthRecordDto> _healthHistory = [];
     [ObservableProperty] private ObservableCollection<BreedingRecordDto> _breedingHistory = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _offspring = [];

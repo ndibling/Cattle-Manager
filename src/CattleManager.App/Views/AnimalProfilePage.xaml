@@ -300,11 +300,13 @@
                                                Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
                                     <DatePicker SelectedDate="{Binding EditLastVaccination}" FontSize="13" Margin="0,0,0,4"
                                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
-                                    <TextBlock Text="Good Mother" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.IsGoodMotherDisplay}" Style="{StaticResource FieldValueStyle}"
-                                               Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
-                                    <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding EditIsGoodMotherSelection}" FontSize="13" Margin="0,0,0,4"
-                                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                    <StackPanel Visibility="{Binding IsFemale, Converter={StaticResource BoolToVisibility}}">
+                                        <TextBlock Text="Good Mother" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.IsGoodMotherDisplay}" Style="{StaticResource FieldValueStyle}"
+                                                   Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
+                                        <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding EditIsGoodMotherSelection}" FontSize="13" Margin="0,0,0,4"
+                                                  Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Last Health Check" Style="{StaticResource FieldLabelStyle}"/>

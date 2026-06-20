@@ -378,7 +378,8 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0"
+                                        Visibility="{Binding IsFemale, Converter={StaticResource BoolToVisibility}}">
                                 <TextBlock Text="Good Mother" Style="{StaticResource FieldLabelStyle}"/>
                                 <ComboBox ItemsSource="{Binding YesNoUnknownOptions}" SelectedItem="{Binding IsGoodMotherSelection}" FontSize="14"/>
                             </StackPanel>
