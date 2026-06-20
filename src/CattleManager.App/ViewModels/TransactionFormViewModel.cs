@@ -3,6 +3,7 @@ using CattleManager.Core.Models;
 using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.IO;
