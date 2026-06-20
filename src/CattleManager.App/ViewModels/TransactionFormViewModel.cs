@@ -3,6 +3,7 @@ using CattleManager.Core.Models;
 using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Serilog;
 using System.Collections.ObjectModel;
 
 namespace CattleManager.App.ViewModels;
@@ -15,6 +16,8 @@ public partial class TransactionFormViewModel : ObservableObject
     private readonly IAnimalRepository _animals;
     private readonly NavigationService _nav;
     private readonly DialogService _dialog;
+    private readonly ExportService _export;
+    private readonly IFarmRepository _farms;
 
     private int? _pendingLinkedAnimalId;
 
@@ -96,12 +99,15 @@ public partial class TransactionFormViewModel : ObservableObject
     };
 
     public TransactionFormViewModel(ITransactionRepository transactions,
-        IAnimalRepository animals, NavigationService nav, DialogService dialog)
+        IAnimalRepository animals, NavigationService nav, DialogService dialog,
+        ExportService export, IFarmRepository farms)
     {
         _transactions = transactions;
         _animals      = animals;
         _nav          = nav;
         _dialog       = dialog;
+        _export       = export;
+        _farms        = farms;
         UpdateCategoryOptions();
     }
 
@@ -196,17 +202,52 @@ public partial class TransactionFormViewModel : ObservableObject
         ValidationError = null;
 
         var dto = BuildDto();
+        TransactionDto saved;
         if (IsNew)
-            await _transactions.AddAsync(dto);
+            saved = await _transactions.AddAsync(dto);
         else
-            await _transactions.UpdateAsync(dto);
+            saved = await _transactions.UpdateAsync(dto);
 
-        await UpdateLinkedAnimalAsync(dto);
+        await UpdateLinkedAnimalAsync(saved);
+        if (IsNew) await TryGenerateBillOfSaleAsync(saved);
         _nav.GoBack();
     }
 
     [RelayCommand]
     private void Cancel() => _nav.GoBack();
+
+    private async Task TryGenerateBillOfSaleAsync(TransactionDto saved)
+    {
+        if (saved.TransactionType != TransactionType.Income) return;
+        if (saved.Category != "LivestockSales") return;
+        if (saved.LinkedAnimalId is null) return;
+
+        try
+        {
+            var animal   = await _animals.GetByIdAsync(saved.LinkedAnimalId.Value);
+            var farm     = await _farms.GetDefaultAsync();
+            var farmName = farm?.FarmName ?? "Farm";
+
+            var folder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "CattleManager", "BillsOfSale");
+            Directory.CreateDirectory(folder);
+
+            var safeName = string.Concat(
+                (animal?.BarnName ?? "Animal").Split(Path.GetInvalidFileNameChars()));
+            var pdfPath = Path.Combine(folder,
+                $"BillOfSale_{safeName}_{saved.Date:yyyyMMdd}_{saved.TransactionId}.pdf");
+
+            await Task.Run(() => _export.ExportBillOfSaleToPdf(saved, animal, farmName, pdfPath));
+
+            saved.AttachmentPath = pdfPath;
+            await _transactions.UpdateAsync(saved);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Bill of sale PDF generation failed for transaction {Id} — non-fatal", saved.TransactionId);
+        }
+    }
 
     private string? Validate()
     {
