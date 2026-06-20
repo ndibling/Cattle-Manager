@@ -96,7 +96,9 @@ public partial class AssetListViewModel : ObservableObject
             ? _financialService.CalculateAnnualDepreciation(asset, Math.Max(1, currentYear))
             : 0m;
 
-        decimal bookValue = Math.Max(asset.SalvageValue, asset.PurchasePrice - accumulated);
+        decimal bookValue = asset.Category == AssetCategory.Livestock
+            ? asset.CurrentValue ?? asset.PurchasePrice
+            : Math.Max(asset.SalvageValue, asset.PurchasePrice - accumulated);
 
         return new AssetDisplayItem
         {
