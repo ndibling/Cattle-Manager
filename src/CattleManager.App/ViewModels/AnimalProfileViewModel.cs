@@ -39,8 +39,12 @@ public partial class AnimalProfileViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFemale))]
+    [NotifyPropertyChangedFor(nameof(ShowSaleDetails))]
     private AnimalDto? _animal;
     public bool IsFemale => Animal?.Gender == Gender.Female;
+    public bool ShowSaleDetails => EditIsForSale || Animal?.Status == AnimalStatus.Sold;
+
+    partial void OnEditIsForSaleChanged(bool _) => OnPropertyChanged(nameof(ShowSaleDetails));
     [ObservableProperty] private ObservableCollection<HealthRecordDto> _healthHistory = [];
     [ObservableProperty] private ObservableCollection<BreedingRecordDto> _breedingHistory = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _offspring = [];

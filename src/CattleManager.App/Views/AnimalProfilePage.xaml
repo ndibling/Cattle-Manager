@@ -225,8 +225,8 @@
                             <TextBlock Text="Current Value" Style="{StaticResource FieldLabelStyle}"/>
                             <TextBlock Text="{Binding Animal.CurrentValue, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
 
-                            <!-- Sale details — only when For Sale -->
-                            <StackPanel Visibility="{Binding EditIsForSale, Converter={StaticResource BoolToVisibility}}">
+                            <!-- Sale details — visible when For Sale or animal is Sold -->
+                            <StackPanel Visibility="{Binding ShowSaleDetails, Converter={StaticResource BoolToVisibility}}">
                                 <Grid Margin="0,8,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
