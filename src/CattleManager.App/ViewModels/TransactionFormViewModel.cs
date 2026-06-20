@@ -301,6 +301,25 @@ public partial class TransactionFormViewModel : ObservableObject
             animal.SoldDate   = dto.Date;
             animal.Status     = AnimalStatus.Sold;
             await _animals.UpdateAsync(animal);
+            await DisposeLinkedAssetAsync(animal);
+        }
+    }
+
+    private static async Task DisposeLinkedAssetAsync(AnimalDto animal)
+    {
+        try
+        {
+            using var scope = App.Services.CreateScope();
+            var assets = scope.ServiceProvider.GetRequiredService<IAssetRepository>();
+            var existing = (await assets.GetByAnimalAsync(animal.AnimalId)).FirstOrDefault();
+            if (existing is null || existing.DisposedDate is not null) return;
+            existing.DisposedDate  = animal.SoldDate ?? DateTime.Today;
+            existing.DisposalPrice = animal.SalePrice;
+            await assets.UpdateAsync(existing);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Asset disposal failed for animal {AnimalId} — non-fatal", animal.AnimalId);
         }
     }
 }
