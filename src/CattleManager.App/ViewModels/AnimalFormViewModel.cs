@@ -34,7 +34,11 @@ public partial class AnimalFormViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsFemale))]
     private Gender _gender;
     public bool IsFemale => Gender == Gender.Female;
-    [ObservableProperty] private AnimalStatus _status;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBreedingAllowed))]
+    private AnimalStatus _status;
+    public bool IsBreedingAllowed => Status != AnimalStatus.Inactive && Status != AnimalStatus.Deceased;
     [ObservableProperty] private DateTime _birthDate = DateTime.Today;
     [ObservableProperty] private DateTime? _dateAcquired;
     [ObservableProperty] private string? _coloring;
@@ -195,6 +199,12 @@ public partial class AnimalFormViewModel : ObservableObject
         if (a.MaleBreedingStatus.HasValue) MaleBreedingStatus = a.MaleBreedingStatus.Value;
     }
 
+    partial void OnStatusChanged(AnimalStatus value)
+    {
+        if (!IsBreedingAllowed && IsBreeding)
+            IsBreeding = false;
+    }
+
     partial void OnIsForSaleChanged(bool value)
     {
         if (!value)
@@ -311,6 +321,8 @@ public partial class AnimalFormViewModel : ObservableObject
         if (BirthDate > DateTime.Today) return "Birth Date cannot be in the future.";
         if (Weight.HasValue && Weight <= 0) return "Weight must be a positive number.";
         if (Height.HasValue && Height <= 0) return "Height must be a positive number.";
+        if (IsBreeding && !IsBreedingAllowed)
+            return "An Inactive or Deceased animal cannot be marked as a breeding animal.";
         if (IsPregnant && BreedingDate.HasValue && ExpectedDueDate.HasValue && ExpectedDueDate <= BreedingDate)
             return "Expected Due Date must be after Breeding Date.";
         return null;
