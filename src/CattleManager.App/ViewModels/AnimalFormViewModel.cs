@@ -193,6 +193,11 @@ public partial class AnimalFormViewModel : ObservableObject
         if (a.MaleBreedingStatus.HasValue) MaleBreedingStatus = a.MaleBreedingStatus.Value;
     }
 
+    partial void OnIsBreedingChanged(bool value)
+    {
+        if (!value) MaleBreedingStatus = default;
+    }
+
     partial void OnBreedingDateChanged(DateTime? value)
     {
         if (value.HasValue && IsPregnant)
@@ -329,7 +334,7 @@ public partial class AnimalFormViewModel : ObservableObject
         PregnancySireId = PregnancySire?.AnimalId,
         BreedingDate = BreedingDate, ExpectedDueDate = ExpectedDueDate,
         ReproductionNotes = ReproductionNotes,
-        MaleBreedingStatus = Gender == Gender.Male ? MaleBreedingStatus : null,
+        MaleBreedingStatus = Gender == Gender.Male && IsBreeding ? MaleBreedingStatus : null,
         CreatedDate = DateTime.UtcNow, ModifiedDate = DateTime.UtcNow
     };
 

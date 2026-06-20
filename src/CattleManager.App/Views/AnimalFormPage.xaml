@@ -426,7 +426,7 @@
                         </StackPanel>
 
                         <!-- Male only -->
-                        <StackPanel>
+                        <StackPanel Visibility="{Binding IsBreeding, Converter={StaticResource BoolToVisibility}}">
                             <TextBlock Text="Breeding Status" Style="{StaticResource FieldLabelStyle}" Margin="0,8,0,0"/>
                             <ComboBox ItemsSource="{Binding MaleBreedingStatusOptions}"
                                       SelectedItem="{Binding MaleBreedingStatus}"
