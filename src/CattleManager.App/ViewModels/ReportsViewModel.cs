@@ -5,6 +5,7 @@ using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace CattleManager.App.ViewModels;
 
