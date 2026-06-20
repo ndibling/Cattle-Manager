@@ -30,6 +30,7 @@ public partial class HerdListViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<HerdListItem> _herds2 = [];
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string? _statusMessage;
+    [ObservableProperty] private string _herdCountLabel = "0 herds";
 
     public HerdListViewModel(IHerdRepository herds, IAnimalRepository animals,
         NavigationService nav, DialogService dialog)
@@ -62,6 +63,7 @@ public partial class HerdListViewModel : ObservableObject
                 });
             }
             Herds2 = new ObservableCollection<HerdListItem>(items);
+            HerdCountLabel = items.Count == 1 ? "1 herd" : $"{items.Count} herds";
         }
         finally
         {

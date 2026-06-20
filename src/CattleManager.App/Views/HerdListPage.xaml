@@ -26,10 +26,7 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Herds" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
                     <Border Background="#E8F5E9" CornerRadius="12" Padding="10,4" Margin="12,0,0,0">
-                        <TextBlock FontSize="13" VerticalAlignment="Center">
-                            <Run Text="{Binding Herds2.Count}"/>
-                            <Run Text=" herd(s)"/>
-                        </TextBlock>
+                        <TextBlock Text="{Binding HerdCountLabel}" FontSize="13" VerticalAlignment="Center"/>
                     </Border>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
