@@ -200,7 +200,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                <TextBlock Text="Pasture Location" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="Pasture Address" Style="{StaticResource FieldLabelStyle}"/>
                                 <TextBox Text="{Binding PastureLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Margin="0,0,12,0">

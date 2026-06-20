@@ -169,7 +169,7 @@
                                                Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
                                     <TextBox Text="{Binding EditLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
                                              Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"/>
-                                    <TextBlock Text="Pasture Location" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBlock Text="Pasture Address" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBlock Text="{Binding Animal.PastureLocation}" Style="{StaticResource FieldValueStyle}"
                                                Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"/>
                                     <TextBox Text="{Binding EditPastureLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="6,4" Margin="0,0,0,4"
