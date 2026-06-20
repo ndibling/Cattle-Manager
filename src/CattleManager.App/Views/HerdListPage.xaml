@@ -53,16 +53,19 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="24,16">
 
-                <!-- Empty state -->
-                <Border Style="{StaticResource CardStyle}"
-                        Visibility="{Binding IsLoading, Converter={StaticResource InverseBoolToVisibility}}">
+                <!-- Empty state — visible only when loaded and no herds exist -->
+                <Border>
                     <Border.Style>
                         <Style TargetType="Border" BasedOn="{StaticResource CardStyle}">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Herds2.Count}" Value="0">
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsLoading}" Value="False"/>
+                                        <Condition Binding="{Binding Herds2.Count}" Value="0"/>
+                                    </MultiDataTrigger.Conditions>
                                     <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
+                                </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
