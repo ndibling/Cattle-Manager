@@ -251,44 +251,51 @@
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
                         <TextBlock Text="Sale Information" Style="{StaticResource SectionHeaderStyle}"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                <TextBlock Text="Asking Price ($)" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding AskingPrice, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
-                                <TextBlock Text="Current Value ($)" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding CurrentValue, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                                <TextBlock Text="Sale Price ($)" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding SalePrice, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="3">
-                                <TextBlock Text="Date Sold" Style="{StaticResource FieldLabelStyle}"/>
-                                <DatePicker SelectedDate="{Binding SoldDate}" FontSize="14"/>
-                            </StackPanel>
-                        </Grid>
-                        <Grid Margin="0,8,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                <TextBlock Text="Buyer Name" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding BuyerName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="Buyer Address" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding BuyerAddress, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
-                            </StackPanel>
-                        </Grid>
+                        <CheckBox Content="For Sale" IsChecked="{Binding IsForSale}" FontSize="14" Margin="0,0,0,12"/>
+
+                        <!-- Current Value — always visible -->
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="Current Value ($)" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox Text="{Binding CurrentValue, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6" Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+
+                        <!-- Sale details — only when For Sale is checked -->
+                        <StackPanel Visibility="{Binding IsForSale, Converter={StaticResource BoolToVisibility}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Asking Price ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding AskingPrice, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                    <TextBlock Text="Sale Price ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding SalePrice, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                                    <TextBlock Text="Date Sold" Style="{StaticResource FieldLabelStyle}"/>
+                                    <DatePicker SelectedDate="{Binding SoldDate}" FontSize="14"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Buyer Name" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding BuyerName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Buyer Address" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding BuyerAddress, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 

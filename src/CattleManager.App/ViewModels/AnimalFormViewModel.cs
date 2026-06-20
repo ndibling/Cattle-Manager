@@ -88,6 +88,7 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private DateTime? _expectedDueDate;
     [ObservableProperty] private string? _reproductionNotes;
     [ObservableProperty] private MaleBreedingStatus _maleBreedingStatus;
+    [ObservableProperty] private bool _isForSale;
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableMales = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableFemales = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableAnimals = [];
@@ -169,6 +170,7 @@ public partial class AnimalFormViewModel : ObservableObject
         PhotoPath = a.PhotoPath;
         BornOnProperty = a.BornOnProperty; SellerName = a.SellerName; SellerAddress = a.SellerAddress;
         PurchaseDate = a.PurchaseDate; PurchasePrice = a.PurchasePrice;
+        IsForSale = a.IsForSale;
         AskingPrice = a.AskingPrice; CurrentValue = a.CurrentValue; SalePrice = a.SalePrice;
         BuyerName = a.BuyerName; BuyerAddress = a.BuyerAddress; SoldDate = a.SoldDate;
         TagNumber = a.TagNumber; Chondro = a.Chondro;
@@ -191,6 +193,18 @@ public partial class AnimalFormViewModel : ObservableObject
         BreedingDate = a.BreedingDate; ExpectedDueDate = a.ExpectedDueDate;
         ReproductionNotes = a.ReproductionNotes;
         if (a.MaleBreedingStatus.HasValue) MaleBreedingStatus = a.MaleBreedingStatus.Value;
+    }
+
+    partial void OnIsForSaleChanged(bool value)
+    {
+        if (!value)
+        {
+            AskingPrice = null;
+            SalePrice   = null;
+            SoldDate    = null;
+            BuyerName   = null;
+            BuyerAddress = null;
+        }
     }
 
     partial void OnIsBreedingChanged(bool value)
@@ -316,8 +330,13 @@ public partial class AnimalFormViewModel : ObservableObject
         BornOnProperty = BornOnProperty,
         SellerName = BornOnProperty ? null : SellerName, SellerAddress = BornOnProperty ? null : SellerAddress,
         PurchaseDate = BornOnProperty ? null : PurchaseDate, PurchasePrice = BornOnProperty ? null : PurchasePrice,
-        AskingPrice = AskingPrice, CurrentValue = CurrentValue, SalePrice = SalePrice,
-        BuyerName = BuyerName, BuyerAddress = BuyerAddress, SoldDate = SoldDate,
+        IsForSale = IsForSale,
+        AskingPrice = IsForSale ? AskingPrice : null,
+        CurrentValue = CurrentValue,
+        SalePrice = IsForSale ? SalePrice : null,
+        BuyerName = IsForSale ? BuyerName : null,
+        BuyerAddress = IsForSale ? BuyerAddress : null,
+        SoldDate = IsForSale ? SoldDate : null,
         TagNumber = TagNumber, Chondro = Chondro,
         Horns = HornsSelection == "Yes" ? true : HornsSelection == "No" ? false : (bool?)null,
         IsGoodMother = IsGoodMotherSelection == "Yes" ? true : IsGoodMotherSelection == "No" ? false : (bool?)null,

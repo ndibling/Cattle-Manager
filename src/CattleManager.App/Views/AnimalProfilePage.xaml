@@ -214,29 +214,40 @@
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <TextBlock Text="Sale &amp; Valuation" Style="{StaticResource SectionHeaderStyle}"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Text="Asking Price" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.AskingPrice, StringFormat=C}" Style="{StaticResource FieldValueStyle}"
-                                               Foreground="#1565C0" FontWeight="SemiBold"/>
-                                    <TextBlock Text="Current Value" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.CurrentValue, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
-                                    <TextBlock Text="Sale Price" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.SalePrice, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1">
-                                    <TextBlock Text="Date Sold" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.SoldDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
-                                    <TextBlock Text="Buyer" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.BuyerName}" Style="{StaticResource FieldValueStyle}"/>
-                                    <TextBlock Text="Buyer Address" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Text="{Binding Animal.BuyerAddress}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"/>
-                                </StackPanel>
-                            </Grid>
+
+                            <!-- For Sale toggle: read-only badge in view mode, checkbox in edit mode -->
+                            <CheckBox Content="For Sale" IsChecked="{Binding EditIsForSale}"
+                                      IsEnabled="{Binding IsEditMode}"
+                                      FontSize="14" Margin="0,0,0,8"/>
+
+                            <!-- Current Value — always visible -->
+                            <TextBlock Text="Current Value" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBlock Text="{Binding Animal.CurrentValue, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
+
+                            <!-- Sale details — only when For Sale -->
+                            <StackPanel Visibility="{Binding EditIsForSale, Converter={StaticResource BoolToVisibility}}">
+                                <Grid Margin="0,8,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Asking Price" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.AskingPrice, StringFormat=C}" Style="{StaticResource FieldValueStyle}"
+                                                   Foreground="#1565C0" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Sale Price" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.SalePrice, StringFormat=C}" Style="{StaticResource FieldValueStyle}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Date Sold" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.SoldDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                        <TextBlock Text="Buyer" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.BuyerName}" Style="{StaticResource FieldValueStyle}"/>
+                                        <TextBlock Text="Buyer Address" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.BuyerAddress}" Style="{StaticResource FieldValueStyle}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 

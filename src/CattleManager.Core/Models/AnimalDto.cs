@@ -32,6 +32,7 @@ public class AnimalDto
     public decimal? PurchasePrice { get; set; }
 
     // Sale info
+    public bool IsForSale { get; set; }
     public decimal? AskingPrice { get; set; }
     public decimal? CurrentValue { get; set; }
     public decimal? SalePrice { get; set; }

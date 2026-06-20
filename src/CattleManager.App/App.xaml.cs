@@ -288,6 +288,7 @@ public partial class App : Application
         {
             await EnsureTableColumnsAsync(conn, "Animals", new System.Collections.Generic.Dictionary<string, string>
             {
+                ["IsForSale"]                = "INTEGER NOT NULL DEFAULT 0",
                 ["TagNumber"]                = "TEXT",
                 ["Chondro"]                  = "INTEGER NOT NULL DEFAULT 0",
                 ["Horns"]                    = "INTEGER",

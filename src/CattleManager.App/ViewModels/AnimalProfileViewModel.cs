@@ -71,6 +71,8 @@ public partial class AnimalProfileViewModel : ObservableObject
     [ObservableProperty] private string? _editPastureState;
     [ObservableProperty] private decimal? _editExpectedHeightAtMaturity;
 
+    [ObservableProperty] private bool _editIsForSale;
+
     // Bull exposure add form
     [ObservableProperty] private bool _isAddingExposure;
     [ObservableProperty] private DateTime _newExposureStartDate = DateTime.Today;
@@ -104,6 +106,7 @@ public partial class AnimalProfileViewModel : ObservableObject
         {
             Animal = await _animals.GetByIdAsync(AnimalId);
             if (Animal is null) return;
+            EditIsForSale = Animal.IsForSale;
 
             var health = await _healthRecords.GetByAnimalAsync(AnimalId);
             HealthHistory = new ObservableCollection<HealthRecordDto>(health);
@@ -160,6 +163,7 @@ public partial class AnimalProfileViewModel : ObservableObject
         EditPastureState = Animal.PastureState;
         EditExpectedHeightAtMaturity = Animal.ExpectedHeightAtMaturity;
         EditPhotoPath = Animal.PhotoPath;
+        EditIsForSale = Animal.IsForSale;
         IsEditMode = true;
     }
 
@@ -184,13 +188,18 @@ public partial class AnimalProfileViewModel : ObservableObject
         Animal.PastureState = EditPastureState;
         Animal.ExpectedHeightAtMaturity = EditExpectedHeightAtMaturity;
         Animal.PhotoPath = EditPhotoPath;
+        Animal.IsForSale = EditIsForSale;
         await _animals.UpdateAsync(Animal);
         IsEditMode = false;
         await LoadAsync();
     }
 
     [RelayCommand]
-    private void CancelEdit() => IsEditMode = false;
+    private void CancelEdit()
+    {
+        EditIsForSale = Animal?.IsForSale ?? false;
+        IsEditMode = false;
+    }
 
     [RelayCommand]
     private void ChangePhoto()
