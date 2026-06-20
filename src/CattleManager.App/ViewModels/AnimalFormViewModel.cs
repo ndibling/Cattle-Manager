@@ -203,7 +203,7 @@ public partial class AnimalFormViewModel : ObservableObject
 
     partial void OnBirthDateChanged(DateTime value)
     {
-        if (IsNew && BornOnProperty)
+        if (IsNewAnimal && BornOnProperty)
             DateAcquired = value;
     }
 
