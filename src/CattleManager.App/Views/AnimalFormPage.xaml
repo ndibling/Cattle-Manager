@@ -328,7 +328,7 @@
                                 <CheckBox Content="Animal is in herd" IsChecked="{Binding DamInHerd}" FontSize="13"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
-                                <ComboBox ItemsSource="{Binding AvailableAnimals}"
+                                <ComboBox ItemsSource="{Binding AvailableFemales}"
                                           SelectedItem="{Binding SelectedDam}"
                                           DisplayMemberPath="BarnName" FontSize="14"
                                           Visibility="{Binding DamInHerd, Converter={StaticResource BoolToVisibility}}"/>

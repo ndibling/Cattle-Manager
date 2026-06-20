@@ -89,6 +89,7 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private string? _reproductionNotes;
     [ObservableProperty] private MaleBreedingStatus _maleBreedingStatus;
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableMales = [];
+    [ObservableProperty] private ObservableCollection<AnimalDto> _availableFemales = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableAnimals = [];
     [ObservableProperty] private string? _validationError;
     [ObservableProperty] private string _formTitle = "Add New Animal";
@@ -135,7 +136,8 @@ public partial class AnimalFormViewModel : ObservableObject
                 ? await _animals.GetByHerdAsync(HerdId)
                 : await _animals.GetAllAsync();
             AvailableAnimals = new ObservableCollection<AnimalDto>(herdAnimals);
-            AvailableMales = new ObservableCollection<AnimalDto>(herdAnimals.Where(a => a.Gender == Gender.Male));
+            AvailableMales   = new ObservableCollection<AnimalDto>(herdAnimals.Where(a => a.Gender == Gender.Male));
+            AvailableFemales = new ObservableCollection<AnimalDto>(herdAnimals.Where(a => a.Gender == Gender.Female));
 
             if (!IsNewAnimal)
             {
@@ -178,7 +180,7 @@ public partial class AnimalFormViewModel : ObservableObject
         if (a.SireId.HasValue) SelectedSire = AvailableAnimals.FirstOrDefault(x => x.AnimalId == a.SireId);
         ExternalSireName = a.ExternalSireName;
         DamInHerd = a.DamId.HasValue;
-        if (a.DamId.HasValue) SelectedDam = AvailableAnimals.FirstOrDefault(x => x.AnimalId == a.DamId);
+        if (a.DamId.HasValue) SelectedDam = AvailableFemales.FirstOrDefault(x => x.AnimalId == a.DamId);
         ExternalDamName = a.ExternalDamName;
         LastWormingDate = a.LastWormingDate; LastVaccinationDate = a.LastVaccinationDate;
         LastHealthCheckDate = a.LastHealthCheckDate; LastHoofTrimmingDate = a.LastHoofTrimmingDate;
