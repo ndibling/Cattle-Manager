@@ -361,7 +361,7 @@
 
                             <!-- Breeding Animal indicator -->
                             <TextBlock Text="Breeding Animal" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBlock Style="{StaticResource FieldValueStyle}">
+                            <TextBlock>
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource FieldValueStyle}">
                                         <Setter Property="Text" Value="No"/>
@@ -387,7 +387,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Text="Sire of Current Calf" Style="{StaticResource FieldLabelStyle}"/>
-                                        <TextBlock Style="{StaticResource FieldValueStyle}">
+                                        <TextBlock>
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock" BasedOn="{StaticResource FieldValueStyle}">
                                                     <Setter Property="Text" Value="{Binding Animal.PregnancySireBarnName}"/>
