@@ -42,20 +42,32 @@
         <Border DockPanel.Dock="Top" Padding="16,10"
                 Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
             <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <ui:AutoSuggestBox x:Name="SearchBox" PlaceholderText="Search by barn or registered name..."
-                                   Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                   Width="280" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding GenderOptions}"
-                          SelectedItem="{Binding FilterGender}"
-                          MinWidth="100" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding BreedOptions}"
-                          SelectedItem="{Binding FilterBreed}"
-                          MinWidth="130" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding StatusOptions}"
-                          SelectedItem="{Binding FilterStatus}"
-                          MinWidth="140" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="Search" FontSize="11" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,0,3"/>
+                    <ui:AutoSuggestBox x:Name="SearchBox" PlaceholderText="Barn or registered name..."
+                                       Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                       Width="260"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Gender" FontSize="11" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,0,3"/>
+                    <ComboBox ItemsSource="{Binding GenderOptions}"
+                              SelectedItem="{Binding FilterGender}"
+                              MinWidth="100"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Breed" FontSize="11" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,0,3"/>
+                    <ComboBox ItemsSource="{Binding BreedOptions}"
+                              SelectedItem="{Binding FilterBreed}"
+                              MinWidth="130"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="Status" FontSize="11" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,0,3"/>
+                    <ComboBox ItemsSource="{Binding StatusOptions}"
+                              SelectedItem="{Binding FilterStatus}"
+                              MinWidth="160"/>
+                </StackPanel>
                 <Button Content="Clear Filters" Command="{Binding ClearFiltersCommand}"
-                        Padding="12,6" VerticalAlignment="Center"/>
+                        Padding="12,6" VerticalAlignment="Bottom"/>
             </WrapPanel>
         </Border>
 
