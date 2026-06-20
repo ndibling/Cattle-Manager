@@ -1,0 +1,150 @@
+<Window x:Class="CattleManager.App.Views.AnimalIntakeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Title="Add New Animal" Width="520" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style x:Key="ChoiceCard" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="20,24"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightAccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,10,0,4"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel>
+
+        <!-- Step 1: Born on farm or Purchased? -->
+        <StackPanel x:Name="Step1Panel" Margin="28,28,28,24">
+            <TextBlock Text="How was this animal acquired?"
+                       FontSize="20" FontWeight="SemiBold" Margin="0,0,0,6"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            <TextBlock Text="Choose the option that best describes how this animal joined the herd."
+                       FontSize="13" TextWrapping="Wrap" Margin="0,0,0,28"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Born on Farm -->
+                <Button Grid.Column="0" Style="{StaticResource ChoiceCard}"
+                        Click="BornOnFarm_Click" HorizontalAlignment="Stretch">
+                    <StackPanel>
+                        <TextBlock Text="&#x1F404;" FontSize="44" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <TextBlock Text="Born on Farm" FontSize="16" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,8"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <TextBlock Text="This animal was born here and raised on the property."
+                                   FontSize="12" TextWrapping="Wrap" TextAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Purchased -->
+                <Button Grid.Column="2" Style="{StaticResource ChoiceCard}"
+                        Click="Purchased_Click" HorizontalAlignment="Stretch">
+                    <StackPanel>
+                        <TextBlock Text="&#x1F4B0;" FontSize="44" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <TextBlock Text="Purchased" FontSize="16" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,8"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        <TextBlock Text="This animal was acquired from another owner or at auction."
+                                   FontSize="12" TextWrapping="Wrap" TextAlignment="Center"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,20,0,0"
+                    Padding="20,8" Click="Cancel_Click"/>
+        </StackPanel>
+
+        <!-- Step 2: Purchase Details -->
+        <StackPanel x:Name="Step2Panel" Visibility="Collapsed" Margin="28,28,28,24">
+            <TextBlock Text="Purchase Details"
+                       FontSize="20" FontWeight="SemiBold" Margin="0,0,0,4"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            <TextBlock Text="Enter the purchase information. An expense transaction will be recorded automatically in the financial module."
+                       FontSize="13" TextWrapping="Wrap" Margin="0,0,0,20"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+            <!-- Purchase Date -->
+            <TextBlock Text="Purchase Date *" Style="{StaticResource FieldLabel}"/>
+            <DatePicker x:Name="PurchaseDatePicker" FontSize="14" HorizontalAlignment="Stretch"/>
+
+            <!-- Purchase Price -->
+            <TextBlock Text="Purchase Price ($) *" Style="{StaticResource FieldLabel}"/>
+            <TextBox x:Name="PurchasePriceBox" FontSize="14" Padding="8,6"/>
+
+            <!-- Expense Category -->
+            <TextBlock Text="Expense Category" Style="{StaticResource FieldLabel}"/>
+            <ComboBox x:Name="CategoryCombo" FontSize="14" HorizontalAlignment="Stretch"
+                      DisplayMemberPath="Display"/>
+
+            <!-- Seller / Vendor Name -->
+            <TextBlock Text="Seller / Vendor Name" Style="{StaticResource FieldLabel}"/>
+            <TextBox x:Name="SellerNameBox" FontSize="14" Padding="8,6"/>
+
+            <!-- Seller Address -->
+            <TextBlock Text="Seller Address" Style="{StaticResource FieldLabel}"/>
+            <TextBox x:Name="SellerAddressBox" FontSize="14" Padding="8,6"
+                     AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                     VerticalScrollBarVisibility="Auto"/>
+
+            <!-- Notes -->
+            <TextBlock Text="Notes" Style="{StaticResource FieldLabel}"/>
+            <TextBox x:Name="NotesBox" FontSize="14" Padding="8,6"
+                     AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                     VerticalScrollBarVisibility="Auto"/>
+
+            <!-- Validation error -->
+            <TextBlock x:Name="ValidationText" Visibility="Collapsed"
+                       Foreground="#D32F2F" FontSize="13" Margin="0,10,0,0" TextWrapping="Wrap"/>
+
+            <!-- Footer -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="Back" Padding="20,8" Margin="0,0,10,0" Click="Back_Click"/>
+                <Button Content="Create Expense &amp; Continue" Padding="20,8"
+                        Style="{StaticResource PrimaryButton}" Click="Continue_Click"/>
+            </StackPanel>
+        </StackPanel>
+
+    </StackPanel>
+</Window>

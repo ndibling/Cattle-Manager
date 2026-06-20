@@ -60,8 +60,13 @@ public class HerdDashboardViewModel
 
     private void DoAddNewAnimal()
     {
+        var dialog = App.Services.GetRequiredService<DialogService>();
+        var intake = dialog.ShowAnimalIntake();
+        if (intake is null) return;
+
         var vm = App.Services.GetRequiredService<AnimalFormViewModel>();
         vm.HerdId = HerdId;
+        vm.ApplyIntake(intake);
         _nav.NavigateTo(new AnimalFormPage(vm));
     }
 }

@@ -19,6 +19,8 @@ public partial class AnimalFormViewModel : ObservableObject
     private readonly NavigationService _nav;
     private readonly DialogService _dialog;
 
+    private AnimalIntakeResult? _pendingIntake;
+
     public int AnimalId { get; set; }
     public int HerdId { get; set; }
     public bool IsNewAnimal => AnimalId == 0;
@@ -237,6 +239,24 @@ public partial class AnimalFormViewModel : ObservableObject
             ExpectedDueDate = _breedingService.CalculateDueDate(value.Value);
     }
 
+    public void ApplyIntake(AnimalIntakeResult intake)
+    {
+        _pendingIntake = intake;
+        BornOnProperty = intake.BornOnFarm;
+        if (intake.BornOnFarm)
+        {
+            BreedersName = intake.BreedersName;
+            CurrentOwner = intake.CurrentOwner;
+        }
+        else
+        {
+            SellerName    = intake.SellerName;
+            SellerAddress = intake.SellerAddress;
+            PurchaseDate  = intake.PurchaseDate;
+            PurchasePrice = intake.PurchasePrice;
+        }
+    }
+
     [RelayCommand]
     private void PickPhoto()
     {
@@ -261,6 +281,9 @@ public partial class AnimalFormViewModel : ObservableObject
                 saved = await _animals.UpdateAsync(dto);
 
             await SyncAnimalAssetAsync(saved);
+            if (_pendingIntake is { BornOnFarm: false })
+                await CreatePurchaseExpenseAsync(saved, _pendingIntake);
+            _pendingIntake = null;
             _nav.GoBack();
         }
         catch (Exception ex)
@@ -319,6 +342,37 @@ public partial class AnimalFormViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Warning(ex, "Asset sync failed for animal {AnimalId} — non-fatal", saved.AnimalId);
+        }
+    }
+
+    private static async Task CreatePurchaseExpenseAsync(AnimalDto saved, AnimalIntakeResult intake)
+    {
+        try
+        {
+            using var scope = App.Services.CreateScope();
+            var transactions = scope.ServiceProvider.GetRequiredService<ITransactionRepository>();
+
+            var notesParts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(intake.SellerAddress))
+                notesParts.Add($"Seller address: {intake.SellerAddress}");
+            if (!string.IsNullOrWhiteSpace(intake.ExpenseNotes))
+                notesParts.Add(intake.ExpenseNotes);
+
+            await transactions.AddAsync(new TransactionDto
+            {
+                TransactionType = TransactionType.Expense,
+                Category        = intake.ExpenseCategoryKey ?? "Other",
+                Date            = intake.PurchaseDate ?? DateTime.Today,
+                Amount          = intake.PurchasePrice ?? 0m,
+                Description     = $"Livestock purchase – {saved.BarnName}",
+                PayeePayer      = intake.SellerName,
+                Notes           = notesParts.Count > 0 ? string.Join("\n", notesParts) : null,
+                LinkedAnimalId  = saved.AnimalId,
+            });
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Purchase expense creation failed for animal {AnimalId} — non-fatal", saved.AnimalId);
         }
     }
 

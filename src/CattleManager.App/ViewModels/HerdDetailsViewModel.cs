@@ -192,8 +192,12 @@ public partial class HerdDetailsViewModel : ObservableObject
     [RelayCommand]
     private void AddNewAnimal()
     {
+        var intake = _dialog.ShowAnimalIntake();
+        if (intake is null) return;
+
         var vm = App.Services.GetRequiredService<AnimalFormViewModel>();
         vm.HerdId = HerdId;
+        vm.ApplyIntake(intake);
         _nav.NavigateTo(new AnimalFormPage(vm));
     }
 

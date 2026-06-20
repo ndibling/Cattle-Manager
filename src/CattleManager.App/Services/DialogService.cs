@@ -1,3 +1,4 @@
+using CattleManager.App.ViewModels;
 using CattleManager.App.Views;
 using Microsoft.Win32;
 using System.Windows;
@@ -6,6 +7,12 @@ namespace CattleManager.App.Services;
 
 public class DialogService
 {
+    public AnimalIntakeResult? ShowAnimalIntake()
+    {
+        var win = new AnimalIntakeWindow { Owner = Application.Current.MainWindow };
+        return win.ShowDialog() == true ? win.Result : null;
+    }
+
     public decimal? PromptForDecimal(string message, string title, decimal? defaultValue = null)
     {
         var win = new InputDialogWindow(title, message, defaultValue?.ToString("F2") ?? string.Empty);
