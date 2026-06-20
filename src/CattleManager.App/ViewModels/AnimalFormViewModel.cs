@@ -201,6 +201,12 @@ public partial class AnimalFormViewModel : ObservableObject
         if (a.MaleBreedingStatus.HasValue) MaleBreedingStatus = a.MaleBreedingStatus.Value;
     }
 
+    partial void OnBirthDateChanged(DateTime value)
+    {
+        if (IsNew && BornOnProperty)
+            DateAcquired = value;
+    }
+
     partial void OnStatusChanged(AnimalStatus value)
     {
         if (!IsBreedingAllowed && IsBreeding)
@@ -245,8 +251,9 @@ public partial class AnimalFormViewModel : ObservableObject
         BornOnProperty = intake.BornOnFarm;
         if (intake.BornOnFarm)
         {
-            BreedersName = intake.BreedersName;
-            CurrentOwner = intake.CurrentOwner;
+            BreedersName  = intake.BreedersName;
+            CurrentOwner  = intake.CurrentOwner;
+            DateAcquired  = BirthDate;
         }
         else
         {
@@ -254,6 +261,7 @@ public partial class AnimalFormViewModel : ObservableObject
             SellerAddress = intake.SellerAddress;
             PurchaseDate  = intake.PurchaseDate;
             PurchasePrice = intake.PurchasePrice;
+            DateAcquired  = intake.PurchaseDate;
         }
     }
 
