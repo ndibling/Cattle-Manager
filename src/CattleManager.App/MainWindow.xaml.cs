@@ -36,8 +36,8 @@ public partial class MainWindow : Window
     private void BtnHerd_Click(object sender, RoutedEventArgs e)
     {
         _nav.ClearBack();
-        var vm = App.Services.GetRequiredService<HerdDetailsViewModel>();
-        _nav.NavigateTo(new HerdDetailsPage(vm));
+        var vm = App.Services.GetRequiredService<HerdListViewModel>();
+        _nav.NavigateTo(new HerdListPage(vm));
         HighlightNav(BtnHerd);
     }
 

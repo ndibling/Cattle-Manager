@@ -34,7 +34,7 @@
                     <Button x:Name="BtnDashboard" Content="🏠  Dashboard"
                             Click="BtnDashboard_Click" Style="{StaticResource NavButtonStyle}"
                             Tag="Dashboard"/>
-                    <Button x:Name="BtnHerd" Content="🐄  Herd Details"
+                    <Button x:Name="BtnHerd" Content="🐄  Herds"
                             Click="BtnHerd_Click" Style="{StaticResource NavButtonStyle}"
                             Tag="Herd"/>
                     <Button x:Name="BtnAddAnimal" Content="➕  Add Animal"

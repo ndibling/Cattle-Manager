@@ -119,6 +119,8 @@ public partial class App : Application
         services.AddSingleton<DialogService>();
 
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<HerdListViewModel>();
+        services.AddTransient<HerdFormViewModel>();
         services.AddTransient<HerdDetailsViewModel>();
         services.AddTransient<AnimalProfileViewModel>();
         services.AddTransient<AnimalFormViewModel>();

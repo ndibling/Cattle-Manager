@@ -32,6 +32,7 @@ public partial class HerdDetailsViewModel : ObservableObject
     [ObservableProperty] private AnimalDto? _selectedAnimal;
     [ObservableProperty] private int _visibleCount;
     [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] private string _pageTitle = "Herd Details";
     [ObservableProperty] private IReadOnlyList<string> _genderOptions = ["All", "Male", "Female"];
     [ObservableProperty] private IReadOnlyList<string> _breedOptions = ["All"];
     [ObservableProperty] private IReadOnlyList<string> _statusOptions =
@@ -52,6 +53,12 @@ public partial class HerdDetailsViewModel : ObservableObject
         IsLoading = true;
         try
         {
+            if (HerdId > 0)
+            {
+                var herd = await _herds.GetByIdAsync(HerdId);
+                PageTitle = herd?.HerdName ?? "Herd Details";
+            }
+
             var list = HerdId > 0
                 ? await _animals.GetByHerdAsync(HerdId)
                 : await _animals.GetAllAsync();
