@@ -318,8 +318,13 @@ public partial class AnimalFormViewModel : ObservableObject
             var existing = (await assets.GetByAnimalAsync(saved.AnimalId)).FirstOrDefault();
             var value    = saved.CurrentValue ?? saved.PurchasePrice ?? 0m;
 
+            bool isDisposed = saved.Status is AnimalStatus.Sold
+                                           or AnimalStatus.Inactive
+                                           or AnimalStatus.Deceased;
+
             if (existing is null)
             {
+                if (isDisposed) return;
                 await assets.AddAsync(new AssetDto
                 {
                     AssetName          = saved.BarnName,
@@ -339,10 +344,10 @@ public partial class AnimalFormViewModel : ObservableObject
                 existing.CurrentValue = value;
                 if (saved.PurchasePrice.HasValue)
                     existing.PurchasePrice = saved.PurchasePrice.Value;
-                if (saved.Status == AnimalStatus.Sold && existing.DisposedDate is null)
+                if (isDisposed && existing.DisposedDate is null)
                 {
                     existing.DisposedDate  = saved.SoldDate ?? DateTime.Today;
-                    existing.DisposalPrice = saved.SalePrice;
+                    existing.DisposalPrice = saved.Status == AnimalStatus.Sold ? saved.SalePrice : null;
                 }
                 await assets.UpdateAsync(existing);
             }
