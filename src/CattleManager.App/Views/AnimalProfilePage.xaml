@@ -354,6 +354,81 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Reproduction -->
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Reproduction" Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <!-- Breeding Animal indicator -->
+                            <TextBlock Text="Breeding Animal" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBlock Style="{StaticResource FieldValueStyle}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource FieldValueStyle}">
+                                        <Setter Property="Text" Value="No"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Animal.IsBreeding}" Value="True">
+                                                <Setter Property="Text" Value="Yes"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <!-- Female breeding details -->
+                            <StackPanel Visibility="{Binding Animal.IsPregnant, Converter={StaticResource BoolToVisibility}}"
+                                        Margin="0,8,0,0">
+                                <TextBlock Text="Currently Pregnant" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="Yes" Style="{StaticResource FieldValueStyle}" Foreground="#1565C0" FontWeight="SemiBold"/>
+                                <Grid Margin="0,8,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Sire of Current Calf" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Style="{StaticResource FieldValueStyle}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource FieldValueStyle}">
+                                                    <Setter Property="Text" Value="{Binding Animal.PregnancySireBarnName}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Animal.PregnancySireBarnName}" Value="{x:Null}">
+                                                            <Setter Property="Text" Value="—"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Breeding Date" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.BreedingDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Expected Due Date" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBlock Text="{Binding Animal.ExpectedDueDate, StringFormat=MM/dd/yyyy}" Style="{StaticResource FieldValueStyle}"
+                                                   Foreground="#2E7D32" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Male breeding status -->
+                            <StackPanel Visibility="{Binding Animal.MaleBreedingStatus, Converter={StaticResource NullToVisibility}}"
+                                        Margin="0,8,0,0">
+                                <TextBlock Text="Breeding Status" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="{Binding Animal.MaleBreedingStatus}" Style="{StaticResource FieldValueStyle}"/>
+                            </StackPanel>
+
+                            <!-- Reproduction Notes -->
+                            <StackPanel Visibility="{Binding Animal.ReproductionNotes, Converter={StaticResource NullToVisibility}}"
+                                        Margin="0,8,0,0">
+                                <TextBlock Text="Reproduction Notes" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="{Binding Animal.ReproductionNotes}" Style="{StaticResource FieldValueStyle}"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
                     <!-- Lineage -->
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
