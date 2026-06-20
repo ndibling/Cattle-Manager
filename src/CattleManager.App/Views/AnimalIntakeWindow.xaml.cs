@@ -13,7 +13,7 @@ public partial class AnimalIntakeWindow : Window
 
     private static readonly IReadOnlyList<CategoryOption> ExpenseCategories =
     [
-        new("Other",                 "Other"),
+        new("LivestockPurchase",     "Livestock Purchase"),
         new("FeedHay",               "Feed & Hay"),
         new("VeterinaryMedical",     "Veterinary & Medical"),
         new("BreedingFees",          "Breeding Fees / AI"),

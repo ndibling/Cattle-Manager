@@ -88,6 +88,7 @@ public partial class BudgetViewModel : ObservableObject
         ("GovernmentPayments",    "Government Payments",        "Income"),
         ("InsuranceProceeds",     "Insurance Proceeds",         "Income"),
         ("MiscellaneousIncome",   "Miscellaneous Income",       "Income"),
+        ("LivestockPurchase",     "Livestock Purchase",         "Expense"),
         ("FeedHay",               "Feed & Hay",                 "Expense"),
         ("VeterinaryMedical",     "Veterinary & Medical",       "Expense"),
         ("BreedingFees",          "Breeding Fees / AI",         "Expense"),

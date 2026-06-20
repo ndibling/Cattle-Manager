@@ -27,6 +27,7 @@ public partial class TransactionFormViewModel : ObservableObject
 
     private static readonly IReadOnlyList<CategoryOption> ExpenseCategories =
     [
+        new("LivestockPurchase",     "Livestock Purchase"),
         new("FeedHay",               "Feed & Hay"),
         new("VeterinaryMedical",     "Veterinary & Medical"),
         new("BreedingFees",          "Breeding Fees / AI"),

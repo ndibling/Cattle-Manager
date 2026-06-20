@@ -20,6 +20,7 @@ public class FinancialService
         ["InsuranceProceeds"]     = "Line 6a — Crop insurance proceeds",
         ["CustomWork"]            = "Line 8 — Other farm income",
         ["MiscellaneousIncome"]   = "Line 8 — Other farm income",
+        ["LivestockPurchase"]     = "Line 1b — Cost or other basis of livestock purchased",
         ["FeedHay"]               = "Line 10 — Feed purchased",
         ["TruckingTransportation"]= "Line 12 — Freight and trucking",
         ["FuelOil"]               = "Line 14 — Gasoline, fuel, and oil",
