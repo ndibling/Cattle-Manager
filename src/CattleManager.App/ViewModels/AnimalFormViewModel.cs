@@ -281,6 +281,7 @@ public partial class AnimalFormViewModel : ObservableObject
 
     private string? Validate()
     {
+        if (HerdId == 0) return "No herd is selected. Please select a herd before adding animals.";
         if (string.IsNullOrWhiteSpace(BarnName)) return "Barn Name is required.";
         if (SelectedBreed is null) return "Breed is required.";
         if (BirthDate > DateTime.Today) return "Birth Date cannot be in the future.";

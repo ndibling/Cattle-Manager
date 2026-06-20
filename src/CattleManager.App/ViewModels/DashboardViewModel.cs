@@ -102,8 +102,10 @@ public partial class DashboardViewModel : ObservableObject
     [RelayCommand]
     private void AddNewAnimal()
     {
+        var herd = SelectedHerd ?? Herds2.FirstOrDefault();
+        if (herd is null) return;
         var vm = App.Services.GetRequiredService<AnimalFormViewModel>();
-        if (SelectedHerd is not null) vm.HerdId = SelectedHerd.HerdId;
+        vm.HerdId = herd.HerdId;
         _nav.NavigateTo(new AnimalFormPage(vm));
     }
 
