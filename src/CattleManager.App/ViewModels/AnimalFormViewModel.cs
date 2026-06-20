@@ -361,6 +361,11 @@ public partial class AnimalFormViewModel : ObservableObject
                     existing.DisposedDate  = saved.SoldDate ?? DateTime.Today;
                     existing.DisposalPrice = saved.Status == AnimalStatus.Sold ? saved.SalePrice : null;
                 }
+                else if (!isDisposed && existing.DisposedDate is not null)
+                {
+                    existing.DisposedDate  = null;
+                    existing.DisposalPrice = null;
+                }
                 await assets.UpdateAsync(existing);
             }
         }

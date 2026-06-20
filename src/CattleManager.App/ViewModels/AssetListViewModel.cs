@@ -70,7 +70,7 @@ public partial class AssetListViewModel : ObservableObject
         IsLoading = true;
         try
         {
-            var list = await _assets.GetAllAsync();
+            var list = await _assets.GetActiveAsync();
             var items = list.Select(a => BuildDisplayItem(a)).ToList();
             _allItems = new ObservableCollection<AssetDisplayItem>(items);
             _viewSource.Source = _allItems;
