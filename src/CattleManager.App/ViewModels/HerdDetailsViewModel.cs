@@ -97,7 +97,7 @@ public partial class HerdDetailsViewModel : ObservableObject
         }
         else if (FilterStatus == "Due for Husbandry")
         {
-            if (a.Status == AnimalStatus.Calf || !IsOverdue(a)) { e.Accepted = false; return; }
+            if (a.Status == AnimalStatus.Calf || a.Status == AnimalStatus.Deceased || !IsOverdue(a)) { e.Accepted = false; return; }
         }
         else if (FilterStatus == "Breeding Female")
         {
