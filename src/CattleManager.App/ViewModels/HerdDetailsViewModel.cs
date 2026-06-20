@@ -94,6 +94,12 @@ public partial class HerdDetailsViewModel : ObservableObject
         {
             if (!IsOverdue(a)) { e.Accepted = false; return; }
         }
+        else if (FilterStatus == "Breeding Female")
+        {
+            if (a.Gender != Gender.Female ||
+                (a.Status != AnimalStatus.BreedingFemale && a.Status != AnimalStatus.Pregnant))
+            { e.Accepted = false; return; }
+        }
         else if (FilterStatus != "All")
         {
             var statusStr = FilterStatus.Replace(" ", "");
