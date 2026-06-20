@@ -20,10 +20,10 @@ public class HerdServiceTests
         _herds.Setup(h => h.GetByIdAsync(1)).ReturnsAsync(new HerdDto { HerdId = 1, HerdName = "Test" });
         _animals.Setup(a => a.GetByHerdAsync(1)).ReturnsAsync(new[]
         {
-            Animal(Gender.Female, AnimalStatus.BreedingFemale, isBreeding: true),
+            Animal(Gender.Female, AnimalStatus.Healthy,  isBreeding: true),
             Animal(Gender.Female, AnimalStatus.Pregnant, isBreeding: true, isPregnant: true),
-            Animal(Gender.Male, AnimalStatus.BreedingMale, maleStatus: MaleBreedingStatus.Active),
-            Animal(Gender.Male, AnimalStatus.BreedingMale, maleStatus: MaleBreedingStatus.Retired),
+            Animal(Gender.Male,   AnimalStatus.Healthy,  isBreeding: true, maleStatus: MaleBreedingStatus.Active),
+            Animal(Gender.Male,   AnimalStatus.Healthy,  isBreeding: true, maleStatus: MaleBreedingStatus.Retired),
             Animal(Gender.Female, AnimalStatus.Healthy),
             // Overdue for worming: last worming 100 days ago, threshold is 70 days
             Animal(Gender.Female, AnimalStatus.Healthy,
@@ -34,8 +34,8 @@ public class HerdServiceTests
         var result = await CreateSut().GetSummaryAsync(1);
 
         result.TotalAnimals.Should().Be(6);
-        result.BreedingFemales.Should().Be(2); // BreedingFemale + Pregnant
-        result.BreedingMales.Should().Be(2);   // all males with Status==BreedingMale
+        result.BreedingFemales.Should().Be(2); // Healthy+IsBreeding female + Pregnant+IsBreeding female
+        result.BreedingMales.Should().Be(2);   // both males: Healthy+IsBreeding
         result.PregnantAnimals.Should().Be(1);
         result.DueForHusbandry.Should().BeGreaterThan(0);
     }

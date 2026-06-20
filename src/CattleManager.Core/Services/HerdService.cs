@@ -26,11 +26,10 @@ public class HerdService
             HerdName = herd?.HerdName ?? string.Empty,
             TotalAnimals = animals.Count,
             BreedingFemales = animals.Count(a =>
-                a.Gender == Gender.Female &&
-                (a.Status == AnimalStatus.BreedingFemale || a.Status == AnimalStatus.Pregnant)),
+                a.IsBreeding && a.Gender == Gender.Female &&
+                (a.Status == AnimalStatus.Healthy || a.Status == AnimalStatus.Pregnant)),
             BreedingMales = animals.Count(a =>
-                a.Gender == Gender.Male &&
-                a.Status == AnimalStatus.BreedingMale),
+                a.IsBreeding && a.Gender == Gender.Male && a.Status == AnimalStatus.Healthy),
             DueForHusbandry = animals.Count(a => _healthService.IsOverdueForHusbandry(a)),
             PregnantAnimals = animals.Count(a => a.IsPregnant)
         };

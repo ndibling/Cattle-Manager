@@ -36,7 +36,7 @@ public partial class HerdDetailsViewModel : ObservableObject
     [ObservableProperty] private IReadOnlyList<string> _genderOptions = ["All", "Male", "Female"];
     [ObservableProperty] private IReadOnlyList<string> _breedOptions = ["All"];
     [ObservableProperty] private IReadOnlyList<string> _statusOptions =
-        ["All", "Healthy", "Breeding Female", "Breeding Male", "Pregnant", "Weaned", "For Sale", "Inactive", "Due for Husbandry"];
+        ["All", "Healthy", "Pregnant", "For Sale", "Sold", "Inactive", "Deceased", "Calf", "Breeding Female", "Breeding Male", "Due for Husbandry"];
 
     public HerdDetailsViewModel(IAnimalRepository animals, IHerdRepository herds,
         HealthService healthService, NavigationService nav, DialogService dialog)
@@ -96,8 +96,13 @@ public partial class HerdDetailsViewModel : ObservableObject
         }
         else if (FilterStatus == "Breeding Female")
         {
-            if (a.Gender != Gender.Female ||
-                (a.Status != AnimalStatus.BreedingFemale && a.Status != AnimalStatus.Pregnant))
+            if (!a.IsBreeding || a.Gender != Gender.Female ||
+                (a.Status != AnimalStatus.Healthy && a.Status != AnimalStatus.Pregnant))
+            { e.Accepted = false; return; }
+        }
+        else if (FilterStatus == "Breeding Male")
+        {
+            if (!a.IsBreeding || a.Gender != Gender.Male || a.Status != AnimalStatus.Healthy)
             { e.Accepted = false; return; }
         }
         else if (FilterStatus != "All")

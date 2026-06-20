@@ -9,6 +9,7 @@
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
         <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
         <conv:StatusToBrushConverter x:Key="StatusToBrush"/>
+        <conv:AnimalStatusDisplayConverter x:Key="AnimalStatusDisplay"/>
         <conv:GenderToBorderBrushConverter x:Key="GenderToBorder"/>
         <conv:GenderToSymbolConverter x:Key="GenderToSymbol"/>
         <conv:PathToImageConverter x:Key="PathToImage"/>
@@ -83,7 +84,7 @@
                         </Border>
                         <Border Background="{Binding Animal.Status, Converter={StaticResource StatusToBrush}}"
                                 CornerRadius="12" Padding="10,4">
-                            <TextBlock Text="{Binding Animal.Status}" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Animal.Status, Converter={StaticResource AnimalStatusDisplay}}" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
                         </Border>
                     </WrapPanel>
 

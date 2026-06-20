@@ -88,7 +88,7 @@ public class SampleDataSeeder
 
         // THE BULL — subject animal with full 4-generation pedigree
         var bull = await AddAnimal(herd.HerdId, angus.BreedId, "Atlas", "RHR Atlas 007", Gender.Male,
-            AnimalStatus.BreedingMale, today.AddYears(-4), parentSire.AnimalId, parentDam.AnimalId,
+            AnimalStatus.Healthy, today.AddYears(-4), parentSire.AnimalId, parentDam.AnimalId,
             weight: 1850, weightUnit: WeightUnit.Pounds, height: 58, heightUnit: HeightUnit.Inches,
             coloring: "Solid black, no markings", location: "Bull Pen 1",
             maleBreedingStatus: MaleBreedingStatus.Active, isBreeding: true,
@@ -100,7 +100,7 @@ public class SampleDataSeeder
 
         // Breeding cows
         var cow1 = await AddAnimal(herd.HerdId, angus.BreedId, "Molly", "RHR Molly 010", Gender.Female,
-            AnimalStatus.BreedingFemale, today.AddYears(-5), gSire.AnimalId, gDam.AnimalId,
+            AnimalStatus.Healthy, today.AddYears(-5), gSire.AnimalId, gDam.AnimalId,
             weight: 1150, weightUnit: WeightUnit.Pounds, height: 50, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture A", isBreeding: true,
             lastWorming: today.AddDays(-60), lastVaccination: today.AddMonths(-2),
@@ -110,7 +110,7 @@ public class SampleDataSeeder
             expectedHeightAtMaturity: 50);
 
         var cow2 = await AddAnimal(herd.HerdId, angus.BreedId, "Rosie", "RHR Rosie 011", Gender.Female,
-            AnimalStatus.BreedingFemale, today.AddYears(-4), gSire.AnimalId, gDam.AnimalId,
+            AnimalStatus.Healthy, today.AddYears(-4), gSire.AnimalId, gDam.AnimalId,
             weight: 1100, weightUnit: WeightUnit.Pounds, height: 49, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture A", isBreeding: true,
             lastWorming: today.AddDays(-30), lastVaccination: today.AddMonths(-8),
@@ -128,7 +128,7 @@ public class SampleDataSeeder
             pastureLocation: "Pasture B", pastureState: "Oklahoma", expectedHeightAtMaturity: 48);
 
         var cow4 = await AddAnimal(herd.HerdId, angus.BreedId, "Buttercup", "RHR Buttercup 013", Gender.Female,
-            AnimalStatus.BreedingFemale, today.AddYears(-6), null, parentDam.AnimalId,
+            AnimalStatus.Healthy, today.AddYears(-6), null, parentDam.AnimalId,
             weight: 1200, weightUnit: WeightUnit.Pounds, height: 51, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture A", isBreeding: true,
             lastWorming: today.AddDays(-100), lastVaccination: today.AddMonths(-2),
@@ -137,7 +137,7 @@ public class SampleDataSeeder
             expectedHeightAtMaturity: 51);
 
         var cow5 = await AddAnimal(herd.HerdId, angus.BreedId, "Hazel", "RHR Hazel 014", Gender.Female,
-            AnimalStatus.BreedingFemale, today.AddYears(-5), null, parentDam.AnimalId,
+            AnimalStatus.Healthy, today.AddYears(-5), null, parentDam.AnimalId,
             weight: 1120, weightUnit: WeightUnit.Pounds, height: 50, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture B", isBreeding: true,
             lastWorming: today.AddDays(-110), lastVaccination: today.AddMonths(-13),
@@ -145,7 +145,7 @@ public class SampleDataSeeder
             pastureLocation: "Pasture B", pastureState: "Oklahoma", expectedHeightAtMaturity: 50);
 
         var cow6 = await AddAnimal(herd.HerdId, angus.BreedId, "Luna", "RHR Luna 015", Gender.Female,
-            AnimalStatus.BreedingFemale, today.AddYears(-3), null, null,
+            AnimalStatus.Healthy, today.AddYears(-3), null, null,
             weight: 1000, weightUnit: WeightUnit.Pounds, height: 47, heightUnit: HeightUnit.Inches,
             coloring: "Solid black", location: "Pasture B", isBreeding: true,
             lastWorming: today.AddDays(-85), lastVaccination: today.AddMonths(-1),

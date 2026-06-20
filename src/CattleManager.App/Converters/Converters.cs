@@ -41,19 +41,26 @@ public class StatusToBrushConverter : IValueConverter
         if (value is AnimalStatus status)
             return status switch
             {
-                AnimalStatus.Healthy => new SolidColorBrush(Color.FromRgb(46, 125, 50)),
-                AnimalStatus.BreedingFemale => new SolidColorBrush(Color.FromRgb(173, 20, 87)),
-                AnimalStatus.BreedingMale => new SolidColorBrush(Color.FromRgb(21, 101, 192)),
+                AnimalStatus.Healthy  => new SolidColorBrush(Color.FromRgb(46, 125, 50)),
                 AnimalStatus.Pregnant => new SolidColorBrush(Color.FromRgb(106, 27, 154)),
-                AnimalStatus.Weaned => new SolidColorBrush(Color.FromRgb(0, 131, 143)),
-                AnimalStatus.ForSale => new SolidColorBrush(Color.FromRgb(230, 81, 0)),
-                AnimalStatus.Sold => new SolidColorBrush(Color.FromRgb(66, 66, 66)),
-                AnimalStatus.Deceased => new SolidColorBrush(Color.FromRgb(97, 97, 97)),
+                AnimalStatus.ForSale  => new SolidColorBrush(Color.FromRgb(230, 81, 0)),
+                AnimalStatus.Sold     => new SolidColorBrush(Color.FromRgb(66, 66, 66)),
                 AnimalStatus.Inactive => new SolidColorBrush(Color.FromRgb(117, 117, 117)),
+                AnimalStatus.Deceased => new SolidColorBrush(Color.FromRgb(97, 97, 97)),
+                AnimalStatus.Calf     => new SolidColorBrush(Color.FromRgb(0, 131, 143)),
                 _ => Brushes.Gray
             };
         return Brushes.Gray;
     }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+public class AnimalStatusDisplayConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => value is AnimalStatus s && s == AnimalStatus.ForSale ? "For Sale" : value?.ToString() ?? "";
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();

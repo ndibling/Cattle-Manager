@@ -303,11 +303,26 @@ public partial class App : Application
                 ["TaxRate"]   = "REAL NOT NULL DEFAULT 0.0",
                 ["TaxAmount"] = "REAL NOT NULL DEFAULT 0.0",
             });
+            await MigrateRemovedStatusValuesAsync(conn);
         }
         finally
         {
             if (!wasOpen) await conn.CloseAsync();
         }
+    }
+
+    // One-time migration: remap integer status values removed in v1.8.
+    // Old: BreedingFemale=1, BreedingMale=2, Weaned=4 — none exist in the new enum.
+    private static async Task MigrateRemovedStatusValuesAsync(System.Data.Common.DbConnection conn)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+UPDATE Animals SET Status = 0, IsBreeding = 1 WHERE Status = 1;
+UPDATE Animals SET Status = 0, IsBreeding = 1 WHERE Status = 2;
+UPDATE Animals SET Status = 0               WHERE Status = 4;";
+        var rows = await cmd.ExecuteNonQueryAsync();
+        if (rows > 0)
+            Log.Information("Migrated {Count} animal status row(s) to new enum layout", rows);
     }
 
     private static async Task EnsureTableColumnsAsync(

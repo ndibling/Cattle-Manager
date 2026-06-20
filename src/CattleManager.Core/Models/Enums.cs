@@ -4,15 +4,13 @@ public enum Gender { Male, Female }
 
 public enum AnimalStatus
 {
-    Healthy,
-    BreedingFemale,
-    BreedingMale,
-    Pregnant,
-    Weaned,
-    ForSale,
-    Sold,
-    Inactive,
-    Deceased
+    Healthy   = 0,
+    Pregnant  = 3,
+    ForSale   = 5,
+    Sold      = 6,
+    Inactive  = 7,
+    Deceased  = 8,
+    Calf      = 9,
 }
 
 public enum MaleBreedingStatus { Active, Retired, Incapacitated }

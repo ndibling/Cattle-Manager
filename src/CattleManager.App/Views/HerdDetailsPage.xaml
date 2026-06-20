@@ -7,6 +7,7 @@
 
     <Page.Resources>
         <local:StatusToBrushConverter x:Key="StatusToBrush"/>
+        <local:AnimalStatusDisplayConverter x:Key="AnimalStatusDisplay"/>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
         <local:OverdueToBrushConverter x:Key="OverdueToBrush"/>
         <local:GenderToBrushConverter x:Key="GenderToBrush"/>
@@ -140,7 +141,8 @@
                         <DataTemplate>
                             <Border CornerRadius="10" Padding="8,3" Margin="4"
                                     Background="{Binding Status, Converter={StaticResource StatusToBrush}}">
-                                <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="SemiBold"
+                                <TextBlock Text="{Binding Status, Converter={StaticResource AnimalStatusDisplay}}"
+                                           FontSize="11" FontWeight="SemiBold"
                                            Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
                         </DataTemplate>

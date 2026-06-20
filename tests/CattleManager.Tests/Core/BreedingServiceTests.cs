@@ -63,7 +63,7 @@ public class BreedingServiceTests
         result.IsPregnant.Should().BeFalse();
         result.ExpectedDueDate.Should().BeNull();
         result.PregnancySireId.Should().BeNull();
-        result.Status.Should().Be(AnimalStatus.BreedingFemale);
+        result.Status.Should().Be(AnimalStatus.Healthy);
     }
 
     [Fact]

@@ -28,7 +28,7 @@ public class BreedingService
         female.IsPregnant = false;
         female.ExpectedDueDate = null;
         female.PregnancySireId = null;
-        female.Status = female.IsBreeding ? AnimalStatus.BreedingFemale : AnimalStatus.Healthy;
+        female.Status = AnimalStatus.Healthy;
         return female;
     }
 

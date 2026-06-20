@@ -38,7 +38,7 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBreedingAllowed))]
     private AnimalStatus _status;
-    public bool IsBreedingAllowed => Status != AnimalStatus.Inactive && Status != AnimalStatus.Deceased;
+    public bool IsBreedingAllowed => Status != AnimalStatus.Inactive && Status != AnimalStatus.Deceased && Status != AnimalStatus.Sold;
     [ObservableProperty] private DateTime _birthDate = DateTime.Today;
     [ObservableProperty] private DateTime? _dateAcquired;
     [ObservableProperty] private string? _coloring;
@@ -203,12 +203,21 @@ public partial class AnimalFormViewModel : ObservableObject
     {
         if (!IsBreedingAllowed && IsBreeding)
             IsBreeding = false;
+        if (value == AnimalStatus.ForSale && !IsForSale)
+            IsForSale = true;
+        else if (value != AnimalStatus.ForSale && IsForSale)
+            IsForSale = false;
     }
 
     partial void OnIsForSaleChanged(bool value)
     {
-        if (!value)
+        if (value)
         {
+            if (Status != AnimalStatus.ForSale) Status = AnimalStatus.ForSale;
+        }
+        else
+        {
+            if (Status == AnimalStatus.ForSale) Status = AnimalStatus.Healthy;
             AskingPrice = null;
             SalePrice   = null;
             SoldDate    = null;
