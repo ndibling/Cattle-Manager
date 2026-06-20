@@ -10,5 +10,6 @@ public record AnimalIntakeResult(
     DateTime? PurchaseDate,
     decimal? PurchasePrice,
     string? ExpenseCategoryKey,
-    string? ExpenseNotes
+    string? ExpenseNotes,
+    int? SelectedHerdId = null
 );

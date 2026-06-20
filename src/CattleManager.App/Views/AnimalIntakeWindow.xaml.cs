@@ -10,6 +10,9 @@ namespace CattleManager.App.Views;
 public partial class AnimalIntakeWindow : Window
 {
     private FarmDto? _farm;
+    private int? _selectedHerdId;
+
+    public bool RequireHerdSelection { get; set; }
 
     private static readonly IReadOnlyList<CategoryOption> ExpenseCategories =
     [
@@ -46,8 +49,31 @@ public partial class AnimalIntakeWindow : Window
             using var scope = App.Services.CreateScope();
             var farms = scope.ServiceProvider.GetRequiredService<IFarmRepository>();
             _farm = await farms.GetDefaultAsync();
+
+            if (RequireHerdSelection)
+            {
+                var herds = scope.ServiceProvider.GetRequiredService<IHerdRepository>();
+                var herdList = await herds.GetAllAsync();
+                HerdCombo.ItemsSource = herdList;
+                Step0Panel.Visibility = Visibility.Visible;
+                Step1Panel.Visibility = Visibility.Collapsed;
+            }
         }
         catch { }
+    }
+
+    private void Step0Continue_Click(object sender, RoutedEventArgs e)
+    {
+        HerdValidationText.Visibility = Visibility.Collapsed;
+        if (HerdCombo.SelectedItem is not HerdDto herd)
+        {
+            HerdValidationText.Text = "Please select a herd.";
+            HerdValidationText.Visibility = Visibility.Visible;
+            return;
+        }
+        _selectedHerdId = herd.HerdId;
+        Step0Panel.Visibility = Visibility.Collapsed;
+        Step1Panel.Visibility = Visibility.Visible;
     }
 
     private void BornOnFarm_Click(object sender, RoutedEventArgs e)
@@ -62,7 +88,8 @@ public partial class AnimalIntakeWindow : Window
             PurchaseDate: null,
             PurchasePrice: null,
             ExpenseCategoryKey: null,
-            ExpenseNotes: null
+            ExpenseNotes: null,
+            SelectedHerdId: _selectedHerdId
         );
         DialogResult = true;
     }
@@ -107,7 +134,8 @@ public partial class AnimalIntakeWindow : Window
             PurchaseDate: PurchaseDatePicker.SelectedDate ?? DateTime.Today,
             PurchasePrice: price,
             ExpenseCategoryKey: category,
-            ExpenseNotes: notes
+            ExpenseNotes: notes,
+            SelectedHerdId: _selectedHerdId
         );
         DialogResult = true;
     }

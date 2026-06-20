@@ -43,7 +43,13 @@ public partial class MainWindow : Window
 
     private void BtnAddAnimal_Click(object sender, RoutedEventArgs e)
     {
+        var win = new AnimalIntakeWindow { Owner = this, RequireHerdSelection = true };
+        if (win.ShowDialog() != true || win.Result is null) return;
+        if (win.Result.SelectedHerdId is not int herdId) return;
+
         var vm = App.Services.GetRequiredService<AnimalFormViewModel>();
+        vm.HerdId = herdId;
+        vm.ApplyIntake(win.Result);
         _nav.NavigateTo(new AnimalFormPage(vm));
         HighlightNav(BtnAddAnimal);
     }

@@ -47,6 +47,29 @@
 
     <StackPanel>
 
+        <!-- Step 0: Herd Selection (only shown from global Add Animal button) -->
+        <StackPanel x:Name="Step0Panel" Visibility="Collapsed" Margin="28,28,28,24">
+            <TextBlock Text="Select Herd"
+                       FontSize="20" FontWeight="SemiBold" Margin="0,0,0,6"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            <TextBlock Text="Choose which herd this animal will be added to."
+                       FontSize="13" TextWrapping="Wrap" Margin="0,0,0,20"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+
+            <TextBlock Text="Herd *" Style="{StaticResource FieldLabel}"/>
+            <ComboBox x:Name="HerdCombo" FontSize="14" HorizontalAlignment="Stretch"
+                      DisplayMemberPath="HerdName"/>
+
+            <TextBlock x:Name="HerdValidationText" Visibility="Collapsed"
+                       Foreground="#D32F2F" FontSize="13" Margin="0,10,0,0" TextWrapping="Wrap"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="Cancel" Padding="20,8" Margin="0,0,10,0" Click="Cancel_Click"/>
+                <Button Content="Continue" Padding="20,8"
+                        Style="{StaticResource PrimaryButton}" Click="Step0Continue_Click"/>
+            </StackPanel>
+        </StackPanel>
+
         <!-- Step 1: Born on farm or Purchased? -->
         <StackPanel x:Name="Step1Panel" Margin="28,28,28,24">
             <TextBlock Text="How was this animal acquired?"
