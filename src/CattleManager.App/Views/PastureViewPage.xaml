@@ -30,8 +30,8 @@
                                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
-                    <TextBlock Text="Filter herd:" VerticalAlignment="Center" FontSize="13"
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Filter herd:" VerticalAlignment="Center" FontSize="13" Margin="0,0,10,0"
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     <ComboBox ItemsSource="{Binding HerdFilterOptions}"
                               SelectedItem="{Binding SelectedHerd}"
