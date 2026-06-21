@@ -187,6 +187,9 @@
                                    FontSize="13" TextWrapping="Wrap" Margin="0,0,0,12"
                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Content="📋 Download CSV Template"
+                                    Command="{Binding DownloadCsvTemplateCommand}"
+                                    Padding="16,8" Margin="0,0,12,0"/>
                             <Button Content="📥 Import Animals from CSV"
                                     Command="{Binding ImportAnimalsCsvCommand}"
                                     Padding="16,8" Margin="0,0,12,0" Style="{StaticResource PrimaryButton}"/>

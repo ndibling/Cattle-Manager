@@ -259,6 +259,69 @@ public partial class SettingsViewModel : ObservableObject
         finally { IsLoading = false; }
     }
 
+    // ── CSV Template ─────────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private async Task DownloadCsvTemplateAsync()
+    {
+        var path = _dialog.SaveCsvFile("Animals_Import_Template");
+        if (path is null) return;
+
+        var sb = new StringBuilder();
+        sb.AppendLine(string.Join(",", CsvHeaders));
+
+        // Example row so the user can see expected formats
+        sb.AppendLine(string.Join(",", new[]
+        {
+            "Main Herd",        // HerdName
+            "Bessie",           // BarnName
+            "Registered Bessie",// RegisteredName
+            "REG-001",          // RegistrationNumber
+            "AHA",              // RegistrationOrganization
+            "Angus",            // BreedName
+            "Female",           // Gender  (Male / Female)
+            "Healthy",          // Status  (Healthy / Calf / ForSale / Sold / Inactive / Deceased / Pregnant)
+            "2022-03-15",       // BirthDate  (yyyy-MM-dd)
+            "2022-03-15",       // DateAcquired
+            "TAG-001",          // TagNumber
+            "850",              // Weight
+            "Pounds",           // WeightUnit  (Pounds / Kilograms)
+            "54",               // Height
+            "Inches",           // HeightUnit  (Inches / Hands / Centimeters)
+            "Black",            // Coloring
+            "John Doe Ranch",   // BreedersName
+            "Jane Smith",       // CurrentOwner
+            "True",             // BornOnProperty  (True / False)
+            "",                 // SellerName
+            "",                 // SellerAddress
+            "",                 // PurchaseDate
+            "",                 // PurchasePrice
+            "False",            // IsForSale
+            "",                 // AskingPrice
+            "1200",             // CurrentValue
+            "",                 // SalePrice
+            "",                 // BuyerName
+            "",                 // BuyerAddress
+            "",                 // SoldDate
+            "North Pasture",    // PastureLocation
+            "TX",               // PastureState
+            "",                 // ExternalSireName
+            "",                 // ExternalDamName
+            "",                 // LastWormingDate
+            "",                 // LastVaccinationDate
+            "",                 // LastHealthCheckDate
+            "",                 // LastHoofTrimmingDate
+            "",                 // HealthNotes
+            "False",            // IsBreeding
+            "False",            // IsPregnant
+            "",                 // ExpectedDueDate
+            "",                 // BreedingDate
+        }));
+
+        await File.WriteAllTextAsync(path, sb.ToString(), Encoding.UTF8);
+        DataStatusMessage = $"Template saved to {Path.GetFileName(path)}.";
+    }
+
     // ── CSV Import ────────────────────────────────────────────────────────────
 
     [RelayCommand]
