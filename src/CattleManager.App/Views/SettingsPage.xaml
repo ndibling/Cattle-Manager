@@ -175,6 +175,47 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Data Management -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Data Management" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <!-- CSV Import / Export -->
+                        <TextBlock Text="Import / Export Animals (CSV)"
+                                   FontSize="14" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <TextBlock Text="Import animals from a CSV file or export all animals to CSV. The CSV must include a header row. Download a template by exporting with no animals loaded."
+                                   FontSize="13" TextWrapping="Wrap" Margin="0,0,0,12"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Content="📥 Import Animals from CSV"
+                                    Command="{Binding ImportAnimalsCsvCommand}"
+                                    Padding="16,8" Margin="0,0,12,0" Style="{StaticResource PrimaryButton}"/>
+                            <Button Content="📤 Export Animals to CSV"
+                                    Command="{Binding ExportAnimalsCsvCommand}"
+                                    Padding="16,8"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding DataStatusMessage}"
+                                   Foreground="#2E7D32" FontSize="13"
+                                   Visibility="{Binding DataStatusMessage, Converter={StaticResource NullToVisibility}}"
+                                   Margin="0,0,0,16" TextWrapping="Wrap"/>
+
+                        <Separator Margin="0,4,0,16"/>
+
+                        <!-- Clear Database -->
+                        <TextBlock Text="Clear Database"
+                                   FontSize="14" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <TextBlock Text="Permanently delete all animals, herds, and financial records. Farm settings and preferences are preserved. This action cannot be undone."
+                                   FontSize="13" TextWrapping="Wrap" Margin="0,0,0,12"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                        <Button Content="🗑 Clear All Data"
+                                Command="{Binding ClearDatabaseCommand}"
+                                Padding="16,8"
+                                Background="#C62828" Foreground="White"
+                                BorderThickness="0" Cursor="Hand"
+                                HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

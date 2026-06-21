@@ -72,6 +72,17 @@ public class DialogService
         return dlg.ShowDialog() == true ? dlg.FileName : null;
     }
 
+    public string? OpenCsvFile()
+    {
+        var dlg = new OpenFileDialog
+        {
+            Title = "Import CSV",
+            Filter = "CSV Files|*.csv|All Files|*.*",
+            Multiselect = false
+        };
+        return dlg.ShowDialog() == true ? dlg.FileName : null;
+    }
+
     public string? SaveCsvFile(string defaultName)
     {
         var dlg = new SaveFileDialog
