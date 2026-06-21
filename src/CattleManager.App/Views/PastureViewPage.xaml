@@ -285,7 +285,7 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBox Grid.Column="0"
-                                                             Text="{Binding DataContext.NewPastureName, RelativeSource={RelativeSource AncestorType=Page}, UpdateSourceTrigger=PropertyChanged}"
+                                                             Text="{Binding NewPastureName, UpdateSourceTrigger=PropertyChanged}"
                                                              ui:ControlHelper.PlaceholderText="Pasture name"
                                                              FontSize="12" Padding="5,3"
                                                              Tag="{Binding}"

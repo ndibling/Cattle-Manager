@@ -181,7 +181,9 @@ public partial class AnimalFormViewModel : ObservableObject
 
     private async Task LoadPastureOptionsAsync(string? selectName = null)
     {
-        var all = await _pastures.GetAllAsync();
+        var all = HerdId > 0
+            ? await _pastures.GetByHerdAsync(HerdId)
+            : await _pastures.GetAllAsync();
         PastureOptions = new ObservableCollection<string>(all.Select(p => p.PastureName).Append(NewPastureSentinel));
         var toSelect = selectName ?? PastureLocation;
         SelectedPastureOption = PastureOptions.Contains(toSelect) ? toSelect : null;
@@ -208,7 +210,7 @@ public partial class AnimalFormViewModel : ObservableObject
     {
         var name = NewPastureName.Trim();
         if (string.IsNullOrWhiteSpace(name)) return;
-        await _pastures.AddAsync(new PastureDto { PastureName = name, Notes = NewPastureNotes?.Trim() });
+        await _pastures.AddAsync(new PastureDto { HerdId = HerdId, PastureName = name, Notes = NewPastureNotes?.Trim() });
         await LoadPastureOptionsAsync(name);
         IsCreatingNewPasture = false;
     }

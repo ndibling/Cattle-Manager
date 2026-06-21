@@ -13,6 +13,8 @@ public partial class HerdBoardGroup : ObservableObject
     public HerdDto Herd { get; init; } = null!;
     public ObservableCollection<PastureLane> Lanes { get; } = [];
     public int TotalAnimalCount => Lanes.Sum(l => l.Animals.Count);
+
+    [ObservableProperty] private string _newPastureName = string.Empty;
 }
 
 public partial class PastureLane : ObservableObject
@@ -43,9 +45,6 @@ public partial class PastureViewViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<HerdDto> _herdFilterOptions = [];
     [ObservableProperty] private HerdDto? _selectedHerd;
 
-    // Pasture add state (shared, one at a time)
-    [ObservableProperty] private string _newPastureName = string.Empty;
-
     public PastureViewViewModel(IPastureRepository pastures, IAnimalRepository animals,
         IHerdRepository herds, DialogService dialog)
     {
@@ -62,10 +61,9 @@ public partial class PastureViewViewModel : ObservableObject
         {
             _allHerds   = (await _herds.GetAllAsync()).ToList();
             _allAnimals = (await _animals.GetAllAsync()).ToList();
-            var allPastures = (await _pastures.GetAllAsync()).ToList();
 
             HerdFilterOptions = new ObservableCollection<HerdDto>(_allHerds);
-            RebuildBoard(allPastures);
+            await RebuildBoardAsync();
         }
         finally
         {
@@ -73,26 +71,22 @@ public partial class PastureViewViewModel : ObservableObject
         }
     }
 
-    partial void OnSelectedHerdChanged(HerdDto? value) => _ = ReloadBoardAsync();
+    partial void OnSelectedHerdChanged(HerdDto? value) => _ = RebuildBoardAsync();
 
-    private async Task ReloadBoardAsync()
-    {
-        var allPastures = (await _pastures.GetAllAsync()).ToList();
-        RebuildBoard(allPastures);
-    }
-
-    private void RebuildBoard(List<PastureDto> allPastures)
+    private async Task RebuildBoardAsync()
     {
         var groups = new ObservableCollection<HerdBoardGroup>();
         var herds  = SelectedHerd is null ? _allHerds : _allHerds.Where(h => h.HerdId == SelectedHerd.HerdId).ToList();
-        var assignedNames = allPastures.Select(p => p.PastureName).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (var herd in herds)
         {
-            var herdAnimals = _allAnimals.Where(a => a.HerdId == herd.HerdId).ToList();
-            var group = new HerdBoardGroup { Herd = herd };
+            var herdPastures = (await _pastures.GetByHerdAsync(herd.HerdId)).ToList();
+            var herdAnimals  = _allAnimals.Where(a => a.HerdId == herd.HerdId).ToList();
+            var group        = new HerdBoardGroup { Herd = herd };
 
-            foreach (var pasture in allPastures)
+            var assignedNames = herdPastures.Select(p => p.PastureName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var pasture in herdPastures)
             {
                 var lane = new PastureLane { Pasture = pasture, PastureName = pasture.PastureName };
                 foreach (var animal in herdAnimals.Where(a =>
@@ -101,7 +95,6 @@ public partial class PastureViewViewModel : ObservableObject
                 group.Lanes.Add(lane);
             }
 
-            // Unassigned: animals with no pasture or a pasture name not in the defined list
             var unassigned = new PastureLane { Pasture = null, PastureName = "Unassigned" };
             foreach (var animal in herdAnimals.Where(a =>
                 string.IsNullOrWhiteSpace(a.PastureLocation) || !assignedNames.Contains(a.PastureLocation)))
@@ -116,12 +109,10 @@ public partial class PastureViewViewModel : ObservableObject
 
     public async Task MoveAnimalAsync(AnimalDto animal, PastureLane targetLane, HerdBoardGroup targetGroup)
     {
-        // Remove from current lane in every group
         foreach (var group in HerdGroups)
             foreach (var lane in group.Lanes)
                 lane.Animals.Remove(animal);
 
-        // Update the animal in the master list
         animal.HerdId = targetGroup.Herd.HerdId;
         animal.PastureLocation = targetLane.IsUnassigned ? null : targetLane.PastureName;
         targetLane.Animals.Add(animal);
@@ -137,35 +128,23 @@ public partial class PastureViewViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
     public async Task AddPastureToGroupAsync(HerdBoardGroup group)
     {
-        var name = NewPastureName.Trim();
+        var name = group.NewPastureName.Trim();
         if (string.IsNullOrWhiteSpace(name)) return;
 
-        var dto = await _pastures.AddAsync(new PastureDto { PastureName = name });
+        var dto  = await _pastures.AddAsync(new PastureDto { HerdId = group.Herd.HerdId, PastureName = name });
         var lane = new PastureLane { Pasture = dto, PastureName = dto.PastureName };
+
         // Insert before the Unassigned lane
-        var unassignedIdx = group.Lanes.Count - 1;
-        if (unassignedIdx >= 0)
-            group.Lanes.Insert(unassignedIdx, lane);
-        else
-            group.Lanes.Add(lane);
+        var insertIdx = group.Lanes.Count - 1;
+        if (insertIdx >= 0) group.Lanes.Insert(insertIdx, lane);
+        else group.Lanes.Add(lane);
 
-        // Also add the lane to all other herd groups (same pasture list applies globally)
-        foreach (var otherGroup in HerdGroups)
-        {
-            if (otherGroup == group) continue;
-            var otherLane = new PastureLane { Pasture = dto, PastureName = dto.PastureName };
-            var idx = otherGroup.Lanes.Count - 1;
-            if (idx >= 0) otherGroup.Lanes.Insert(idx, otherLane);
-            else otherGroup.Lanes.Add(otherLane);
-        }
-
-        NewPastureName = string.Empty;
+        group.NewPastureName = string.Empty;
     }
 
-    public async Task CommitRenameAsync(PastureLane lane)
+    public async Task CommitRenameAsync(PastureLane lane, HerdBoardGroup ownerGroup)
     {
         if (lane.Pasture is null) return;
         var newName = lane.RenameText.Trim();
@@ -179,57 +158,39 @@ public partial class PastureViewViewModel : ObservableObject
         lane.Pasture.PastureName = newName;
         await _pastures.UpdateAsync(lane.Pasture);
 
-        // Update all animal cards across all groups
-        foreach (var group in HerdGroups)
-            foreach (var l in group.Lanes)
-                foreach (var animal in l.Animals.Where(a =>
-                    string.Equals(a.PastureLocation, oldName, StringComparison.OrdinalIgnoreCase)).ToList())
-                {
-                    animal.PastureLocation = newName;
-                    await _animals.UpdateAsync(animal);
-                }
+        // Update PastureLocation only on animals belonging to the same herd
+        foreach (var l in ownerGroup.Lanes)
+            foreach (var animal in l.Animals.Where(a =>
+                string.Equals(a.PastureLocation, oldName, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                animal.PastureLocation = newName;
+                await _animals.UpdateAsync(animal);
+            }
 
-        // Update all lane headers in every herd group
-        foreach (var group in HerdGroups)
-            foreach (var l in group.Lanes.Where(l => l.Pasture?.PastureId == lane.Pasture.PastureId))
-                l.PastureName = newName;
-
-        lane.IsRenaming = false;
+        lane.PastureName = newName;
+        lane.IsRenaming  = false;
     }
 
-    public async Task DeletePastureAsync(PastureLane lane)
+    public async Task DeletePastureAsync(PastureLane lane, HerdBoardGroup ownerGroup)
     {
         if (lane.Pasture is null) return;
 
-        int count = HerdGroups.Sum(g => g.Lanes
-            .Where(l => l.Pasture?.PastureId == lane.Pasture.PastureId)
-            .Sum(l => l.Animals.Count));
-
+        int count = lane.Animals.Count;
         if (count > 0)
         {
             string msg = $"{count} animal(s) are in \"{lane.PastureName}\". They will be moved to Unassigned. Continue?";
             if (!_dialog.Confirm(msg, "Delete Pasture")) return;
 
-            foreach (var group in HerdGroups)
+            var unassigned = ownerGroup.Lanes.FirstOrDefault(l => l.IsUnassigned);
+            foreach (var animal in lane.Animals.ToList())
             {
-                var matchingLane = group.Lanes.FirstOrDefault(l => l.Pasture?.PastureId == lane.Pasture.PastureId);
-                if (matchingLane is null) continue;
-                var unassigned = group.Lanes.FirstOrDefault(l => l.IsUnassigned);
-                foreach (var animal in matchingLane.Animals.ToList())
-                {
-                    animal.PastureLocation = null;
-                    unassigned?.Animals.Add(animal);
-                    await _animals.UpdateAsync(animal);
-                }
+                animal.PastureLocation = null;
+                unassigned?.Animals.Add(animal);
+                await _animals.UpdateAsync(animal);
             }
         }
 
         await _pastures.DeleteAsync(lane.Pasture.PastureId);
-
-        foreach (var group in HerdGroups)
-        {
-            var toRemove = group.Lanes.Where(l => l.Pasture?.PastureId == lane.Pasture.PastureId).ToList();
-            foreach (var l in toRemove) group.Lanes.Remove(l);
-        }
+        ownerGroup.Lanes.Remove(lane);
     }
 }

@@ -288,11 +288,28 @@ public partial class App : Application
         await db.Database.ExecuteSqlRawAsync(@"
             CREATE TABLE IF NOT EXISTS ""Pastures"" (
                 ""PastureId""   INTEGER NOT NULL CONSTRAINT ""PK_Pastures"" PRIMARY KEY AUTOINCREMENT,
+                ""HerdId""      INTEGER NOT NULL DEFAULT 0,
                 ""PastureName"" TEXT    NOT NULL DEFAULT '',
                 ""Notes""       TEXT    NULL,
                 ""SortOrder""   INTEGER NOT NULL DEFAULT 0
             )");
         Log.Information("Verified table Pastures exists");
+
+        // Add HerdId to existing Pastures tables created before this column was introduced
+        var conn = db.Database.GetDbConnection();
+        bool wasOpen = conn.State == System.Data.ConnectionState.Open;
+        if (!wasOpen) await conn.OpenAsync();
+        try
+        {
+            await EnsureTableColumnsAsync(conn, "Pastures", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["HerdId"] = "INTEGER NOT NULL DEFAULT 0",
+            });
+        }
+        finally
+        {
+            if (!wasOpen) await conn.CloseAsync();
+        }
     }
 
     private static async Task EnsureColumnsExistAsync(CattleDbContext db)

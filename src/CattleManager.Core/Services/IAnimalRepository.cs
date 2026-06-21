@@ -85,6 +85,7 @@ public interface IBullExposureRepository
 public interface IPastureRepository
 {
     Task<IReadOnlyList<PastureDto>> GetAllAsync();
+    Task<IReadOnlyList<PastureDto>> GetByHerdAsync(int herdId);
     Task<PastureDto> AddAsync(PastureDto dto);
     Task<PastureDto> UpdateAsync(PastureDto dto);
     Task DeleteAsync(int pastureId);

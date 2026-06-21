@@ -67,26 +67,34 @@ public partial class PastureViewPage : Page
     private async void DeletePastureBtn_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
-        await _vm.DeletePastureAsync(lane);
+        var group = GetGroupContainingLane(lane);
+        if (group is null) return;
+        await _vm.DeletePastureAsync(lane, group);
     }
 
     private void RenameTextBox_KeyDown(object sender, KeyEventArgs e)
     {
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
-        if (e.Key == Key.Enter) _ = _vm.CommitRenameAsync(lane);
+        var group = GetGroupContainingLane(lane);
+        if (group is null) return;
+        if (e.Key == Key.Enter)  _ = _vm.CommitRenameAsync(lane, group);
         else if (e.Key == Key.Escape) lane.IsRenaming = false;
     }
 
     private async void RenameTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
-        await _vm.CommitRenameAsync(lane);
+        var group = GetGroupContainingLane(lane);
+        if (group is null) return;
+        await _vm.CommitRenameAsync(lane, group);
     }
 
     private async void CommitRenameBtn_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
-        await _vm.CommitRenameAsync(lane);
+        var group = GetGroupContainingLane(lane);
+        if (group is null) return;
+        await _vm.CommitRenameAsync(lane, group);
     }
 
     private async void AddPastureBtn_Click(object sender, RoutedEventArgs e)

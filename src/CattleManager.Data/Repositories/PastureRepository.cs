@@ -16,10 +16,20 @@ public class PastureRepository : IPastureRepository
         return list.Select(Map).ToList();
     }
 
+    public async Task<IReadOnlyList<PastureDto>> GetByHerdAsync(int herdId)
+    {
+        var list = await _db.Pastures
+            .Where(p => p.HerdId == herdId)
+            .OrderBy(p => p.SortOrder).ThenBy(p => p.PastureName)
+            .ToListAsync();
+        return list.Select(Map).ToList();
+    }
+
     public async Task<PastureDto> AddAsync(PastureDto dto)
     {
         var e = new Pasture
         {
+            HerdId      = dto.HerdId,
             PastureName = dto.PastureName,
             Notes       = dto.Notes,
             SortOrder   = dto.SortOrder,
@@ -52,6 +62,7 @@ public class PastureRepository : IPastureRepository
     private static PastureDto Map(Pasture e) => new()
     {
         PastureId   = e.PastureId,
+        HerdId      = e.HerdId,
         PastureName = e.PastureName,
         Notes       = e.Notes,
         SortOrder   = e.SortOrder,

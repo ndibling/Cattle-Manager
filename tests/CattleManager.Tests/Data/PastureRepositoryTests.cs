@@ -27,21 +27,38 @@ public class PastureRepositoryTests : IDisposable
     [Fact]
     public async Task AddAsync_PersistsAndReturnsWithId()
     {
-        var dto = new PastureDto { PastureName = "North Pasture", Notes = "Near the creek" };
+        var dto = new PastureDto { HerdId = 1, PastureName = "North Pasture", Notes = "Near the creek" };
 
         var result = await _sut.AddAsync(dto);
 
         result.PastureId.Should().BeGreaterThan(0);
+        result.HerdId.Should().Be(1);
         result.PastureName.Should().Be("North Pasture");
         result.Notes.Should().Be("Near the creek");
     }
 
     [Fact]
+    public async Task GetByHerdAsync_ReturnsOnlyMatchingHerd()
+    {
+        await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "North Pasture" });
+        await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "South Pasture" });
+        await _sut.AddAsync(new PastureDto { HerdId = 2, PastureName = "East Pasture" });
+
+        var herd1 = await _sut.GetByHerdAsync(1);
+        var herd2 = await _sut.GetByHerdAsync(2);
+
+        herd1.Should().HaveCount(2);
+        herd1.Should().OnlyContain(p => p.HerdId == 1);
+        herd2.Should().HaveCount(1);
+        herd2[0].PastureName.Should().Be("East Pasture");
+    }
+
+    [Fact]
     public async Task GetAllAsync_ReturnsAllPastures_OrderedBySortOrderThenName()
     {
-        await _sut.AddAsync(new PastureDto { PastureName = "Barn",         SortOrder = 2 });
-        await _sut.AddAsync(new PastureDto { PastureName = "North Pasture", SortOrder = 0 });
-        await _sut.AddAsync(new PastureDto { PastureName = "South Pasture", SortOrder = 1 });
+        await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "Barn",          SortOrder = 2 });
+        await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "North Pasture", SortOrder = 0 });
+        await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "South Pasture", SortOrder = 1 });
 
         var result = await _sut.GetAllAsync();
 
@@ -54,7 +71,7 @@ public class PastureRepositoryTests : IDisposable
     [Fact]
     public async Task UpdateAsync_ChangesNameAndNotes()
     {
-        var added = await _sut.AddAsync(new PastureDto { PastureName = "Old Name", Notes = "Old notes" });
+        var added = await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "Old Name", Notes = "Old notes" });
         added.PastureName = "New Name";
         added.Notes       = "Updated notes";
 
@@ -69,7 +86,7 @@ public class PastureRepositoryTests : IDisposable
     [Fact]
     public async Task DeleteAsync_RemovesPasture()
     {
-        var added = await _sut.AddAsync(new PastureDto { PastureName = "To Delete" });
+        var added = await _sut.AddAsync(new PastureDto { HerdId = 1, PastureName = "To Delete" });
 
         await _sut.DeleteAsync(added.PastureId);
 
