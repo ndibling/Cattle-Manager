@@ -18,6 +18,7 @@ public partial class HerdDetailsViewModel : ObservableObject
     private readonly HealthService _healthService;
     private readonly NavigationService _nav;
     private readonly DialogService _dialog;
+    private readonly ColumnConfigService _columnConfig;
 
     private ObservableCollection<AnimalDto> _allAnimals = [];
     private readonly CollectionViewSource _viewSource = new();
@@ -38,14 +39,42 @@ public partial class HerdDetailsViewModel : ObservableObject
     [ObservableProperty] private IReadOnlyList<string> _statusOptions =
         ["All", "Active", "Healthy", "Pregnant", "For Sale", "Sold", "Inactive", "Deceased", "Calf", "Breeding Female", "Breeding Male", "Due for Husbandry"];
 
+    // ---- Column visibility (default ON = currently shown; default OFF = new optional) ----
+    [ObservableProperty] private bool _showRegisteredName   = true;
+    [ObservableProperty] private bool _showBreed            = true;
+    [ObservableProperty] private bool _showGender           = true;
+    [ObservableProperty] private bool _showAge              = true;
+    [ObservableProperty] private bool _showBirthDate        = true;
+    [ObservableProperty] private bool _showWeight           = true;
+    [ObservableProperty] private bool _showHeight           = true;
+    [ObservableProperty] private bool _showLastWorming      = true;
+    [ObservableProperty] private bool _showStatus           = true;
+    [ObservableProperty] private bool _showTagNumber        = false;
+    [ObservableProperty] private bool _showDateAcquired     = false;
+    [ObservableProperty] private bool _showPurchasePrice    = false;
+    [ObservableProperty] private bool _showCurrentValue     = false;
+    [ObservableProperty] private bool _showAskingPrice      = false;
+    [ObservableProperty] private bool _showSalePrice        = false;
+    [ObservableProperty] private bool _showSoldDate         = false;
+    [ObservableProperty] private bool _showBuyerName        = false;
+    [ObservableProperty] private bool _showPastureAddress   = false;
+    [ObservableProperty] private bool _showLastVaccination  = false;
+    [ObservableProperty] private bool _showLastHealthCheck  = false;
+    [ObservableProperty] private bool _showLastHoofTrimming = false;
+    [ObservableProperty] private bool _showSireName         = false;
+    [ObservableProperty] private bool _showDamName          = false;
+    [ObservableProperty] private bool _showExpectedDueDate  = false;
+
     public HerdDetailsViewModel(IAnimalRepository animals, IHerdRepository herds,
-        HealthService healthService, NavigationService nav, DialogService dialog)
+        HealthService healthService, NavigationService nav, DialogService dialog,
+        ColumnConfigService columnConfig)
     {
         _animals = animals;
         _herds = herds;
         _healthService = healthService;
         _nav = nav;
         _dialog = dialog;
+        _columnConfig = columnConfig;
     }
 
     public async Task LoadAsync()
@@ -53,6 +82,8 @@ public partial class HerdDetailsViewModel : ObservableObject
         IsLoading = true;
         try
         {
+            await LoadColumnConfigAsync();
+
             if (HerdId > 0)
             {
                 var herd = await _herds.GetByIdAsync(HerdId);
@@ -145,6 +176,66 @@ public partial class HerdDetailsViewModel : ObservableObject
     }
 
     public bool IsOverdue(AnimalDto a) => _healthService.IsOverdueForHusbandry(a);
+
+    private async Task LoadColumnConfigAsync()
+    {
+        var c = await _columnConfig.LoadAsync();
+        ShowRegisteredName   = c.ShowRegisteredName;
+        ShowBreed            = c.ShowBreed;
+        ShowGender           = c.ShowGender;
+        ShowAge              = c.ShowAge;
+        ShowBirthDate        = c.ShowBirthDate;
+        ShowWeight           = c.ShowWeight;
+        ShowHeight           = c.ShowHeight;
+        ShowLastWorming      = c.ShowLastWorming;
+        ShowStatus           = c.ShowStatus;
+        ShowTagNumber        = c.ShowTagNumber;
+        ShowDateAcquired     = c.ShowDateAcquired;
+        ShowPurchasePrice    = c.ShowPurchasePrice;
+        ShowCurrentValue     = c.ShowCurrentValue;
+        ShowAskingPrice      = c.ShowAskingPrice;
+        ShowSalePrice        = c.ShowSalePrice;
+        ShowSoldDate         = c.ShowSoldDate;
+        ShowBuyerName        = c.ShowBuyerName;
+        ShowPastureAddress   = c.ShowPastureAddress;
+        ShowLastVaccination  = c.ShowLastVaccination;
+        ShowLastHealthCheck  = c.ShowLastHealthCheck;
+        ShowLastHoofTrimming = c.ShowLastHoofTrimming;
+        ShowSireName         = c.ShowSireName;
+        ShowDamName          = c.ShowDamName;
+        ShowExpectedDueDate  = c.ShowExpectedDueDate;
+    }
+
+    public async Task SaveColumnConfigAsync()
+    {
+        await _columnConfig.SaveAsync(new ColumnConfig
+        {
+            ShowRegisteredName   = ShowRegisteredName,
+            ShowBreed            = ShowBreed,
+            ShowGender           = ShowGender,
+            ShowAge              = ShowAge,
+            ShowBirthDate        = ShowBirthDate,
+            ShowWeight           = ShowWeight,
+            ShowHeight           = ShowHeight,
+            ShowLastWorming      = ShowLastWorming,
+            ShowStatus           = ShowStatus,
+            ShowTagNumber        = ShowTagNumber,
+            ShowDateAcquired     = ShowDateAcquired,
+            ShowPurchasePrice    = ShowPurchasePrice,
+            ShowCurrentValue     = ShowCurrentValue,
+            ShowAskingPrice      = ShowAskingPrice,
+            ShowSalePrice        = ShowSalePrice,
+            ShowSoldDate         = ShowSoldDate,
+            ShowBuyerName        = ShowBuyerName,
+            ShowPastureAddress   = ShowPastureAddress,
+            ShowLastVaccination  = ShowLastVaccination,
+            ShowLastHealthCheck  = ShowLastHealthCheck,
+            ShowLastHoofTrimming = ShowLastHoofTrimming,
+            ShowSireName         = ShowSireName,
+            ShowDamName          = ShowDamName,
+            ShowExpectedDueDate  = ShowExpectedDueDate,
+        });
+    }
 
     [RelayCommand]
     private void ViewProfile(AnimalDto? animal)

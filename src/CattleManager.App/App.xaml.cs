@@ -110,6 +110,7 @@ public partial class App : Application
         services.AddScoped<HealthService>();
         services.AddScoped<FinancialService>();
         services.AddScoped<HerdService>();
+        services.AddScoped<ColumnConfigService>();
         services.AddScoped<BreedingService>();
         services.AddScoped<PedigreeService>();
         services.AddScoped<SampleDataSeeder>();

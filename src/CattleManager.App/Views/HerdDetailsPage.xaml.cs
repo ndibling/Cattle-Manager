@@ -15,6 +15,7 @@ public partial class HerdDetailsPage : Page
         DataContext = vm;
         InitializeComponent();
         Loaded += async (_, _) => await _vm.LoadAsync();
+        ColChooserPopup.Closed += async (_, _) => await _vm.SaveColumnConfigAsync();
     }
 
     private void DataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

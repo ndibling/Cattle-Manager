@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:local="clr-namespace:CattleManager.App.Converters"
+      xmlns:helpers="clr-namespace:CattleManager.App.Helpers"
       Title="Herd Details">
 
     <Page.Resources>
@@ -11,6 +12,8 @@
         <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
         <local:OverdueToBrushConverter x:Key="OverdueToBrush"/>
         <local:GenderToBrushConverter x:Key="GenderToBrush"/>
+        <!-- Proxy exposes ViewModel to DataGrid column Visibility bindings -->
+        <helpers:BindingProxy x:Key="proxy" Data="{Binding}"/>
     </Page.Resources>
 
     <DockPanel>
@@ -68,7 +71,74 @@
                               MinWidth="160"/>
                 </StackPanel>
                 <Button Content="Clear Filters" Command="{Binding ClearFiltersCommand}"
-                        Padding="12,6" VerticalAlignment="Bottom"/>
+                        Padding="12,6" VerticalAlignment="Bottom" Margin="0,0,8,0"/>
+
+                <!-- Columns chooser -->
+                <ToggleButton x:Name="ColChooserBtn" Content="Columns ▾"
+                              Padding="12,6" VerticalAlignment="Bottom" FontSize="12"/>
+                <Popup x:Name="ColChooserPopup"
+                       PlacementTarget="{Binding ElementName=ColChooserBtn}"
+                       Placement="Bottom"
+                       StaysOpen="False"
+                       IsOpen="{Binding IsChecked, ElementName=ColChooserBtn}">
+                    <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                            BorderThickness="1" Padding="12,10" CornerRadius="4" MinWidth="200">
+                        <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock Text="Show / Hide Columns" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
+
+                                <TextBlock Text="IDENTITY" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,0,4"/>
+                                <CheckBox Content="Registered Name" IsChecked="{Binding ShowRegisteredName}" Margin="0,2"/>
+                                <CheckBox Content="Tag Number"       IsChecked="{Binding ShowTagNumber}"      Margin="0,2"/>
+
+                                <TextBlock Text="PHYSICAL" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Gender"     IsChecked="{Binding ShowGender}"    Margin="0,2"/>
+                                <CheckBox Content="Age"        IsChecked="{Binding ShowAge}"       Margin="0,2"/>
+                                <CheckBox Content="Birth Date" IsChecked="{Binding ShowBirthDate}" Margin="0,2"/>
+                                <CheckBox Content="Weight"     IsChecked="{Binding ShowWeight}"    Margin="0,2"/>
+                                <CheckBox Content="Height"     IsChecked="{Binding ShowHeight}"    Margin="0,2"/>
+
+                                <TextBlock Text="CLASSIFICATION" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Breed"  IsChecked="{Binding ShowBreed}"  Margin="0,2"/>
+                                <CheckBox Content="Status" IsChecked="{Binding ShowStatus}" Margin="0,2"/>
+
+                                <TextBlock Text="LOCATION" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Pasture Address" IsChecked="{Binding ShowPastureAddress}" Margin="0,2"/>
+
+                                <TextBlock Text="ACQUISITION" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Date Acquired"  IsChecked="{Binding ShowDateAcquired}"  Margin="0,2"/>
+                                <CheckBox Content="Purchase Price" IsChecked="{Binding ShowPurchasePrice}" Margin="0,2"/>
+
+                                <TextBlock Text="FINANCIAL" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Current Value" IsChecked="{Binding ShowCurrentValue}" Margin="0,2"/>
+                                <CheckBox Content="Asking Price"  IsChecked="{Binding ShowAskingPrice}"  Margin="0,2"/>
+                                <CheckBox Content="Sale Price"    IsChecked="{Binding ShowSalePrice}"    Margin="0,2"/>
+                                <CheckBox Content="Sold Date"     IsChecked="{Binding ShowSoldDate}"     Margin="0,2"/>
+                                <CheckBox Content="Buyer"         IsChecked="{Binding ShowBuyerName}"    Margin="0,2"/>
+
+                                <TextBlock Text="HEALTH" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Last Worming"     IsChecked="{Binding ShowLastWorming}"      Margin="0,2"/>
+                                <CheckBox Content="Last Vaccination" IsChecked="{Binding ShowLastVaccination}"  Margin="0,2"/>
+                                <CheckBox Content="Last Health Check"  IsChecked="{Binding ShowLastHealthCheck}"  Margin="0,2"/>
+                                <CheckBox Content="Last Hoof Trimming" IsChecked="{Binding ShowLastHoofTrimming}" Margin="0,2"/>
+
+                                <TextBlock Text="BREEDING" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,10,0,4"/>
+                                <CheckBox Content="Sire"              IsChecked="{Binding ShowSireName}"        Margin="0,2"/>
+                                <CheckBox Content="Dam"               IsChecked="{Binding ShowDamName}"         Margin="0,2"/>
+                                <CheckBox Content="Expected Due Date" IsChecked="{Binding ShowExpectedDueDate}" Margin="0,2"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Popup>
             </WrapPanel>
         </Border>
 
@@ -110,14 +180,20 @@
             </DataGrid.RowStyle>
 
             <DataGrid.Columns>
-                <!-- Barn Name -->
+                <!-- Barn Name — always visible, pinned -->
                 <DataGridTextColumn Header="Barn Name" Binding="{Binding BarnName}" Width="130" FontWeight="SemiBold"/>
+
                 <!-- Registered Name -->
-                <DataGridTextColumn Header="Registered Name" Binding="{Binding RegisteredName}" Width="160"/>
+                <DataGridTextColumn Header="Registered Name" Binding="{Binding RegisteredName}" Width="160"
+                    Visibility="{Binding Data.ShowRegisteredName, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Breed -->
-                <DataGridTextColumn Header="Breed" Binding="{Binding BreedName}" Width="110"/>
+                <DataGridTextColumn Header="Breed" Binding="{Binding BreedName}" Width="110"
+                    Visibility="{Binding Data.ShowBreed, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Gender -->
-                <DataGridTemplateColumn Header="Gender" Width="70">
+                <DataGridTemplateColumn Header="Gender" Width="70"
+                    Visibility="{Binding Data.ShowGender, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Gender}" Foreground="{Binding Gender, Converter={StaticResource GenderToBrush}}"
@@ -125,18 +201,30 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
                 <!-- Age -->
-                <DataGridTextColumn Header="Age" Binding="{Binding AgeDisplay}" Width="80"/>
+                <DataGridTextColumn Header="Age" Binding="{Binding AgeDisplay}" Width="80"
+                    Visibility="{Binding Data.ShowAge, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Birth Date -->
-                <DataGridTextColumn Header="Birth Date" Binding="{Binding BirthDate, StringFormat=MM/dd/yyyy}" Width="90"/>
+                <DataGridTextColumn Header="Birth Date" Binding="{Binding BirthDate, StringFormat=MM/dd/yyyy}" Width="90"
+                    Visibility="{Binding Data.ShowBirthDate, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Weight -->
-                <DataGridTextColumn Header="Weight" Binding="{Binding WeightDisplay}" Width="90"/>
+                <DataGridTextColumn Header="Weight" Binding="{Binding WeightDisplay}" Width="90"
+                    Visibility="{Binding Data.ShowWeight, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Height -->
-                <DataGridTextColumn Header="Height" Binding="{Binding HeightDisplay}" Width="80"/>
+                <DataGridTextColumn Header="Height" Binding="{Binding HeightDisplay}" Width="80"
+                    Visibility="{Binding Data.ShowHeight, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Last Worming -->
-                <DataGridTextColumn Header="Last Worming" Binding="{Binding LastWormingDate, StringFormat=MM/dd/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Last Worming" Binding="{Binding LastWormingDate, StringFormat=MM/dd/yyyy}" Width="100"
+                    Visibility="{Binding Data.ShowLastWorming, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
                 <!-- Status -->
-                <DataGridTemplateColumn Header="Status" Width="130">
+                <DataGridTemplateColumn Header="Status" Width="130"
+                    Visibility="{Binding Data.ShowStatus, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Border CornerRadius="10" Padding="8,3" Margin="4"
@@ -148,7 +236,70 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <!-- Actions -->
+
+                <!-- === Optional columns (default OFF) === -->
+
+                <!-- Tag Number -->
+                <DataGridTextColumn Header="Tag #" Binding="{Binding TagNumber}" Width="80"
+                    Visibility="{Binding Data.ShowTagNumber, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Date Acquired -->
+                <DataGridTextColumn Header="Date Acquired" Binding="{Binding DateAcquired, StringFormat=MM/dd/yyyy}" Width="110"
+                    Visibility="{Binding Data.ShowDateAcquired, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Purchase Price -->
+                <DataGridTextColumn Header="Purchase Price" Binding="{Binding PurchasePrice, StringFormat=C}" Width="110"
+                    Visibility="{Binding Data.ShowPurchasePrice, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Current Value -->
+                <DataGridTextColumn Header="Current Value" Binding="{Binding CurrentValue, StringFormat=C}" Width="110"
+                    Visibility="{Binding Data.ShowCurrentValue, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Asking Price -->
+                <DataGridTextColumn Header="Asking Price" Binding="{Binding AskingPrice, StringFormat=C}" Width="110"
+                    Visibility="{Binding Data.ShowAskingPrice, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Sale Price -->
+                <DataGridTextColumn Header="Sale Price" Binding="{Binding SalePrice, StringFormat=C}" Width="100"
+                    Visibility="{Binding Data.ShowSalePrice, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Sold Date -->
+                <DataGridTextColumn Header="Sold Date" Binding="{Binding SoldDate, StringFormat=MM/dd/yyyy}" Width="90"
+                    Visibility="{Binding Data.ShowSoldDate, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Buyer -->
+                <DataGridTextColumn Header="Buyer" Binding="{Binding BuyerName}" Width="120"
+                    Visibility="{Binding Data.ShowBuyerName, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Pasture Address -->
+                <DataGridTextColumn Header="Pasture Address" Binding="{Binding PastureLocation}" Width="140"
+                    Visibility="{Binding Data.ShowPastureAddress, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Last Vaccination -->
+                <DataGridTextColumn Header="Last Vaccination" Binding="{Binding LastVaccinationDate, StringFormat=MM/dd/yyyy}" Width="120"
+                    Visibility="{Binding Data.ShowLastVaccination, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Last Health Check -->
+                <DataGridTextColumn Header="Last Health Check" Binding="{Binding LastHealthCheckDate, StringFormat=MM/dd/yyyy}" Width="130"
+                    Visibility="{Binding Data.ShowLastHealthCheck, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Last Hoof Trimming -->
+                <DataGridTextColumn Header="Last Hoof Trim" Binding="{Binding LastHoofTrimmingDate, StringFormat=MM/dd/yyyy}" Width="120"
+                    Visibility="{Binding Data.ShowLastHoofTrimming, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Sire -->
+                <DataGridTextColumn Header="Sire" Binding="{Binding SireBarnName}" Width="110"
+                    Visibility="{Binding Data.ShowSireName, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Dam -->
+                <DataGridTextColumn Header="Dam" Binding="{Binding DamBarnName}" Width="110"
+                    Visibility="{Binding Data.ShowDamName, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Expected Due Date -->
+                <DataGridTextColumn Header="Due Date" Binding="{Binding ExpectedDueDate, StringFormat=MM/dd/yyyy}" Width="90"
+                    Visibility="{Binding Data.ShowExpectedDueDate, Source={StaticResource proxy}, Converter={StaticResource BoolToVisibility}}"/>
+
+                <!-- Actions — always visible -->
                 <DataGridTemplateColumn Header="" Width="40">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
