@@ -74,6 +74,15 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private string _isGoodMotherSelection = "Unknown";
     [ObservableProperty] private string? _pastureLocation;
     [ObservableProperty] private string? _pastureState;
+
+    // Pasture picker
+    private const string NewPastureSentinel = "➕ New Pasture...";
+    private string? _priorPastureSelection;
+    [ObservableProperty] private ObservableCollection<string> _pastureOptions = [];
+    [ObservableProperty] private string? _selectedPastureOption;
+    [ObservableProperty] private bool _isCreatingNewPasture;
+    [ObservableProperty] private string _newPastureName = string.Empty;
+    [ObservableProperty] private string? _newPastureNotes;
     [ObservableProperty] private decimal? _expectedHeightAtMaturity;
     [ObservableProperty] private DateTime? _soldDate;
     [ObservableProperty] private AnimalDto? _selectedSire;
@@ -120,15 +129,19 @@ public partial class AnimalFormViewModel : ObservableObject
         "Wisconsin", "Wyoming"
     ];
 
+    private readonly IPastureRepository _pastures;
+
     public AnimalFormViewModel(IAnimalRepository animals,
         IBreedRepository breeds, BreedingService breedingService,
-        NavigationService nav, DialogService dialog)
+        NavigationService nav, DialogService dialog,
+        IPastureRepository pastures)
     {
         _animals = animals;
         _breeds  = breeds;
         _breedingService = breedingService;
         _nav = nav;
         _dialog = dialog;
+        _pastures = pastures;
     }
 
     public async Task LoadAsync()
@@ -146,6 +159,8 @@ public partial class AnimalFormViewModel : ObservableObject
             AvailableMales   = new ObservableCollection<AnimalDto>(herdAnimals.Where(a => a.Gender == Gender.Male));
             AvailableFemales = new ObservableCollection<AnimalDto>(herdAnimals.Where(a => a.Gender == Gender.Female));
 
+            await LoadPastureOptionsAsync();
+
             if (!IsNewAnimal)
             {
                 FormTitle = "Edit Animal";
@@ -162,6 +177,47 @@ public partial class AnimalFormViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    private async Task LoadPastureOptionsAsync(string? selectName = null)
+    {
+        var all = await _pastures.GetAllAsync();
+        PastureOptions = new ObservableCollection<string>(all.Select(p => p.PastureName).Append(NewPastureSentinel));
+        var toSelect = selectName ?? PastureLocation;
+        SelectedPastureOption = PastureOptions.Contains(toSelect) ? toSelect : null;
+    }
+
+    partial void OnSelectedPastureOptionChanged(string? value)
+    {
+        if (value == NewPastureSentinel)
+        {
+            IsCreatingNewPasture = true;
+            NewPastureName = string.Empty;
+            NewPastureNotes = null;
+            _priorPastureSelection = _priorPastureSelection == NewPastureSentinel ? null : _priorPastureSelection;
+        }
+        else
+        {
+            _priorPastureSelection = value;
+            IsCreatingNewPasture = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveNewPastureAsync()
+    {
+        var name = NewPastureName.Trim();
+        if (string.IsNullOrWhiteSpace(name)) return;
+        await _pastures.AddAsync(new PastureDto { PastureName = name, Notes = NewPastureNotes?.Trim() });
+        await LoadPastureOptionsAsync(name);
+        IsCreatingNewPasture = false;
+    }
+
+    [RelayCommand]
+    private void CancelNewPasture()
+    {
+        IsCreatingNewPasture = false;
+        SelectedPastureOption = _priorPastureSelection;
     }
 
     private void PopulateFromDto(AnimalDto a)
@@ -182,7 +238,9 @@ public partial class AnimalFormViewModel : ObservableObject
         TagNumber = a.TagNumber; Chondro = a.Chondro;
         HornsSelection = a.Horns == true ? "Yes" : a.Horns == false ? "No" : "Unknown";
         IsGoodMotherSelection = a.IsGoodMother == true ? "Yes" : a.IsGoodMother == false ? "No" : "Unknown";
-        PastureLocation = a.PastureLocation; PastureState = a.PastureState;
+        PastureLocation = a.PastureLocation;
+        SelectedPastureOption = PastureOptions.Contains(a.PastureLocation) ? a.PastureLocation : null;
+        PastureState = a.PastureState;
         ExpectedHeightAtMaturity = a.ExpectedHeightAtMaturity;
         SireInHerd = a.SireId.HasValue;
         if (a.SireId.HasValue) SelectedSire = AvailableAnimals.FirstOrDefault(x => x.AnimalId == a.SireId);
@@ -445,7 +503,9 @@ public partial class AnimalFormViewModel : ObservableObject
         TagNumber = TagNumber, Chondro = Chondro,
         Horns = HornsSelection == "Yes" ? true : HornsSelection == "No" ? false : (bool?)null,
         IsGoodMother = IsGoodMotherSelection == "Yes" ? true : IsGoodMotherSelection == "No" ? false : (bool?)null,
-        PastureLocation = PastureLocation, PastureState = PastureState,
+        PastureLocation = SelectedPastureOption == NewPastureSentinel || SelectedPastureOption is null
+            ? null : SelectedPastureOption,
+        PastureState = PastureState,
         ExpectedHeightAtMaturity = ExpectedHeightAtMaturity,
         SireId = SireInHerd ? SelectedSire?.AnimalId : null,
         ExternalSireName = SireInHerd ? null : ExternalSireName,

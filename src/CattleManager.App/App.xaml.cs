@@ -54,6 +54,7 @@ public partial class App : Application
             if (!created)
             {
                 await EnsureFinancialTablesExistAsync(db);
+                await EnsurePastureTableExistsAsync(db);
                 bool schemaOk = await DatabaseSchemaIsValidAsync(db);
                 if (!schemaOk)
                 {
@@ -102,6 +103,7 @@ public partial class App : Application
         services.AddScoped<IAnimalPhotoRepository, AnimalPhotoRepository>();
         services.AddScoped<IAnimalAttachmentRepository, AnimalAttachmentRepository>();
         services.AddScoped<IBullExposureRepository, BullExposureRepository>();
+        services.AddScoped<IPastureRepository, PastureRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
         services.AddScoped<IAssetRepository, AssetRepository>();
         services.AddScoped<ILoanRepository, LoanRepository>();
@@ -137,6 +139,7 @@ public partial class App : Application
         services.AddTransient<ReportsViewModel>();
         services.AddTransient<FinancialDashboardViewModel>();
         services.AddTransient<BudgetViewModel>();
+        services.AddTransient<PastureViewViewModel>();
 
         services.AddSingleton<MainWindow>();
     }
@@ -280,6 +283,18 @@ public partial class App : Application
         }
     }
 
+    private static async Task EnsurePastureTableExistsAsync(CattleDbContext db)
+    {
+        await db.Database.ExecuteSqlRawAsync(@"
+            CREATE TABLE IF NOT EXISTS ""Pastures"" (
+                ""PastureId""   INTEGER NOT NULL CONSTRAINT ""PK_Pastures"" PRIMARY KEY AUTOINCREMENT,
+                ""PastureName"" TEXT    NOT NULL DEFAULT '',
+                ""Notes""       TEXT    NULL,
+                ""SortOrder""   INTEGER NOT NULL DEFAULT 0
+            )");
+        Log.Information("Verified table Pastures exists");
+    }
+
     private static async Task EnsureColumnsExistAsync(CattleDbContext db)
     {
         var conn = db.Database.GetDbConnection();
@@ -369,6 +384,7 @@ UPDATE Animals SET Status = 0               WHERE Status = 4;";
             _ = await db.Loans.AnyAsync();
             _ = await db.LoanPayments.AnyAsync();
             _ = await db.BudgetEntries.AnyAsync();
+            _ = await db.Pastures.AnyAsync();
             return true;
         }
         catch

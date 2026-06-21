@@ -81,3 +81,11 @@ public interface IBullExposureRepository
     Task DeleteAsync(int exposureId);
     Task DeleteSampleDataAsync();
 }
+
+public interface IPastureRepository
+{
+    Task<IReadOnlyList<PastureDto>> GetAllAsync();
+    Task<PastureDto> AddAsync(PastureDto dto);
+    Task<PastureDto> UpdateAsync(PastureDto dto);
+    Task DeleteAsync(int pastureId);
+}

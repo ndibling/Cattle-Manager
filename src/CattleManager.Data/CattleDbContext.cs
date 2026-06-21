@@ -25,6 +25,8 @@ public class CattleDbContext : DbContext
     public DbSet<LoanPayment> LoanPayments => Set<LoanPayment>();
     public DbSet<BudgetEntry> BudgetEntries => Set<BudgetEntry>();
 
+    public DbSet<Pasture> Pastures => Set<Pasture>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>(entity =>

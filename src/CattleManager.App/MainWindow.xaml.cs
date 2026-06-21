@@ -41,6 +41,14 @@ public partial class MainWindow : Window
         HighlightNav(BtnHerd);
     }
 
+    private void BtnPastureView_Click(object sender, RoutedEventArgs e)
+    {
+        _nav.ClearBack();
+        var vm = App.Services.GetRequiredService<PastureViewViewModel>();
+        _nav.NavigateTo(new PastureViewPage(vm));
+        HighlightNav(BtnPastureView);
+    }
+
     private void BtnAddAnimal_Click(object sender, RoutedEventArgs e)
     {
         var win = new AnimalIntakeWindow { Owner = this, RequireHerdSelection = true };
@@ -72,7 +80,7 @@ public partial class MainWindow : Window
 
     private void HighlightNav(Button active)
     {
-        foreach (var btn in new[] { BtnDashboard, BtnHerd, BtnAddAnimal, BtnFinancials, BtnSettings })
+        foreach (var btn in new[] { BtnDashboard, BtnHerd, BtnPastureView, BtnAddAnimal, BtnFinancials, BtnSettings })
         {
             btn.Tag = btn == active ? "Active" : btn.Name.Replace("Btn", "");
         }

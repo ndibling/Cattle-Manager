@@ -200,8 +200,31 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                <TextBlock Text="Pasture Address" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding PastureLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
+                                <TextBlock Text="Pasture" Style="{StaticResource FieldLabelStyle}"/>
+                                <ComboBox ItemsSource="{Binding PastureOptions}"
+                                          SelectedItem="{Binding SelectedPastureOption}"
+                                          FontSize="14"
+                                          ui:ControlHelper.PlaceholderText="Select pasture…"/>
+                                <!-- Inline new-pasture form -->
+                                <Border Visibility="{Binding IsCreatingNewPasture, Converter={StaticResource BoolToVisibility}}"
+                                        BorderThickness="1" CornerRadius="4" Padding="8,8" Margin="0,6,0,0"
+                                        BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                        Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                                    <StackPanel>
+                                        <TextBlock Text="New Pasture" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                        <TextBox Text="{Binding NewPastureName, UpdateSourceTrigger=PropertyChanged}"
+                                                 ui:ControlHelper.PlaceholderText="Pasture name (required)"
+                                                 FontSize="13" Padding="6,4" Margin="0,0,0,4"/>
+                                        <TextBox Text="{Binding NewPastureNotes, UpdateSourceTrigger=PropertyChanged}"
+                                                 ui:ControlHelper.PlaceholderText="Notes (optional)"
+                                                 FontSize="13" Padding="6,4" Margin="0,0,0,6"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="Create" Command="{Binding SaveNewPastureCommand}"
+                                                    Style="{StaticResource PrimaryButton}" Margin="0,0,6,0"/>
+                                            <Button Content="Cancel" Command="{Binding CancelNewPastureCommand}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Margin="0,0,12,0">
                                 <TextBlock Text="Pasture State" Style="{StaticResource FieldLabelStyle}"/>
