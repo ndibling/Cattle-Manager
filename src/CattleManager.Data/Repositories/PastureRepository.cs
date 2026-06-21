@@ -31,6 +31,8 @@ public class PastureRepository : IPastureRepository
         {
             HerdId      = dto.HerdId,
             PastureName = dto.PastureName,
+            Address     = dto.Address,
+            State       = dto.State,
             Notes       = dto.Notes,
             SortOrder   = dto.SortOrder,
         };
@@ -45,6 +47,8 @@ public class PastureRepository : IPastureRepository
         var e = await _db.Pastures.FindAsync(dto.PastureId)
             ?? throw new ArgumentException($"Pasture {dto.PastureId} not found");
         e.PastureName = dto.PastureName;
+        e.Address     = dto.Address;
+        e.State       = dto.State;
         e.Notes       = dto.Notes;
         e.SortOrder   = dto.SortOrder;
         await _db.SaveChangesAsync();
@@ -64,6 +68,8 @@ public class PastureRepository : IPastureRepository
         PastureId   = e.PastureId,
         HerdId      = e.HerdId,
         PastureName = e.PastureName,
+        Address     = e.Address,
+        State       = e.State,
         Notes       = e.Notes,
         SortOrder   = e.SortOrder,
     };

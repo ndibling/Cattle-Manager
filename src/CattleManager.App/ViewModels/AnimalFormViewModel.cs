@@ -130,6 +130,7 @@ public partial class AnimalFormViewModel : ObservableObject
     ];
 
     private readonly IPastureRepository _pastures;
+    private List<PastureDto> _loadedPastures = [];
 
     public AnimalFormViewModel(IAnimalRepository animals,
         IBreedRepository breeds, BreedingService breedingService,
@@ -184,6 +185,7 @@ public partial class AnimalFormViewModel : ObservableObject
         var all = HerdId > 0
             ? await _pastures.GetByHerdAsync(HerdId)
             : await _pastures.GetAllAsync();
+        _loadedPastures = all.ToList();
         PastureOptions = new ObservableCollection<string>(all.Select(p => p.PastureName).Append(NewPastureSentinel));
         var toSelect = selectName ?? PastureLocation;
         SelectedPastureOption = PastureOptions.Contains(toSelect) ? toSelect : null;
@@ -202,6 +204,21 @@ public partial class AnimalFormViewModel : ObservableObject
         {
             _priorPastureSelection = value;
             IsCreatingNewPasture = false;
+
+            // Auto-populate location fields from the selected pasture
+            var pasture = value is not null
+                ? _loadedPastures.FirstOrDefault(p => p.PastureName == value)
+                : null;
+            if (pasture is not null)
+            {
+                CurrentLocation = pasture.Address;
+                PastureState    = pasture.State;
+            }
+            else if (value is null)
+            {
+                CurrentLocation = null;
+                PastureState    = null;
+            }
         }
     }
 

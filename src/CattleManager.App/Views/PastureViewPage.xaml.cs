@@ -57,11 +57,13 @@ public partial class PastureViewPage : Page
         e.Handled = true;
     }
 
-    private void RenamePastureBtn_Click(object sender, RoutedEventArgs e)
+    private void EditPastureBtn_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
-        lane.RenameText = lane.PastureName;
-        lane.IsRenaming = true;
+        if (sender is not FrameworkElement el || el.Tag is not PastureLane lane || lane.IsUnassigned) return;
+        lane.RenameText  = lane.PastureName;
+        lane.EditAddress = lane.Pasture?.Address ?? string.Empty;
+        lane.EditState   = lane.Pasture?.State   ?? string.Empty;
+        lane.IsEditing   = true;
     }
 
     private async void DeletePastureBtn_Click(object sender, RoutedEventArgs e)
@@ -77,24 +79,22 @@ public partial class PastureViewPage : Page
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
         var group = GetGroupContainingLane(lane);
         if (group is null) return;
-        if (e.Key == Key.Enter)  _ = _vm.CommitRenameAsync(lane, group);
-        else if (e.Key == Key.Escape) lane.IsRenaming = false;
+        if (e.Key == Key.Enter)  _ = _vm.CommitEditAsync(lane, group);
+        else if (e.Key == Key.Escape) lane.IsEditing = false;
     }
 
-    private async void RenameTextBox_LostFocus(object sender, RoutedEventArgs e)
+    private async void CommitEditBtn_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
         var group = GetGroupContainingLane(lane);
         if (group is null) return;
-        await _vm.CommitRenameAsync(lane, group);
+        await _vm.CommitEditAsync(lane, group);
     }
 
-    private async void CommitRenameBtn_Click(object sender, RoutedEventArgs e)
+    private void CancelEditBtn_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement el || el.Tag is not PastureLane lane) return;
-        var group = GetGroupContainingLane(lane);
-        if (group is null) return;
-        await _vm.CommitRenameAsync(lane, group);
+        lane.IsEditing = false;
     }
 
     private async void AddPastureBtn_Click(object sender, RoutedEventArgs e)

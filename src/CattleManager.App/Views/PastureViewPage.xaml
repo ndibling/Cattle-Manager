@@ -136,7 +136,7 @@
                                                                 </Border.Style>
                                                                 <Grid>
                                                                     <!-- Normal header display -->
-                                                                    <Grid Visibility="{Binding IsRenaming, Converter={StaticResource InverseBoolToVisibility}}">
+                                                                    <Grid Visibility="{Binding IsEditing, Converter={StaticResource InverseBoolToVisibility}}">
                                                                         <Grid.ColumnDefinitions>
                                                                             <ColumnDefinition Width="*"/>
                                                                             <ColumnDefinition Width="Auto"/>
@@ -150,9 +150,9 @@
                                                                         <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                                                     Visibility="{Binding IsUnassigned, Converter={StaticResource InverseBoolToVisibility}}">
                                                                             <Button Content="✏" FontSize="11" Padding="4,2"
-                                                                                    ToolTip="Rename pasture"
+                                                                                    ToolTip="Edit pasture"
                                                                                     Tag="{Binding}"
-                                                                                    Click="RenamePastureBtn_Click"
+                                                                                    Click="EditPastureBtn_Click"
                                                                                     Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"/>
                                                                             <Button Content="✕" FontSize="11" Padding="4,2"
                                                                                     Foreground="Red"
@@ -163,24 +163,30 @@
                                                                         </StackPanel>
                                                                     </Grid>
 
-                                                                    <!-- Rename mode -->
-                                                                    <Grid Visibility="{Binding IsRenaming, Converter={StaticResource BoolToVisibility}}">
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="*"/>
-                                                                            <ColumnDefinition Width="Auto"/>
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <TextBox Grid.Column="0"
-                                                                                 Text="{Binding RenameText, UpdateSourceTrigger=PropertyChanged}"
+                                                                    <!-- Edit mode -->
+                                                                    <StackPanel Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibility}}">
+                                                                        <TextBox Text="{Binding RenameText, UpdateSourceTrigger=PropertyChanged}"
+                                                                                 ui:ControlHelper.PlaceholderText="Name"
                                                                                  FontSize="12" Padding="4,2"
                                                                                  Tag="{Binding}"
-                                                                                 KeyDown="RenameTextBox_KeyDown"
-                                                                                 LostFocus="RenameTextBox_LostFocus"
-                                                                                 x:Name="RenameBox"/>
-                                                                        <Button Grid.Column="1" Content="✓" FontSize="11" Padding="4,2"
-                                                                                Tag="{Binding}"
-                                                                                Click="CommitRenameBtn_Click"
-                                                                                Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"/>
-                                                                    </Grid>
+                                                                                 KeyDown="RenameTextBox_KeyDown"/>
+                                                                        <TextBox Text="{Binding EditAddress, UpdateSourceTrigger=PropertyChanged}"
+                                                                                 ui:ControlHelper.PlaceholderText="Address"
+                                                                                 FontSize="12" Padding="4,2" Margin="0,3,0,0"/>
+                                                                        <TextBox Text="{Binding EditState, UpdateSourceTrigger=PropertyChanged}"
+                                                                                 ui:ControlHelper.PlaceholderText="State"
+                                                                                 FontSize="12" Padding="4,2" Margin="0,3,0,0"/>
+                                                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                                            <Button Content="✓" FontSize="11" Padding="6,2"
+                                                                                    Tag="{Binding}"
+                                                                                    Click="CommitEditBtn_Click"
+                                                                                    Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                                                                            <Button Content="✗" FontSize="11" Padding="6,2" Margin="4,0,0,0"
+                                                                                    Tag="{Binding}"
+                                                                                    Click="CancelEditBtn_Click"
+                                                                                    Style="{DynamicResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                                                                        </StackPanel>
+                                                                    </StackPanel>
                                                                 </Grid>
                                                             </Border>
 
@@ -279,22 +285,22 @@
                                                 <TextBlock Text="+ Add Pasture" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
                                                            Margin="0,0,0,6"/>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <TextBox Grid.Column="0"
-                                                             Text="{Binding NewPastureName, UpdateSourceTrigger=PropertyChanged}"
-                                                             ui:ControlHelper.PlaceholderText="Pasture name"
-                                                             FontSize="12" Padding="5,3"
-                                                             Tag="{Binding}"
-                                                             KeyDown="AddPastureTextBox_KeyDown"/>
-                                                    <Button Grid.Column="1" Content="✓" Padding="6,3" Margin="4,0,0,0"
-                                                            FontSize="12"
-                                                            Tag="{Binding}"
-                                                            Click="AddPastureBtn_Click"/>
-                                                </Grid>
+                                                <TextBox Text="{Binding NewPastureName, UpdateSourceTrigger=PropertyChanged}"
+                                                         ui:ControlHelper.PlaceholderText="Pasture name"
+                                                         FontSize="12" Padding="5,3"
+                                                         Tag="{Binding}"
+                                                         KeyDown="AddPastureTextBox_KeyDown"/>
+                                                <TextBox Text="{Binding NewPastureAddress, UpdateSourceTrigger=PropertyChanged}"
+                                                         ui:ControlHelper.PlaceholderText="Address (optional)"
+                                                         FontSize="12" Padding="5,3" Margin="0,4,0,0"/>
+                                                <TextBox Text="{Binding NewPastureState, UpdateSourceTrigger=PropertyChanged}"
+                                                         ui:ControlHelper.PlaceholderText="State (optional)"
+                                                         FontSize="12" Padding="5,3" Margin="0,4,0,0"/>
+                                                <Button Content="Add" Padding="0,4" Margin="0,6,0,0"
+                                                        HorizontalAlignment="Stretch"
+                                                        FontSize="12"
+                                                        Tag="{Binding}"
+                                                        Click="AddPastureBtn_Click"/>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>

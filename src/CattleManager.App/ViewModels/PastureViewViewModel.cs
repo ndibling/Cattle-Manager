@@ -2,7 +2,6 @@ using CattleManager.App.Services;
 using CattleManager.Core.Models;
 using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Serilog;
 using System.Collections.ObjectModel;
 
@@ -14,17 +13,21 @@ public partial class HerdBoardGroup : ObservableObject
     public ObservableCollection<PastureLane> Lanes { get; } = [];
     public int TotalAnimalCount => Lanes.Sum(l => l.Animals.Count);
 
-    [ObservableProperty] private string _newPastureName = string.Empty;
+    [ObservableProperty] private string _newPastureName    = string.Empty;
+    [ObservableProperty] private string _newPastureAddress = string.Empty;
+    [ObservableProperty] private string _newPastureState   = string.Empty;
 }
 
 public partial class PastureLane : ObservableObject
 {
     public PastureDto? Pasture { get; init; }
 
-    [ObservableProperty] private string _pastureName = string.Empty;
-    [ObservableProperty] private bool _isRenaming;
-    [ObservableProperty] private bool _isDragOver;
-    [ObservableProperty] private string _renameText = string.Empty;
+    [ObservableProperty] private string _pastureName  = string.Empty;
+    [ObservableProperty] private bool   _isEditing;
+    [ObservableProperty] private bool   _isDragOver;
+    [ObservableProperty] private string _renameText   = string.Empty;
+    [ObservableProperty] private string _editAddress  = string.Empty;
+    [ObservableProperty] private string _editState    = string.Empty;
 
     public bool IsUnassigned => Pasture is null;
     public ObservableCollection<AnimalDto> Animals { get; } = [];
@@ -33,12 +36,12 @@ public partial class PastureLane : ObservableObject
 public partial class PastureViewViewModel : ObservableObject
 {
     private readonly IPastureRepository _pastures;
-    private readonly IAnimalRepository _animals;
-    private readonly IHerdRepository _herds;
-    private readonly DialogService _dialog;
+    private readonly IAnimalRepository  _animals;
+    private readonly IHerdRepository    _herds;
+    private readonly DialogService      _dialog;
 
     private List<AnimalDto> _allAnimals = [];
-    private List<HerdDto> _allHerds = [];
+    private List<HerdDto>   _allHerds   = [];
 
     [ObservableProperty] private ObservableCollection<HerdBoardGroup> _herdGroups = [];
     [ObservableProperty] private bool _isLoading;
@@ -113,8 +116,10 @@ public partial class PastureViewViewModel : ObservableObject
             foreach (var lane in group.Lanes)
                 lane.Animals.Remove(animal);
 
-        animal.HerdId = targetGroup.Herd.HerdId;
+        animal.HerdId          = targetGroup.Herd.HerdId;
         animal.PastureLocation = targetLane.IsUnassigned ? null : targetLane.PastureName;
+        animal.CurrentLocation = targetLane.IsUnassigned ? null : targetLane.Pasture?.Address;
+        animal.PastureState    = targetLane.IsUnassigned ? null : targetLane.Pasture?.State;
         targetLane.Animals.Add(animal);
 
         try
@@ -130,45 +135,64 @@ public partial class PastureViewViewModel : ObservableObject
 
     public async Task AddPastureToGroupAsync(HerdBoardGroup group)
     {
-        var name = group.NewPastureName.Trim();
+        var name    = group.NewPastureName.Trim();
+        var address = group.NewPastureAddress.Trim();
+        var state   = group.NewPastureState.Trim();
         if (string.IsNullOrWhiteSpace(name)) return;
 
-        var dto  = await _pastures.AddAsync(new PastureDto { HerdId = group.Herd.HerdId, PastureName = name });
+        var dto = await _pastures.AddAsync(new PastureDto
+        {
+            HerdId      = group.Herd.HerdId,
+            PastureName = name,
+            Address     = string.IsNullOrWhiteSpace(address) ? null : address,
+            State       = string.IsNullOrWhiteSpace(state)   ? null : state,
+        });
         var lane = new PastureLane { Pasture = dto, PastureName = dto.PastureName };
 
-        // Insert before the Unassigned lane
         var insertIdx = group.Lanes.Count - 1;
         if (insertIdx >= 0) group.Lanes.Insert(insertIdx, lane);
         else group.Lanes.Add(lane);
 
-        group.NewPastureName = string.Empty;
+        group.NewPastureName    = string.Empty;
+        group.NewPastureAddress = string.Empty;
+        group.NewPastureState   = string.Empty;
     }
 
-    public async Task CommitRenameAsync(PastureLane lane, HerdBoardGroup ownerGroup)
+    public async Task CommitEditAsync(PastureLane lane, HerdBoardGroup ownerGroup)
     {
         if (lane.Pasture is null) return;
-        var newName = lane.RenameText.Trim();
-        if (string.IsNullOrWhiteSpace(newName) || newName == lane.PastureName)
+
+        var newName    = lane.RenameText.Trim();
+        var newAddress = string.IsNullOrWhiteSpace(lane.EditAddress) ? null : lane.EditAddress.Trim();
+        var newState   = string.IsNullOrWhiteSpace(lane.EditState)   ? null : lane.EditState.Trim();
+
+        if (string.IsNullOrWhiteSpace(newName))
         {
-            lane.IsRenaming = false;
+            lane.IsEditing = false;
             return;
         }
 
-        var oldName = lane.PastureName;
+        var oldName     = lane.PastureName;
+        bool nameChanged = !string.Equals(newName, oldName, StringComparison.OrdinalIgnoreCase);
+
         lane.Pasture.PastureName = newName;
+        lane.Pasture.Address     = newAddress;
+        lane.Pasture.State       = newState;
         await _pastures.UpdateAsync(lane.Pasture);
 
-        // Update PastureLocation only on animals belonging to the same herd
+        // Sync all animals in this herd that are assigned to this pasture
         foreach (var l in ownerGroup.Lanes)
             foreach (var animal in l.Animals.Where(a =>
                 string.Equals(a.PastureLocation, oldName, StringComparison.OrdinalIgnoreCase)).ToList())
             {
-                animal.PastureLocation = newName;
+                if (nameChanged) animal.PastureLocation = newName;
+                animal.CurrentLocation = newAddress;
+                animal.PastureState    = newState;
                 await _animals.UpdateAsync(animal);
             }
 
         lane.PastureName = newName;
-        lane.IsRenaming  = false;
+        lane.IsEditing   = false;
     }
 
     public async Task DeletePastureAsync(PastureLane lane, HerdBoardGroup ownerGroup)
@@ -185,6 +209,8 @@ public partial class PastureViewViewModel : ObservableObject
             foreach (var animal in lane.Animals.ToList())
             {
                 animal.PastureLocation = null;
+                animal.CurrentLocation = null;
+                animal.PastureState    = null;
                 unassigned?.Animals.Add(animal);
                 await _animals.UpdateAsync(animal);
             }

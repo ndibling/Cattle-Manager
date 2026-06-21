@@ -290,12 +290,14 @@ public partial class App : Application
                 ""PastureId""   INTEGER NOT NULL CONSTRAINT ""PK_Pastures"" PRIMARY KEY AUTOINCREMENT,
                 ""HerdId""      INTEGER NOT NULL DEFAULT 0,
                 ""PastureName"" TEXT    NOT NULL DEFAULT '',
+                ""Address""     TEXT    NULL,
+                ""State""       TEXT    NULL,
                 ""Notes""       TEXT    NULL,
                 ""SortOrder""   INTEGER NOT NULL DEFAULT 0
             )");
         Log.Information("Verified table Pastures exists");
 
-        // Add HerdId to existing Pastures tables created before this column was introduced
+        // Add columns introduced after initial release
         var conn = db.Database.GetDbConnection();
         bool wasOpen = conn.State == System.Data.ConnectionState.Open;
         if (!wasOpen) await conn.OpenAsync();
@@ -303,7 +305,9 @@ public partial class App : Application
         {
             await EnsureTableColumnsAsync(conn, "Pastures", new System.Collections.Generic.Dictionary<string, string>
             {
-                ["HerdId"] = "INTEGER NOT NULL DEFAULT 0",
+                ["HerdId"]  = "INTEGER NOT NULL DEFAULT 0",
+                ["Address"] = "TEXT NULL",
+                ["State"]   = "TEXT NULL",
             });
         }
         finally
