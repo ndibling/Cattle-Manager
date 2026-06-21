@@ -522,13 +522,13 @@
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Grid.Column="0">
-                                                        <Run Text="Cost: "/><Run Text="{Binding CostBasis, StringFormat=C}"/>
+                                                        <Run Text="Cost: "/><Run Text="{Binding CostBasis, StringFormat=C, Mode=OneWay}"/>
                                                     </TextBlock>
                                                     <TextBlock Grid.Column="1">
-                                                        <Run Text="Sale: "/><Run Text="{Binding SalePrice, StringFormat=C}"/>
+                                                        <Run Text="Sale: "/><Run Text="{Binding SalePrice, StringFormat=C, Mode=OneWay}"/>
                                                     </TextBlock>
                                                     <TextBlock Grid.Column="2" FontWeight="SemiBold">
-                                                        <Run Text="Gain/Loss: "/><Run Text="{Binding GainOrLoss, StringFormat=C}"/>
+                                                        <Run Text="Gain/Loss: "/><Run Text="{Binding GainOrLoss, StringFormat=C, Mode=OneWay}"/>
                                                     </TextBlock>
                                                 </Grid>
                                             </StackPanel>
