@@ -63,7 +63,7 @@ public partial class PastureViewViewModel : ObservableObject
         try
         {
             _allHerds   = (await _herds.GetAllAsync()).ToList();
-            _allAnimals = (await _animals.GetAllAsync()).ToList();
+            _allAnimals = (await _animals.GetAllAsync()).Where(a => a.Status != AnimalStatus.Sold).ToList();
 
             HerdFilterOptions = new ObservableCollection<HerdDto>(_allHerds);
             await RebuildBoardAsync();
