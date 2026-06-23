@@ -178,17 +178,12 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                <TextBlock Text="Current Location" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox Text="{Binding CurrentLocation, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="0,0,12,0">
                                 <TextBlock Text="Breeder's Name" Style="{StaticResource FieldLabelStyle}"/>
                                 <TextBox Text="{Binding BreedersName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="2">
+                            <StackPanel Grid.Column="1">
                                 <TextBlock Text="Current Owner" Style="{StaticResource FieldLabelStyle}"/>
                                 <TextBox Text="{Binding CurrentOwner, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6"/>
                             </StackPanel>
