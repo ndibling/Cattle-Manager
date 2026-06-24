@@ -146,7 +146,6 @@ public class PedigreeControl : Canvas
                 AddParentRequested?.Invoke(this, new AddParentEventArgs(
                     node.AnimalId!.Value, "Sire", node.BarnName ?? ""));
             };
-            btn.PreviewMouseLeftButtonDown += (_, e) => e.Handled = true;
             Children.Add(btn);
         }
 
@@ -162,7 +161,6 @@ public class PedigreeControl : Canvas
                 AddParentRequested?.Invoke(this, new AddParentEventArgs(
                     node.AnimalId!.Value, "Dam", node.BarnName ?? ""));
             };
-            btn.PreviewMouseLeftButtonDown += (_, e) => e.Handled = true;
             Children.Add(btn);
         }
 
@@ -178,7 +176,6 @@ public class PedigreeControl : Canvas
                 RemoveParentRequested?.Invoke(this, new RemoveParentEventArgs(
                     node.ChildAnimalId!.Value, node.Role, node.BarnName ?? ""));
             };
-            btn.PreviewMouseLeftButtonDown += (_, e) => e.Handled = true;
             Children.Add(btn);
         }
     }
