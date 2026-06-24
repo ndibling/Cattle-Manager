@@ -155,11 +155,6 @@
                 <Setter Property="BorderThickness"  Value="0,0,1,1"/>
             </Style>
 
-            <!-- DataGridRow — belt-and-suspenders foreground for rows with per-DataGrid RowStyle -->
-            <Style TargetType="DataGridRow">
-                <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-                <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

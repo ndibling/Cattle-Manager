@@ -129,7 +129,7 @@
                   MouseDoubleClick="DataGrid_MouseDoubleClick">
 
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
