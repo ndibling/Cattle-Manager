@@ -134,14 +134,31 @@
                 <Setter Property="TextWrapping" Value="Wrap"/>
             </Style>
 
-            <!-- DataGrid — fix hardcoded white row backgrounds in dark mode.
-                 BasedOn inherits all ModernWpf DataGrid styling; we only override background/foreground.
-                 AlternatingRowBackground is intentionally NOT set: leaving it null means all rows use
-                 RowBackground, avoiding the "every other row is white in dark mode" problem. -->
+            <!-- DataGrid row/header dark-mode fix.
+                 AlternatingRowBackground must be explicitly set to the same brush as RowBackground —
+                 the BasedOn base style may carry a white AlternatingRowBackground that would otherwise
+                 show through as white odd rows. DataGridColumnHeader has its own implicit style below. -->
             <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
-                <Setter Property="RowBackground"  Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-                <Setter Property="Background"     Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-                <Setter Property="Foreground"     Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                <Setter Property="RowBackground"             Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                <Setter Property="AlternatingRowBackground"  Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                <Setter Property="Background"                Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                <Setter Property="Foreground"                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            </Style>
+
+            <!-- DataGridColumnHeader — fix white header background in dark mode -->
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="Background"       Value="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"/>
+                <Setter Property="Foreground"       Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                <Setter Property="Padding"          Value="12,6"/>
+                <Setter Property="FontWeight"       Value="SemiBold"/>
+                <Setter Property="BorderBrush"      Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+                <Setter Property="BorderThickness"  Value="0,0,1,1"/>
+            </Style>
+
+            <!-- DataGridRow — belt-and-suspenders foreground for rows with per-DataGrid RowStyle -->
+            <Style TargetType="DataGridRow">
+                <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

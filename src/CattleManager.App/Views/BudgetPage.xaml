@@ -217,9 +217,13 @@
 
                                 <DataGrid.Resources>
                                     <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="Padding" Value="12,6"/>
-                                        <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="FontSize" Value="12"/>
+                                        <Setter Property="Background"      Value="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"/>
+                                        <Setter Property="Foreground"      Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                                        <Setter Property="Padding"         Value="12,6"/>
+                                        <Setter Property="FontWeight"      Value="SemiBold"/>
+                                        <Setter Property="FontSize"        Value="12"/>
+                                        <Setter Property="BorderBrush"     Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+                                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
                                     </Style>
                                     <Style TargetType="DataGridCell">
                                         <Setter Property="Padding" Value="12,0"/>
