@@ -51,6 +51,8 @@
                 <Setter Property="CornerRadius" Value="8"/>
                 <Setter Property="Padding" Value="16"/>
                 <Setter Property="Margin" Value="8"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
                 <Setter Property="Effect">
                     <Setter.Value>
                         <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.12" Color="Black"/>
@@ -78,7 +80,9 @@
                             <Border Background="{TemplateBinding Background}"
                                     CornerRadius="8"
                                     Padding="{TemplateBinding Padding}"
-                                    MinWidth="{TemplateBinding MinWidth}">
+                                    MinWidth="{TemplateBinding MinWidth}"
+                                    BorderThickness="1"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.12" Color="Black"/>
                                 </Border.Effect>
