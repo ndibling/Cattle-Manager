@@ -37,4 +37,6 @@ public class PedigreeNodeDto
     public string Role { get; set; } = string.Empty;
     public PedigreeNodeDto? Sire { get; set; }
     public PedigreeNodeDto? Dam { get; set; }
+    /// <summary>AnimalId of the node whose SireId/DamId references this node. Null on the root subject.</summary>
+    public int? ChildAnimalId { get; set; }
 }

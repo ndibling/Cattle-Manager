@@ -47,6 +47,8 @@ public class PedigreeService
             node.Sire = CreateUnknownNode(animal.ExternalSireName, Gender.Male, generation + 1, "Sire");
         }
 
+        if (node.Sire is not null) node.Sire.ChildAnimalId = animal.AnimalId;
+
         if (animal.DamId.HasValue)
         {
             var dam = await _animals.GetByIdAsync(animal.DamId.Value);
@@ -59,7 +61,35 @@ public class PedigreeService
             node.Dam = CreateUnknownNode(animal.ExternalDamName, Gender.Female, generation + 1, "Dam");
         }
 
+        if (node.Dam is not null) node.Dam.ChildAnimalId = animal.AnimalId;
+
         return node;
+    }
+
+    public async Task AssignParentAsync(int childAnimalId, string role, int? parentAnimalId, string? externalName)
+    {
+        var child = await _animals.GetByIdAsync(childAnimalId)
+            ?? throw new ArgumentException($"Animal {childAnimalId} not found");
+        if (role == "Sire")
+        {
+            child.SireId = parentAnimalId;
+            child.ExternalSireName = parentAnimalId is null ? externalName : null;
+        }
+        else
+        {
+            child.DamId = parentAnimalId;
+            child.ExternalDamName = parentAnimalId is null ? externalName : null;
+        }
+        await _animals.UpdateAsync(child);
+    }
+
+    public async Task RemoveParentAsync(int childAnimalId, string role)
+    {
+        var child = await _animals.GetByIdAsync(childAnimalId)
+            ?? throw new ArgumentException($"Animal {childAnimalId} not found");
+        if (role == "Sire") { child.SireId = null; child.ExternalSireName = null; }
+        else                { child.DamId  = null; child.ExternalDamName  = null; }
+        await _animals.UpdateAsync(child);
     }
 
     private static PedigreeNodeDto CreateUnknownNode(string? name, Gender gender, int generation, string role) =>

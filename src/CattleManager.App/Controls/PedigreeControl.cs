@@ -7,6 +7,20 @@ using System.Windows.Shapes;
 
 namespace CattleManager.App.Controls;
 
+public class AddParentEventArgs(int childAnimalId, string role, string childBarnName) : EventArgs
+{
+    public int ChildAnimalId { get; } = childAnimalId;
+    public string Role { get; } = role;
+    public string ChildBarnName { get; } = childBarnName;
+}
+
+public class RemoveParentEventArgs(int childAnimalId, string role, string barnName) : EventArgs
+{
+    public int ChildAnimalId { get; } = childAnimalId;
+    public string Role { get; } = role;
+    public string BarnName { get; } = barnName;
+}
+
 public class PedigreeControl : Canvas
 {
     public static readonly DependencyProperty RootNodeProperty =
@@ -19,12 +33,17 @@ public class PedigreeControl : Canvas
         set => SetValue(RootNodeProperty, value);
     }
 
-    public event EventHandler<PedigreeNodeDto>? NodeClicked;
+    public event EventHandler<PedigreeNodeDto>?    NodeClicked;
+    public event EventHandler<AddParentEventArgs>?    AddParentRequested;
+    public event EventHandler<RemoveParentEventArgs>? RemoveParentRequested;
 
-    private const double NodeWidth = 140;
+    private const double NodeWidth  = 140;
     private const double NodeHeight = 80;
-    private const double HGap = 30;
-    private const double VGap = 16;
+    private const double HGap       = 40;   // widened slightly to fit action buttons
+    private const double VGap       = 16;
+    private const double BtnSize    = 22;
+    private const double BtnOffset  = 4;    // gap between node right edge and buttons
+    private const int    MaxGen     = 4;
 
     private static void OnRootNodeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
@@ -39,16 +58,10 @@ public class PedigreeControl : Canvas
         if (RootNode is null) return;
 
         double totalHeight = CalculateTotalHeight(RootNode);
-
-        // startY = 0 so RenderNode places the root at totalHeight/2 (centre).
-        // Previously this was totalHeight/2 - NodeHeight/2, which caused a
-        // double-offset: RenderNode adds height/2 internally, so the root
-        // landed at totalHeight - NodeHeight (near the bottom) and ancestors
-        // spilled past the canvas boundary.
         RenderNode(RootNode, 0, 0, totalHeight);
 
         int maxGen = GetMaxGeneration(RootNode);
-        Width = (maxGen + 1) * (NodeWidth + HGap) + HGap;
+        Width  = (maxGen + 1) * (NodeWidth + HGap) + HGap;
         Height = totalHeight + NodeHeight;
         InvalidateMeasure();
     }
@@ -57,18 +70,15 @@ public class PedigreeControl : Canvas
     {
         int max = node.Generation;
         if (node.Sire is not null) max = Math.Max(max, GetMaxGeneration(node.Sire));
-        if (node.Dam is not null) max = Math.Max(max, GetMaxGeneration(node.Dam));
+        if (node.Dam  is not null) max = Math.Max(max, GetMaxGeneration(node.Dam));
         return max;
     }
 
-    // Canvas measures itself as (0,0) by default, which means the ScrollViewer
-    // never learns the real size. Report our explicit dimensions so scrollbars
-    // are sized correctly.
     protected override Size MeasureOverride(Size constraint)
     {
         base.MeasureOverride(constraint);
         return new Size(
-            double.IsNaN(Width) ? 0 : Width,
+            double.IsNaN(Width)  ? 0 : Width,
             double.IsNaN(Height) ? 0 : Height);
     }
 
@@ -78,13 +88,13 @@ public class PedigreeControl : Canvas
             return NodeHeight + VGap;
         double h = 0;
         if (node.Sire is not null) h += CalculateTotalHeight(node.Sire);
-        if (node.Dam is not null) h += CalculateTotalHeight(node.Dam);
+        if (node.Dam  is not null) h += CalculateTotalHeight(node.Dam);
         return Math.Max(h, NodeHeight + VGap);
     }
 
     private Point RenderNode(PedigreeNodeDto node, int gen, double y, double height)
     {
-        double x = gen * (NodeWidth + HGap);
+        double x     = gen * (NodeWidth + HGap);
         double nodeY = y + height / 2 - NodeHeight / 2;
 
         var border = CreateNodeElement(node);
@@ -92,14 +102,17 @@ public class PedigreeControl : Canvas
         SetTop(border, nodeY);
         Children.Add(border);
 
+        // Action buttons float in the HGap to the right of the node box
+        AddActionButtons(node, x, nodeY);
+
         var nodeCenterRight = new Point(x + NodeWidth, nodeY + NodeHeight / 2);
 
         if (node.Sire is not null || node.Dam is not null)
         {
-            double sireHeight = node.Sire is not null ? CalculateTotalHeight(node.Sire) : height / 2;
-            double damHeight = node.Dam is not null ? CalculateTotalHeight(node.Dam) : height / 2;
-            double totalChildH = sireHeight + damHeight;
-            double childY = y + height / 2 - totalChildH / 2;
+            double sireHeight   = node.Sire is not null ? CalculateTotalHeight(node.Sire) : height / 2;
+            double damHeight    = node.Dam  is not null ? CalculateTotalHeight(node.Dam)  : height / 2;
+            double totalChildH  = sireHeight + damHeight;
+            double childY       = y + height / 2 - totalChildH / 2;
 
             if (node.Sire is not null)
             {
@@ -117,9 +130,82 @@ public class PedigreeControl : Canvas
         return new Point(x, nodeY + NodeHeight / 2);
     }
 
+    private void AddActionButtons(PedigreeNodeDto node, double nodeX, double nodeY)
+    {
+        double btnX = nodeX + NodeWidth + BtnOffset;
+
+        // [+] Sire — add sire parent
+        if (node.IsInHerd && node.Sire is null && node.Generation < MaxGen)
+        {
+            var btn = MakeActionButton("♂+", "#1565C0", "Assign Sire");
+            SetLeft(btn, btnX);
+            SetTop(btn, nodeY + 4);
+            btn.Click += (_, e) =>
+            {
+                e.Handled = true;
+                AddParentRequested?.Invoke(this, new AddParentEventArgs(
+                    node.AnimalId!.Value, "Sire", node.BarnName ?? ""));
+            };
+            btn.PreviewMouseLeftButtonDown += (_, e) => e.Handled = true;
+            Children.Add(btn);
+        }
+
+        // [+] Dam — add dam parent
+        if (node.IsInHerd && node.Dam is null && node.Generation < MaxGen)
+        {
+            var btn = MakeActionButton("♀+", "#AD1457", "Assign Dam");
+            SetLeft(btn, btnX);
+            SetTop(btn, nodeY + NodeHeight - BtnSize - 4);
+            btn.Click += (_, e) =>
+            {
+                e.Handled = true;
+                AddParentRequested?.Invoke(this, new AddParentEventArgs(
+                    node.AnimalId!.Value, "Dam", node.BarnName ?? ""));
+            };
+            btn.PreviewMouseLeftButtonDown += (_, e) => e.Handled = true;
+            Children.Add(btn);
+        }
+
+        // [−] Remove — unlink this node from its biological child
+        if (node.Generation > 0 && node.ChildAnimalId.HasValue)
+        {
+            var btn = MakeActionButton("−", "#555555", $"Remove {node.BarnName ?? "this animal"} from pedigree");
+            SetLeft(btn, btnX);
+            SetTop(btn, nodeY + NodeHeight / 2 - BtnSize / 2);
+            btn.Click += (_, e) =>
+            {
+                e.Handled = true;
+                RemoveParentRequested?.Invoke(this, new RemoveParentEventArgs(
+                    node.ChildAnimalId!.Value, node.Role, node.BarnName ?? ""));
+            };
+            btn.PreviewMouseLeftButtonDown += (_, e) => e.Handled = true;
+            Children.Add(btn);
+        }
+    }
+
+    private static Button MakeActionButton(string label, string hexColor, string tooltip)
+    {
+        var color = (Color)ColorConverter.ConvertFromString(hexColor);
+        return new Button
+        {
+            Content    = label,
+            Width      = BtnSize,
+            Height     = BtnSize,
+            FontSize   = 10,
+            FontWeight = FontWeights.Bold,
+            Padding    = new Thickness(0),
+            Background = new SolidColorBrush(Color.FromArgb(200, color.R, color.G, color.B)),
+            Foreground = Brushes.White,
+            BorderThickness = new Thickness(0),
+            Cursor   = Cursors.Hand,
+            ToolTip  = tooltip,
+            Tag      = hexColor   // unused, kept for debugging
+        };
+    }
+
     private Border CreateNodeElement(PedigreeNodeDto node)
     {
-        var isUnknown = !node.IsInHerd && node.AnimalId is null;
+        var isUnknown  = !node.IsInHerd && node.AnimalId is null;
         var genderColor = node.Gender == Gender.Male
             ? Color.FromRgb(21, 101, 192)
             : node.Gender == Gender.Female
@@ -128,49 +214,47 @@ public class PedigreeControl : Canvas
 
         var border = new Border
         {
-            Width = NodeWidth,
-            Height = NodeHeight,
-            CornerRadius = new CornerRadius(8),
+            Width           = NodeWidth,
+            Height          = NodeHeight,
+            CornerRadius    = new CornerRadius(8),
             BorderThickness = new Thickness(2),
-            BorderBrush = new SolidColorBrush(genderColor),
-            Background = isUnknown
+            BorderBrush     = new SolidColorBrush(genderColor),
+            Background      = isUnknown
                 ? new SolidColorBrush(Color.FromArgb(30, 200, 200, 200))
                 : new SolidColorBrush(Color.FromArgb(20, genderColor.R, genderColor.G, genderColor.B)),
-            Cursor = node.IsInHerd ? Cursors.Hand : Cursors.Arrow,
+            Cursor  = node.IsInHerd ? Cursors.Hand : Cursors.Arrow,
             ToolTip = BuildTooltip(node)
         };
 
         var stack = new StackPanel { Margin = new Thickness(8, 6, 8, 6) };
 
-        var nameText = new TextBlock
+        stack.Children.Add(new TextBlock
         {
-            Text = node.BarnName ?? "Unknown",
-            FontWeight = FontWeights.SemiBold,
-            FontSize = 12,
+            Text        = node.BarnName ?? "Unknown",
+            FontWeight  = FontWeights.SemiBold,
+            FontSize    = 12,
             TextTrimming = TextTrimming.CharacterEllipsis,
-            Foreground = isUnknown ? Brushes.Gray : Brushes.Black
-        };
-        stack.Children.Add(nameText);
+            Foreground  = isUnknown ? Brushes.Gray : Brushes.Black
+        });
 
         if (!string.IsNullOrEmpty(node.RegisteredName))
         {
             stack.Children.Add(new TextBlock
             {
-                Text = node.RegisteredName,
-                FontSize = 10,
-                Foreground = Brushes.Gray,
+                Text        = node.RegisteredName,
+                FontSize    = 10,
+                Foreground  = Brushes.Gray,
                 TextTrimming = TextTrimming.CharacterEllipsis
             });
         }
 
-        var genderSymbol = new TextBlock
+        stack.Children.Add(new TextBlock
         {
-            Text = node.Gender == Gender.Male ? "♂" : node.Gender == Gender.Female ? "♀" : "?",
-            FontSize = 14,
-            Foreground = new SolidColorBrush(genderColor),
+            Text                = node.Gender == Gender.Male ? "♂" : node.Gender == Gender.Female ? "♀" : "?",
+            FontSize            = 14,
+            Foreground          = new SolidColorBrush(genderColor),
             HorizontalAlignment = HorizontalAlignment.Right
-        };
-        stack.Children.Add(genderSymbol);
+        });
 
         border.Child = stack;
 
@@ -188,7 +272,7 @@ public class PedigreeControl : Canvas
 
     private static ToolTip BuildTooltip(PedigreeNodeDto node)
     {
-        var tp = new ToolTip();
+        var tp    = new ToolTip();
         var stack = new StackPanel { Margin = new Thickness(8) };
         stack.Children.Add(new TextBlock { Text = node.BarnName ?? "Unknown", FontWeight = FontWeights.Bold });
         if (!string.IsNullOrEmpty(node.RegisteredName))
@@ -204,18 +288,11 @@ public class PedigreeControl : Canvas
     private void DrawLine(Point from, Point to)
     {
         var midX = (from.X + to.X) / 2;
-        var line = new Polyline
+        Children.Add(new Polyline
         {
-            Stroke = new SolidColorBrush(Color.FromRgb(180, 180, 180)),
+            Stroke          = new SolidColorBrush(Color.FromRgb(180, 180, 180)),
             StrokeThickness = 1.5,
-            Points = new PointCollection
-            {
-                from,
-                new Point(midX, from.Y),
-                new Point(midX, to.Y),
-                to
-            }
-        };
-        Children.Add(line);
+            Points          = new PointCollection { from, new(midX, from.Y), new(midX, to.Y), to }
+        });
     }
 }

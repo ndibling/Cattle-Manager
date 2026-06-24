@@ -1,3 +1,4 @@
+using CattleManager.App.Controls;
 using CattleManager.App.ViewModels;
 using CattleManager.Core.Models;
 using System.Windows;
@@ -10,7 +11,7 @@ public partial class PedigreePage : Page
 {
     private readonly PedigreeViewModel _vm;
 
-    private bool _isPanning;
+    private bool  _isPanning;
     private Point _panOrigin;
     private Point _scrollOrigin;
 
@@ -19,11 +20,37 @@ public partial class PedigreePage : Page
         _vm = vm;
         DataContext = vm;
         InitializeComponent();
+
+        PedigreeCanvas.AddParentRequested    += OnAddParentRequested;
+        PedigreeCanvas.RemoveParentRequested += OnRemoveParentRequested;
+
         Loaded += async (_, _) => await _vm.LoadAsync();
     }
 
     private void PedigreeCanvas_NodeClicked(object sender, PedigreeNodeDto node) =>
         _vm.ViewAnimalCommand.Execute(node);
+
+    private async void OnAddParentRequested(object? sender, AddParentEventArgs e)
+    {
+        var dialog = new AddParentDialog(e.ChildBarnName, e.Role, _vm.AllAnimals)
+        {
+            Owner = Window.GetWindow(this)
+        };
+        if (dialog.ShowDialog() == true)
+            await _vm.AssignParentAsync(e.ChildAnimalId, e.Role, dialog.SelectedAnimalId, dialog.ExternalName);
+    }
+
+    private async void OnRemoveParentRequested(object? sender, RemoveParentEventArgs e)
+    {
+        var result = MessageBox.Show(
+            $"Remove \"{e.BarnName}\" as {e.Role} from this pedigree?",
+            "Remove Parent",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
+            await _vm.RemoveParentAsync(e.ChildAnimalId, e.Role);
+    }
 
     private void PrintPedigree_Click(object sender, RoutedEventArgs e)
     {
@@ -34,8 +61,8 @@ public partial class PedigreePage : Page
 
     private void Scroll_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        _isPanning = true;
-        _panOrigin = e.GetPosition(PedigreeScroll);
+        _isPanning  = true;
+        _panOrigin  = e.GetPosition(PedigreeScroll);
         _scrollOrigin = new Point(PedigreeScroll.HorizontalOffset, PedigreeScroll.VerticalOffset);
         PedigreeScroll.CaptureMouse();
         PedigreeScroll.Cursor = Cursors.SizeAll;
