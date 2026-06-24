@@ -17,7 +17,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Financial Overview" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                    <Border Background="#E8F5E9" CornerRadius="12" Padding="10,4" Margin="12,0,0,0"
+                    <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="12" Padding="10,4" Margin="12,0,0,0"
                             Visibility="{Binding FiscalYearDisplay, Converter={StaticResource NullToVisibility}}">
                         <TextBlock Text="{Binding FiscalYearDisplay}" FontSize="13" VerticalAlignment="Center"/>
                     </Border>
@@ -106,7 +106,7 @@
                         </Button.ToolTip>
                         <StackPanel>
                             <TextBlock Text="{Binding NetFarmIncomeDisplay}" FontSize="28" FontWeight="Bold"
-                                       Foreground="#2E7D32" HorizontalAlignment="Center"/>
+                                       Foreground="#4CAF50" HorizontalAlignment="Center"/>
                             <TextBlock Text="Net Farm Income" FontSize="12" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,4,0,0"/>
@@ -122,14 +122,14 @@
                                     <TextBlock TextWrapping="Wrap" FontSize="12"
                                                Text="The sum of all income transactions recorded for the current fiscal year, including livestock sales, breeding services, and any other farm income."/>
                                     <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"
-                                               Foreground="#888888"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                Text="Formula: Sum of all Income transactions this fiscal year"/>
                                 </StackPanel>
                             </ToolTip>
                         </Button.ToolTip>
                         <StackPanel>
                             <TextBlock Text="{Binding TotalRevenueDisplay}" FontSize="28" FontWeight="Bold"
-                                       Foreground="#1565C0" HorizontalAlignment="Center"/>
+                                       Foreground="#42A5F5" HorizontalAlignment="Center"/>
                             <TextBlock Text="Total Revenue" FontSize="12" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,4,0,0"/>
@@ -145,14 +145,14 @@
                                     <TextBlock TextWrapping="Wrap" FontSize="12"
                                                Text="The sum of all expense transactions recorded for the current fiscal year, including feed, veterinary, labor, equipment, and other operating costs."/>
                                     <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"
-                                               Foreground="#888888"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                Text="Formula: Sum of all Expense transactions this fiscal year"/>
                                 </StackPanel>
                             </ToolTip>
                         </Button.ToolTip>
                         <StackPanel>
                             <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="28" FontWeight="Bold"
-                                       Foreground="#C62828" HorizontalAlignment="Center"/>
+                                       Foreground="#EF5350" HorizontalAlignment="Center"/>
                             <TextBlock Text="Total Expenses" FontSize="12" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,4,0,0"/>
@@ -168,14 +168,14 @@
                                     <TextBlock TextWrapping="Wrap" FontSize="12"
                                                Text="Measures how much of your farm's assets are financed by debt. A lower ratio indicates stronger financial health. Below 0.5 is generally considered low risk; above 0.7 signals high leverage."/>
                                     <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"
-                                               Foreground="#888888"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                Text="Formula: Total Liabilities ÷ Total Assets"/>
                                 </StackPanel>
                             </ToolTip>
                         </Button.ToolTip>
                         <StackPanel>
                             <TextBlock Text="{Binding DebtToAssetDisplay}" FontSize="28" FontWeight="Bold"
-                                       Foreground="#E65100" HorizontalAlignment="Center"/>
+                                       Foreground="#FFA726" HorizontalAlignment="Center"/>
                             <TextBlock Text="Debt-to-Asset Ratio" FontSize="12" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,4,0,0"/>
@@ -191,14 +191,14 @@
                                     <TextBlock TextWrapping="Wrap" FontSize="12"
                                                Text="The average total farm expense allocated to each active animal this fiscal year. Useful for benchmarking efficiency and setting sale prices."/>
                                     <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"
-                                               Foreground="#888888"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                Text="Formula: Total Expenses ÷ Number of Active Animals"/>
                                 </StackPanel>
                             </ToolTip>
                         </Button.ToolTip>
                         <StackPanel>
                             <TextBlock Text="{Binding AvgCostPerHeadDisplay}" FontSize="28" FontWeight="Bold"
-                                       Foreground="#6A1B9A" HorizontalAlignment="Center"/>
+                                       Foreground="#AB47BC" HorizontalAlignment="Center"/>
                             <TextBlock Text="Avg Cost / Head" FontSize="12" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,4,0,0"/>
@@ -213,14 +213,14 @@
                                     <TextBlock TextWrapping="Wrap" FontSize="12"
                                                Text="The minimum price per animal you must receive on sales to cover all farm expenses for the year. If your actual sale prices fall below this, the operation is running at a loss."/>
                                     <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"
-                                               Foreground="#888888"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                Text="Formula: Total Expenses ÷ Number of Animals Sold This Year"/>
                                 </StackPanel>
                             </ToolTip>
                         </Button.ToolTip>
                         <StackPanel>
                             <TextBlock Text="{Binding BreakEvenPriceDisplay}" FontSize="28" FontWeight="Bold"
-                                       Foreground="#F57F17" HorizontalAlignment="Center"/>
+                                       Foreground="#FFA726" HorizontalAlignment="Center"/>
                             <TextBlock Text="Break-Even Price" FontSize="12" HorizontalAlignment="Center"
                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                        Margin="0,4,0,0"/>

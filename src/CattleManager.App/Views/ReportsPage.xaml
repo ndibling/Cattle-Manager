@@ -137,7 +137,7 @@
                                            FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Separator Margin="0,10"/>
+                            <Separator Margin="0,10" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
                             <!-- Expenses section -->
                             <TextBlock Text="EXPENSES" FontSize="15" FontWeight="Bold" Margin="0,0,0,6"/>
@@ -179,17 +179,19 @@
                                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                             </Grid>
 
-                            <Separator Margin="0,10"/>
+                            <Separator Margin="0,10" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
                             <!-- Net Farm Income -->
-                            <Border Background="#E8F5E9" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
+                            <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    BorderBrush="#4CAF50" BorderThickness="2,0,0,0"
+                                    CornerRadius="0,6,6,0" Padding="12,8" Margin="0,0,0,16">
                                 <Grid>
                                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="NET FARM INCOME" FontWeight="Bold" FontSize="15"
-                                               Foreground="#2E7D32"/>
+                                               Foreground="#4CAF50"/>
                                     <TextBlock Grid.Column="1" Text="{Binding PnlResult.NetFarmIncome, StringFormat=C}"
                                                FontWeight="Bold" FontSize="15" HorizontalAlignment="Right"
-                                               Foreground="#2E7D32"/>
+                                               Foreground="#4CAF50"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -266,14 +268,16 @@
                                 <TextBlock Grid.Column="1" Text="{Binding BsResult.TotalFixedAssetsNet, StringFormat=C}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Border Background="#E8F5E9" CornerRadius="6" Padding="12,8" Margin="0,8">
+                            <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    BorderBrush="#4CAF50" BorderThickness="2,0,0,0"
+                                    CornerRadius="0,6,6,0" Padding="12,8" Margin="0,8">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="TOTAL ASSETS" FontWeight="Bold" FontSize="14" Foreground="#2E7D32"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding BsResult.TotalAssets, StringFormat=C}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right" Foreground="#2E7D32"/>
+                                    <TextBlock Grid.Column="0" Text="TOTAL ASSETS" FontWeight="Bold" FontSize="14" Foreground="#4CAF50"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding BsResult.TotalAssets, StringFormat=C}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right" Foreground="#4CAF50"/>
                                 </Grid>
                             </Border>
 
-                            <Separator Margin="0,6"/>
+                            <Separator Margin="0,6" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
                             <!-- LIABILITIES -->
                             <TextBlock Text="LIABILITIES" FontSize="15" FontWeight="Bold" Margin="0,0,0,6"/>
@@ -309,19 +313,23 @@
                                 <TextBlock Grid.Column="1" Text="{Binding BsResult.TotalLongTermLiabilities, StringFormat=C}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Border Background="#FFEBEE" CornerRadius="6" Padding="12,8" Margin="0,8">
+                            <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    BorderBrush="#EF5350" BorderThickness="2,0,0,0"
+                                    CornerRadius="0,6,6,0" Padding="12,8" Margin="0,8">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="TOTAL LIABILITIES" FontWeight="Bold" FontSize="14" Foreground="#C62828"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding BsResult.TotalLiabilities, StringFormat=C}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right" Foreground="#C62828"/>
+                                    <TextBlock Grid.Column="0" Text="TOTAL LIABILITIES" FontWeight="Bold" FontSize="14" Foreground="#EF5350"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding BsResult.TotalLiabilities, StringFormat=C}" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right" Foreground="#EF5350"/>
                                 </Grid>
                             </Border>
 
-                            <Separator Margin="0,6"/>
+                            <Separator Margin="0,6" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
-                            <Border Background="#E3F2FD" CornerRadius="6" Padding="12,8" Margin="0,0,0,16">
+                            <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    BorderBrush="#42A5F5" BorderThickness="2,0,0,0"
+                                    CornerRadius="0,6,6,0" Padding="12,8" Margin="0,0,0,16">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="OWNER'S EQUITY" FontWeight="Bold" FontSize="15" Foreground="#1565C0"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding BsResult.OwnersEquity, StringFormat=C}" FontWeight="Bold" FontSize="15" HorizontalAlignment="Right" Foreground="#1565C0"/>
+                                    <TextBlock Grid.Column="0" Text="OWNER'S EQUITY" FontWeight="Bold" FontSize="15" Foreground="#42A5F5"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding BsResult.OwnersEquity, StringFormat=C}" FontWeight="Bold" FontSize="15" HorizontalAlignment="Right" Foreground="#42A5F5"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -378,7 +386,7 @@
                                 <TextBlock Grid.Column="1" Text="{Binding CfResult.OperatingActivities, StringFormat=C}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Separator Margin="0,10"/>
+                            <Separator Margin="0,10" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
                             <TextBlock Text="INVESTING ACTIVITIES" FontSize="15" FontWeight="Bold" Margin="0,0,0,6"/>
                             <ItemsControl ItemsSource="{Binding CfResult.InvestingItems}">
@@ -396,7 +404,7 @@
                                 <TextBlock Grid.Column="1" Text="{Binding CfResult.InvestingActivities, StringFormat=C}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Separator Margin="0,10"/>
+                            <Separator Margin="0,10" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
                             <TextBlock Text="FINANCING ACTIVITIES" FontSize="15" FontWeight="Bold" Margin="0,0,0,6"/>
                             <ItemsControl ItemsSource="{Binding CfResult.FinancingItems}">
@@ -414,10 +422,12 @@
                                 <TextBlock Grid.Column="1" Text="{Binding CfResult.FinancingActivities, StringFormat=C}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Border Background="#E8F5E9" CornerRadius="6" Padding="12,8" Margin="0,12,0,16">
+                            <Border Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    BorderBrush="#4CAF50" BorderThickness="2,0,0,0"
+                                    CornerRadius="0,6,6,0" Padding="12,8" Margin="0,12,0,16">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="NET CASH CHANGE" FontWeight="Bold" FontSize="15" Foreground="#2E7D32"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding CfResult.NetCashChange, StringFormat=C}" FontWeight="Bold" FontSize="15" HorizontalAlignment="Right" Foreground="#2E7D32"/>
+                                    <TextBlock Grid.Column="0" Text="NET CASH CHANGE" FontWeight="Bold" FontSize="15" Foreground="#4CAF50"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding CfResult.NetCashChange, StringFormat=C}" FontWeight="Bold" FontSize="15" HorizontalAlignment="Right" Foreground="#4CAF50"/>
                                 </Grid>
                             </Border>
                         </StackPanel>
@@ -474,7 +484,7 @@
                                 <TextBlock Grid.Column="1" Text="{Binding TaxResult.NetFarmIncome, StringFormat=C}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                             </Grid>
 
-                            <Separator Margin="0,10"/>
+                            <Separator Margin="0,10" Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
 
                             <TextBlock Text="ESTIMATED TAX LIABILITY" FontSize="15" FontWeight="Bold" Margin="0,0,0,6"/>
                             <Grid Margin="0,2"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
@@ -625,7 +635,7 @@
                                                                 <TextBlock Grid.Column="2" Text="{Binding AmountDisplay}"
                                                                            FontSize="13" FontWeight="SemiBold"
                                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                                                                           Foreground="#2E7D32"/>
+                                                                           Foreground="#4CAF50"/>
                                                                 <Button Grid.Column="3"
                                                                         Content="Download"
                                                                         Command="{Binding DataContext.DownloadBillOfSaleCommand,
