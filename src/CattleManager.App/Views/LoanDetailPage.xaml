@@ -66,7 +66,9 @@
                       VirtualizingPanel.IsVirtualizing="True"
                       RowHeight="34" FontSize="13">
                 <DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                         <Style.Triggers>
                             <!-- Past periods are dimmed -->
                             <DataTrigger Binding="{Binding IsPaid}" Value="True">

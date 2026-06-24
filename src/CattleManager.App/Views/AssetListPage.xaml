@@ -129,7 +129,9 @@
                   MouseDoubleClick="DataGrid_MouseDoubleClick">
 
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>

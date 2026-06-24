@@ -143,6 +143,15 @@
                 <Setter Property="AlternatingRowBackground"  Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
                 <Setter Property="Background"                Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
                 <Setter Property="Foreground"                Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                <Setter Property="RowStyle">
+                    <Setter.Value>
+                        <!-- Explicit setter so rows don't fall back to Aero2's white DataGridRow style -->
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <!-- DataGridColumnHeader — fix white header background in dark mode -->
