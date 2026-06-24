@@ -87,7 +87,7 @@
                                         Command="{Binding ViewHerdDetailsCommand}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding TotalAnimals}" FontSize="40" FontWeight="Bold"
-                                                   Foreground="#4CAF50" HorizontalAlignment="Center"/>
+                                                   Foreground="#00E676" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Total Animals" FontSize="13" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                    Margin="0,4,0,0"/>
@@ -99,7 +99,7 @@
                                         Command="{Binding ViewActiveAnimalsCommand}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding ActiveAnimals}" FontSize="40" FontWeight="Bold"
-                                                   Foreground="#66BB6A" HorizontalAlignment="Center"/>
+                                                   Foreground="#69F0AE" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Active Animals" FontSize="13" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                    Margin="0,4,0,0"/>
@@ -111,7 +111,7 @@
                                         Command="{Binding ViewBreedingFemalesCommand}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding BreedingFemales}" FontSize="40" FontWeight="Bold"
-                                                   Foreground="#EC407A" HorizontalAlignment="Center"/>
+                                                   Foreground="#FF4081" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Breeding Females" FontSize="13" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                    Margin="0,4,0,0"/>
@@ -123,7 +123,7 @@
                                         Command="{Binding ViewBreedingMalesCommand}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding BreedingMales}" FontSize="40" FontWeight="Bold"
-                                                   Foreground="#42A5F5" HorizontalAlignment="Center"/>
+                                                   Foreground="#2979FF" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Breeding Males" FontSize="13" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                    Margin="0,4,0,0"/>
@@ -135,7 +135,7 @@
                                         Command="{Binding ViewPregnantCommand}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding PregnantAnimals}" FontSize="40" FontWeight="Bold"
-                                                   Foreground="#AB47BC" HorizontalAlignment="Center"/>
+                                                   Foreground="#D500F9" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Pregnant" FontSize="13" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                    Margin="0,4,0,0"/>
@@ -150,7 +150,7 @@
                                     </Button.Background>
                                     <StackPanel>
                                         <TextBlock Text="{Binding DueForHusbandry}" FontSize="40" FontWeight="Bold"
-                                                   Foreground="#FFA726" HorizontalAlignment="Center"/>
+                                                   Foreground="#FF6D00" HorizontalAlignment="Center"/>
                                         <TextBlock Text="Due for Husbandry" FontSize="13" HorizontalAlignment="Center"
                                                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                                                    Margin="0,4,0,0"/>
