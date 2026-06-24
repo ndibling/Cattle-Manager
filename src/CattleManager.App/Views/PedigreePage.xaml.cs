@@ -4,6 +4,7 @@ using CattleManager.Core.Models;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace CattleManager.App.Views;
 
@@ -61,8 +62,16 @@ public partial class PedigreePage : Page
 
     private void Scroll_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        _isPanning  = true;
-        _panOrigin  = e.GetPosition(PedigreeScroll);
+        // Don't pan when the click originated from an action button
+        var src = e.OriginalSource as DependencyObject;
+        while (src is not null && src != PedigreeScroll)
+        {
+            if (src is Button) return;
+            src = VisualTreeHelper.GetParent(src);
+        }
+
+        _isPanning    = true;
+        _panOrigin    = e.GetPosition(PedigreeScroll);
         _scrollOrigin = new Point(PedigreeScroll.HorizontalOffset, PedigreeScroll.VerticalOffset);
         PedigreeScroll.CaptureMouse();
         PedigreeScroll.Cursor = Cursors.SizeAll;
