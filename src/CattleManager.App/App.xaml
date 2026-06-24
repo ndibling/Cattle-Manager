@@ -135,12 +135,13 @@
             </Style>
 
             <!-- DataGrid — fix hardcoded white row backgrounds in dark mode.
-                 BasedOn inherits all ModernWpf DataGrid styling; we only override background/foreground. -->
+                 BasedOn inherits all ModernWpf DataGrid styling; we only override background/foreground.
+                 AlternatingRowBackground is intentionally NOT set: leaving it null means all rows use
+                 RowBackground, avoiding the "every other row is white in dark mode" problem. -->
             <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
-                <Setter Property="RowBackground"            Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-                <Setter Property="AlternatingRowBackground" Value="{DynamicResource SystemControlBackgroundAltMediumLowBrush}"/>
-                <Setter Property="Background"               Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-                <Setter Property="Foreground"               Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                <Setter Property="RowBackground"  Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                <Setter Property="Background"     Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+                <Setter Property="Foreground"     Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
