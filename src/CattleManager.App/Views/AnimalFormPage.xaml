@@ -284,8 +284,8 @@
                             <TextBox Text="{Binding CurrentValue, UpdateSourceTrigger=PropertyChanged}" FontSize="14" Padding="8,6" Width="200" HorizontalAlignment="Left"/>
                         </StackPanel>
 
-                        <!-- Sale details — only when For Sale is checked -->
-                        <StackPanel Visibility="{Binding IsForSale, Converter={StaticResource BoolToVisibility}}">
+                        <!-- Sale details — visible when For Sale or Sold -->
+                        <StackPanel Visibility="{Binding ShowSaleSection, Converter={StaticResource BoolToVisibility}}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>

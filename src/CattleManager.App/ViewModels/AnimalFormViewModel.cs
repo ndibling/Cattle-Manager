@@ -39,8 +39,10 @@ public partial class AnimalFormViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBreedingAllowed))]
+    [NotifyPropertyChangedFor(nameof(ShowSaleSection))]
     private AnimalStatus _status;
     public bool IsBreedingAllowed => Status != AnimalStatus.Inactive && Status != AnimalStatus.Deceased && Status != AnimalStatus.Sold;
+    public bool ShowSaleSection   => IsForSale || Status == AnimalStatus.Sold;
     [ObservableProperty] private DateTime _birthDate = DateTime.Today;
     [ObservableProperty] private DateTime? _dateAcquired;
     [ObservableProperty] private string? _coloring;
@@ -103,7 +105,9 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private DateTime? _expectedDueDate;
     [ObservableProperty] private string? _reproductionNotes;
     [ObservableProperty] private MaleBreedingStatus _maleBreedingStatus;
-    [ObservableProperty] private bool _isForSale;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowSaleSection))]
+    private bool _isForSale;
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableMales = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableFemales = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableAnimals = [];
@@ -315,11 +319,6 @@ public partial class AnimalFormViewModel : ObservableObject
         else
         {
             if (Status == AnimalStatus.ForSale) Status = AnimalStatus.Healthy;
-            AskingPrice = null;
-            SalePrice   = null;
-            SoldDate    = null;
-            BuyerName   = null;
-            BuyerAddress = null;
         }
     }
 
@@ -513,7 +512,7 @@ public partial class AnimalFormViewModel : ObservableObject
         SellerName = BornOnProperty ? null : SellerName, SellerAddress = BornOnProperty ? null : SellerAddress,
         PurchaseDate = BornOnProperty ? null : PurchaseDate, PurchasePrice = BornOnProperty ? null : PurchasePrice,
         IsForSale = IsForSale,
-        AskingPrice = IsForSale ? AskingPrice : null,
+        AskingPrice = AskingPrice,
         CurrentValue = CurrentValue,
         SalePrice = SalePrice,
         BuyerName = BuyerName,
