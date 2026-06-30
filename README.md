@@ -1,6 +1,6 @@
-# 🐄 Cattle Manager
+# Herd Master
 
-A modern Windows desktop application for managing cattle herds. Track animals, health records, breeding, pedigrees, and finances — all stored locally on your machine.
+A modern Windows desktop application for managing farm animal herds. Track animals, health records, breeding, pedigrees, and finances — all stored locally on your machine. Supports cattle, horses, goats, sheep, chickens, ducks, geese, pigs, and any custom animal type you define.
 
 ![CI](https://github.com/ndibling/Cattle-Manager/actions/workflows/ci.yml/badge.svg)
 
@@ -9,28 +9,33 @@ A modern Windows desktop application for managing cattle herds. Track animals, h
 ## Features
 
 ### Herd Management
-- **Dashboard** — At-a-glance herd stats: total animals, breeding females/males, pregnant cows, and animals due for husbandry tasks
+- **Multi-Species Herds** — Create herds for any farm animal: cattle, horses, goats, sheep, chickens, ducks, geese, pigs, or custom types you define in Settings. Each herd is tied to an animal type; "herd" vs. "flock" terminology adjusts automatically
+- **Dashboard** — At-a-glance stats: total animals, breeding females/males, pregnant animals, and animals due for husbandry tasks
 - **Herd Details** — Sortable, filterable, searchable table of all animals with inline action menus
-- **Animal Profiles** — "Baseball card" view with photo, full health history, lineage, and reproduction info; separate Purchase Details and Sale & Valuation sections showing asking price, current value, sale price, and buyer info; inline edit mode
-- **Add / Edit Animals** — Tabbed form with validation, autocomplete sire/dam dropdowns, photo upload, and auto-calculated ages and due dates; asking price and current value editable alongside sale info
+- **Animal Profiles** — "Baseball card" view with photo, full health history, lineage, and reproduction info; Purchase Details and Sale & Valuation sections with asking price, current value, sale price, and buyer info; inline edit mode
+- **Add / Edit Animals** — Tabbed form with validation; breed dropdown filtered to the herd's species; autocomplete sire/dam dropdowns, photo upload, and auto-calculated ages and due dates
 - **Pedigree Diagram** — Visual 4-generation ancestry tree with clickable nodes and print support
 - **Health & Husbandry Tracking** — Worming, vaccination, and health check dates with overdue alerts
 - **Breeding Management** — Pregnancy tracking with auto-calculated due dates (283-day gestation), calving records
 
+### Settings & Customization
+- **Animal Types** — View built-in types or add your own (e.g. Alpaca, Llama). Choose whether the group is called a "Herd", "Flock", "Pack", etc.
+- **Breeds per Type** — Each animal type has its own breed list. Add custom breeds under any type; standard breeds are protected from deletion
+- **Measurement Preferences** — Weight (lb/kg) and height (in/cm/hands) units
+- **Themes** — Light and Dark mode
+
 ### Financial Management
 - **Financial Dashboard** — KPI tiles for Net Farm Income, Total Revenue, Total Expenses, Debt-to-Asset Ratio, Average Cost/Head, and Break-Even Price; revenue vs. expense bar chart by month
 - **Transactions** — Income and expense ledger with category tagging, payee/payer, receipt attachments, and optional animal linkage; filterable by date, type, and category
-- **Asset Register** — Track equipment, land, buildings, vehicles, and breeding stock; animals automatically appear as livestock assets on save; current value tracks separately from cost basis; livestock assets are not depreciated (Straight-Line, 150% DB, or Section 179 for all other categories)
-- **Loan Tracking** — Full amortization schedules for all active loans; record actual payments with principal/interest breakdown; outstanding balance calculated to any date
+- **Asset Register** — Track equipment, land, buildings, vehicles, and breeding stock; animals automatically appear as livestock assets; current value tracked separately from cost basis; Straight-Line, 150% DB, or Section 179 depreciation
+- **Loan Tracking** — Full amortization schedules; record actual payments with principal/interest breakdown; outstanding balance calculated to any date
 - **Financial Reports** — Profit & Loss, Balance Sheet, Cash Flow Statement, and Tax Summary (Schedule F mapping, SE tax estimate, capital gains); exportable to PDF
-- **Budget** — Monthly budget by income/expense category; add only the categories you need; expand each category to enter per-month amounts; Actual vs. Budget variance and annual totals computed automatically
-- **Financial Settings** — Fiscal year start month, accounting method (Cash/Accrual), state of operation, and tax rate inputs for estimated federal and state income tax calculations
+- **Budget** — Monthly budget by income/expense category; Actual vs. Budget variance and annual totals computed automatically
 
 ### General
-- **Export** — Herd list to CSV, animal profiles and financial reports to PDF
+- **Export** — Herd list and animal data to CSV; animal profiles and financial reports to PDF
 - **Backup & Restore** — One-click database backup and restore
-- **Sample Data** — Ships with a pre-populated "Rolling Hills Ranch" demo herd (including sample transactions, assets, and loans) so you can explore the app immediately
-- **Light / Dark Mode** — Switchable theme via Settings
+- **Sample Data** — Ships with a pre-populated "Rolling Hills Ranch" demo herd so you can explore the app immediately
 - **MSI Installer** — Standard Windows installer with Start Menu and Desktop shortcuts
 
 ---
@@ -56,7 +61,7 @@ A modern Windows desktop application for managing cattle herds. Track animals, h
 1. Go to the [Releases](https://github.com/ndibling/Cattle-Manager/releases) page
 2. Download the latest `CattleManager-vX.X.X.msi`
 3. Run the installer and follow the prompts
-4. Launch **Cattle Manager** from the Start Menu or Desktop shortcut
+4. Launch **Herd Master** from the Start Menu or Desktop shortcut
 
 Data is stored in `%LOCALAPPDATA%\CattleManager\` and is never transmitted externally.
 
@@ -64,9 +69,11 @@ Data is stored in `%LOCALAPPDATA%\CattleManager\` and is never transmitted exter
 
 ## Getting Started
 
-On first launch the app loads **Rolling Hills Ranch** — a sample Angus herd with 20 animals, a full 4-generation pedigree, health records, breeding history, sample transactions, assets, and loans. Use it to explore all the features.
+On first launch the app loads **Rolling Hills Ranch** — a sample Angus cattle herd with 20 animals, a full 4-generation pedigree, health records, breeding history, sample transactions, assets, and loans. Use it to explore all the features.
 
 When you're ready to start with your own data, click **"Clear Sample Data"** on the dashboard. The button disappears permanently once clicked and all sample records are removed.
+
+To add your first real herd, go to **Herds → Add Herd**, choose an animal type, and give it a name.
 
 ---
 
@@ -141,8 +148,8 @@ Cattle-Manager/
 To publish a release:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.14.0
+git push origin v1.14.0
 ```
 
 ---
@@ -166,4 +173,4 @@ Please ensure all tests pass and coverage stays at or above 80% before submittin
 
 ## License
 
-This project is provided for personal and commercial use in cattle herd management. See [LICENSE](LICENSE) for details.
+This project is provided for personal and commercial use. See [LICENSE](LICENSE) for details.
