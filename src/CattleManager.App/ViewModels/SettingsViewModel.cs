@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 
@@ -17,6 +18,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IFarmRepository _farms;
     private readonly IHerdRepository _herds;
     private readonly IBreedRepository _breeds;
+    private readonly IAnimalTypeRepository _animalTypes;
     private readonly IAnimalRepository _animals;
     private readonly IAppSettingsRepository _settings;
     private readonly DialogService _dialog;
@@ -51,6 +53,138 @@ public partial class SettingsViewModel : ObservableObject
          "July", "August", "September", "October", "November", "December"];
     public IReadOnlyList<string> FiscalMonthOptions { get; } = MonthNames;
 
+    // ── Animal Types & Breeds management ─────────────────────────────────────
+    [ObservableProperty] private ObservableCollection<AnimalTypeDto> _animalTypeList = [];
+    [ObservableProperty] private AnimalTypeDto? _selectedAnimalTypeItem;
+    [ObservableProperty] private ObservableCollection<BreedDto> _breedsForSelectedType = [];
+    [ObservableProperty] private bool _isAddingAnimalType;
+    [ObservableProperty] private string _newTypeName = string.Empty;
+    [ObservableProperty] private string _newTypeGroupTerm = "Herd";
+    [ObservableProperty] private bool _isAddingBreed;
+    [ObservableProperty] private string _newBreedName = string.Empty;
+    [ObservableProperty] private string? _animalTypeStatusMessage;
+
+    public IReadOnlyList<string> GroupTermOptions { get; } = ["Herd", "Flock", "Pack", "School", "Colony"];
+
+    partial void OnSelectedAnimalTypeItemChanged(AnimalTypeDto? value)
+    {
+        BreedsForSelectedType.Clear();
+        NewBreedName = string.Empty;
+        IsAddingBreed = false;
+        AnimalTypeStatusMessage = null;
+        if (value is not null)
+            _ = LoadBreedsForTypeAsync(value.AnimalTypeId);
+    }
+
+    private async Task LoadBreedsForTypeAsync(int animalTypeId)
+    {
+        var breeds = await _breeds.GetByAnimalTypeAsync(animalTypeId);
+        BreedsForSelectedType.Clear();
+        foreach (var b in breeds) BreedsForSelectedType.Add(b);
+    }
+
+    [RelayCommand]
+    private void BeginAddAnimalType()
+    {
+        NewTypeName = string.Empty;
+        NewTypeGroupTerm = "Herd";
+        IsAddingAnimalType = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmAddAnimalTypeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewTypeName)) return;
+        try
+        {
+            var added = await _animalTypes.AddAsync(new AnimalTypeDto
+            {
+                TypeName = NewTypeName.Trim(),
+                GroupTerm = NewTypeGroupTerm
+            });
+            AnimalTypeList.Add(added);
+            SelectedAnimalTypeItem = added;
+            IsAddingAnimalType = false;
+            NewTypeName = string.Empty;
+            AnimalTypeStatusMessage = $"Animal type \"{added.TypeName}\" added.";
+        }
+        catch (Exception ex)
+        {
+            AnimalTypeStatusMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void CancelAddAnimalType() => IsAddingAnimalType = false;
+
+    [RelayCommand]
+    private async Task DeleteAnimalTypeAsync(AnimalTypeDto item)
+    {
+        if (!_dialog.Confirm($"Delete animal type \"{item.TypeName}\"? This will fail if any herds or breeds still reference it.", "Delete Animal Type"))
+            return;
+        try
+        {
+            await _animalTypes.DeleteAsync(item.AnimalTypeId);
+            AnimalTypeList.Remove(item);
+            if (SelectedAnimalTypeItem?.AnimalTypeId == item.AnimalTypeId)
+                SelectedAnimalTypeItem = null;
+            AnimalTypeStatusMessage = $"Animal type \"{item.TypeName}\" deleted.";
+        }
+        catch (Exception ex)
+        {
+            AnimalTypeStatusMessage = $"Cannot delete: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void BeginAddBreed()
+    {
+        NewBreedName = string.Empty;
+        IsAddingBreed = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmAddBreedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewBreedName) || SelectedAnimalTypeItem is null) return;
+        try
+        {
+            var added = await _breeds.AddAsync(new BreedDto
+            {
+                BreedName = NewBreedName.Trim(),
+                AnimalTypeId = SelectedAnimalTypeItem.AnimalTypeId
+            });
+            BreedsForSelectedType.Add(added);
+            IsAddingBreed = false;
+            NewBreedName = string.Empty;
+            AnimalTypeStatusMessage = $"Breed \"{added.BreedName}\" added.";
+        }
+        catch (Exception ex)
+        {
+            AnimalTypeStatusMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void CancelAddBreed() => IsAddingBreed = false;
+
+    [RelayCommand]
+    private async Task DeleteBreedAsync(BreedDto item)
+    {
+        if (!_dialog.Confirm($"Delete breed \"{item.BreedName}\"? This will fail if any animals still reference it.", "Delete Breed"))
+            return;
+        try
+        {
+            await _breeds.DeleteAsync(item.BreedId);
+            BreedsForSelectedType.Remove(item);
+            AnimalTypeStatusMessage = $"Breed \"{item.BreedName}\" deleted.";
+        }
+        catch (Exception ex)
+        {
+            AnimalTypeStatusMessage = $"Cannot delete: {ex.Message}";
+        }
+    }
+
     // CSV column order used for both import and export
     private static readonly string[] CsvHeaders =
     [
@@ -65,15 +199,16 @@ public partial class SettingsViewModel : ObservableObject
     ];
 
     public SettingsViewModel(IFarmRepository farms, IHerdRepository herds,
-        IBreedRepository breeds, IAnimalRepository animals,
+        IBreedRepository breeds, IAnimalTypeRepository animalTypes, IAnimalRepository animals,
         IAppSettingsRepository settings, DialogService dialog)
     {
-        _farms    = farms;
-        _herds    = herds;
-        _breeds   = breeds;
-        _animals  = animals;
-        _settings = settings;
-        _dialog   = dialog;
+        _farms       = farms;
+        _herds       = herds;
+        _breeds      = breeds;
+        _animalTypes = animalTypes;
+        _animals     = animals;
+        _settings    = settings;
+        _dialog      = dialog;
     }
 
     public async Task LoadAsync()
@@ -110,6 +245,11 @@ public partial class SettingsViewModel : ObservableObject
             StateSalesTaxRate    = await _settings.GetAsync("StateSalesTaxRate")   ?? "0";
             StateIncomeTaxRate   = await _settings.GetAsync("StateIncomeTaxRate")  ?? "0";
             FederalIncomeTaxRate = await _settings.GetAsync("FederalIncomeTaxRate") ?? "22";
+
+            var types = await _animalTypes.GetAllAsync();
+            AnimalTypeList.Clear();
+            foreach (var t in types) AnimalTypeList.Add(t);
+            SelectedAnimalTypeItem = AnimalTypeList.FirstOrDefault();
         }
         finally
         {
@@ -364,7 +504,7 @@ public partial class SettingsViewModel : ObservableObject
 
                     if (!allHerds.TryGetValue(herdName, out var herd))
                     {
-                        herd = await _herds.AddAsync(new HerdDto { HerdName = herdName });
+                        herd = await _herds.AddAsync(new HerdDto { HerdName = herdName, AnimalTypeId = 1 });
                         allHerds[herd.HerdName] = herd;
                     }
 
@@ -372,7 +512,7 @@ public partial class SettingsViewModel : ObservableObject
                     if (string.IsNullOrWhiteSpace(breedName)) breedName = "Unknown";
                     if (!allBreeds.TryGetValue(breedName, out var breed))
                     {
-                        breed = await _breeds.AddAsync(new BreedDto { BreedName = breedName });
+                        breed = await _breeds.AddAsync(new BreedDto { BreedName = breedName, AnimalTypeId = 1 });
                         allBreeds[breed.BreedName] = breed;
                     }
 

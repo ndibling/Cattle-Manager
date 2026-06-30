@@ -1,16 +1,28 @@
 namespace CattleManager.Data.Entities;
 
+public class AnimalType
+{
+    public int AnimalTypeId { get; set; }
+    public string TypeName { get; set; } = string.Empty;
+    public string GroupTerm { get; set; } = "Herd";
+    public bool IsStandardType { get; set; }
+
+    public ICollection<Herd> Herds { get; set; } = new List<Herd>();
+    public ICollection<Breed> Breeds { get; set; } = new List<Breed>();
+}
+
 public class Herd
 {
     public int HerdId { get; set; }
     public int FarmId { get; set; }
     public string HerdName { get; set; } = string.Empty;
-    public string HerdType { get; set; } = string.Empty;
+    public int AnimalTypeId { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsSampleData { get; set; }
     public DateTime CreatedDate { get; set; }
 
     public Farm Farm { get; set; } = null!;
+    public AnimalType AnimalType { get; set; } = null!;
     public ICollection<Animal> Animals { get; set; } = new List<Animal>();
 }
 
@@ -29,7 +41,9 @@ public class Breed
     public int BreedId { get; set; }
     public string BreedName { get; set; } = string.Empty;
     public bool IsStandardBreed { get; set; }
+    public int AnimalTypeId { get; set; }
 
+    public AnimalType AnimalType { get; set; } = null!;
     public ICollection<Animal> Animals { get; set; } = new List<Animal>();
 }
 

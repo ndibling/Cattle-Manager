@@ -18,6 +18,7 @@ public class RepositoryTests : IDisposable
     private readonly HealthRecordRepository _health;
     private readonly BreedingRecordRepository _breeding;
     private readonly AppSettingsRepository _settings;
+    private readonly AnimalTypeRepository _animalTypes;
 
     public RepositoryTests()
     {
@@ -34,6 +35,7 @@ public class RepositoryTests : IDisposable
         _health = new HealthRecordRepository(_db);
         _breeding = new BreedingRecordRepository(_db);
         _settings = new AppSettingsRepository(_db);
+        _animalTypes = new AnimalTypeRepository(_db);
     }
 
     public void Dispose() => _db.Dispose();
@@ -43,7 +45,7 @@ public class RepositoryTests : IDisposable
         var farm = await _farms.UpsertAsync(new FarmDto { FarmName = "Test Farm" });
         var herd = await _herds.AddAsync(new HerdDto
         {
-            FarmId = farm.FarmId, HerdName = "Test Herd", HerdType = "Angus", IsActive = true
+            FarmId = farm.FarmId, HerdName = "Test Herd", AnimalTypeId = 1, IsActive = true
         });
         var allBreeds = await _breeds.GetAllAsync();
         return (farm.FarmId, herd.HerdId, allBreeds.First().BreedId);
@@ -95,7 +97,7 @@ public class RepositoryTests : IDisposable
         var farm = await _farms.UpsertAsync(new FarmDto { FarmName = "F" });
         var herd = await _herds.AddAsync(new HerdDto
         {
-            FarmId = farm.FarmId, HerdName = "H1", HerdType = "Angus", IsActive = true
+            FarmId = farm.FarmId, HerdName = "H1", AnimalTypeId = 1, IsActive = true
         });
         herd.HerdId.Should().BeGreaterThan(0);
 
@@ -143,7 +145,7 @@ public class RepositoryTests : IDisposable
     {
         var (_, herdId, breedId) = await SetupBasicDataAsync();
         var farm2 = await _farms.UpsertAsync(new FarmDto { FarmName = "F2" });
-        var herd2 = await _herds.AddAsync(new HerdDto { FarmId = farm2.FarmId, HerdName = "H2", HerdType = "Angus", IsActive = true });
+        var herd2 = await _herds.AddAsync(new HerdDto { FarmId = farm2.FarmId, HerdName = "H2", AnimalTypeId = 1, IsActive = true });
 
         await AddAnimal(herdId, breedId, "A1");
         await AddAnimal(herdId, breedId, "A2");
@@ -268,12 +270,45 @@ public class RepositoryTests : IDisposable
     [Fact]
     public async Task Breed_AddCustom_AppearsInList()
     {
-        var newBreed = await _breeds.AddAsync(new BreedDto { BreedName = "Custom Mix" });
+        var newBreed = await _breeds.AddAsync(new BreedDto { BreedName = "Custom Mix", AnimalTypeId = 1 });
         newBreed.BreedId.Should().BeGreaterThan(0);
         newBreed.IsStandardBreed.Should().BeFalse();
 
         var all = await _breeds.GetAllAsync();
         all.Should().Contain(b => b.BreedName == "Custom Mix");
+    }
+
+    [Fact]
+    public async Task AnimalType_AddGetDelete_RoundTrip()
+    {
+        var added = await _animalTypes.AddAsync(new AnimalTypeDto
+        {
+            TypeName = "Alpaca", GroupTerm = "Herd"
+        });
+        added.AnimalTypeId.Should().BeGreaterThan(0);
+        added.IsStandardType.Should().BeFalse();
+
+        var all = await _animalTypes.GetAllAsync();
+        all.Should().Contain(t => t.TypeName == "Alpaca");
+
+        await _animalTypes.DeleteAsync(added.AnimalTypeId);
+        var after = await _animalTypes.GetAllAsync();
+        after.Should().NotContain(t => t.TypeName == "Alpaca");
+    }
+
+    [Fact]
+    public async Task Breed_GetByAnimalType_ReturnsOnlyMatchingBreeds()
+    {
+        var goatType = await _animalTypes.AddAsync(new AnimalTypeDto { TypeName = "Goat Test", GroupTerm = "Herd" });
+        await _breeds.AddAsync(new BreedDto { BreedName = "Nubian Test", AnimalTypeId = goatType.AnimalTypeId });
+        await _breeds.AddAsync(new BreedDto { BreedName = "Boer Test",   AnimalTypeId = goatType.AnimalTypeId });
+
+        var goatBreeds = await _breeds.GetByAnimalTypeAsync(goatType.AnimalTypeId);
+        goatBreeds.Should().HaveCount(2);
+        goatBreeds.Should().AllSatisfy(b => b.AnimalTypeId.Should().Be(goatType.AnimalTypeId));
+
+        var cattleBreeds = await _breeds.GetByAnimalTypeAsync(1); // standard Cattle type
+        cattleBreeds.Should().NotContain(b => b.AnimalTypeName == "Goat Test");
     }
 
     // ── Full field round-trip ─────────────────────────────────────────────────

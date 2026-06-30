@@ -11,6 +11,7 @@ public class CattleDbContext : DbContext
     public DbSet<Herd> Herds => Set<Herd>();
     public DbSet<Farm> Farms => Set<Farm>();
     public DbSet<Breed> Breeds => Set<Breed>();
+    public DbSet<AnimalType> AnimalTypes => Set<AnimalType>();
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
     public DbSet<BreedingRecord> BreedingRecords => Set<BreedingRecord>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
@@ -175,28 +176,108 @@ public class CattleDbContext : DbContext
             entity.Property(b => b.BudgetAmount).HasPrecision(10, 2);
         });
 
-        SeedBreeds(modelBuilder);
+        modelBuilder.Entity<AnimalType>(entity =>
+        {
+            entity.HasKey(t => t.AnimalTypeId);
+            entity.HasMany(t => t.Breeds)
+                  .WithOne(b => b.AnimalType)
+                  .HasForeignKey(b => b.AnimalTypeId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasMany(t => t.Herds)
+                  .WithOne(h => h.AnimalType)
+                  .HasForeignKey(h => h.AnimalTypeId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        SeedData(modelBuilder);
     }
 
-    private static void SeedBreeds(ModelBuilder modelBuilder)
+    private static void SeedData(ModelBuilder modelBuilder)
     {
-        var breeds = new[]
-        {
-            new Breed { BreedId = 1, BreedName = "Angus", IsStandardBreed = true },
-            new Breed { BreedId = 2, BreedName = "Hereford", IsStandardBreed = true },
-            new Breed { BreedId = 3, BreedName = "Brahman", IsStandardBreed = true },
-            new Breed { BreedId = 4, BreedName = "Charolais", IsStandardBreed = true },
-            new Breed { BreedId = 5, BreedName = "Simmental", IsStandardBreed = true },
-            new Breed { BreedId = 6, BreedName = "Zebu", IsStandardBreed = true },
-            new Breed { BreedId = 7, BreedName = "Miniature Zebu", IsStandardBreed = true },
-            new Breed { BreedId = 8, BreedName = "Longhorn", IsStandardBreed = true },
-            new Breed { BreedId = 9, BreedName = "Shorthorn", IsStandardBreed = true },
-            new Breed { BreedId = 10, BreedName = "Limousin", IsStandardBreed = true },
-            new Breed { BreedId = 11, BreedName = "Gelbvieh", IsStandardBreed = true },
-            new Breed { BreedId = 12, BreedName = "Brangus", IsStandardBreed = true },
-            new Breed { BreedId = 13, BreedName = "Beefmaster", IsStandardBreed = true },
-            new Breed { BreedId = 14, BreedName = "Mixed Breed", IsStandardBreed = true },
-        };
-        modelBuilder.Entity<Breed>().HasData(breeds);
+        modelBuilder.Entity<AnimalType>().HasData(
+            new AnimalType { AnimalTypeId = 1, TypeName = "Cattle",  GroupTerm = "Herd",  IsStandardType = true },
+            new AnimalType { AnimalTypeId = 2, TypeName = "Horse",   GroupTerm = "Herd",  IsStandardType = true },
+            new AnimalType { AnimalTypeId = 3, TypeName = "Goat",    GroupTerm = "Herd",  IsStandardType = true },
+            new AnimalType { AnimalTypeId = 4, TypeName = "Sheep",   GroupTerm = "Flock", IsStandardType = true },
+            new AnimalType { AnimalTypeId = 5, TypeName = "Chicken", GroupTerm = "Flock", IsStandardType = true },
+            new AnimalType { AnimalTypeId = 6, TypeName = "Duck",    GroupTerm = "Flock", IsStandardType = true },
+            new AnimalType { AnimalTypeId = 7, TypeName = "Goose",   GroupTerm = "Flock", IsStandardType = true },
+            new AnimalType { AnimalTypeId = 8, TypeName = "Pig",     GroupTerm = "Herd",  IsStandardType = true }
+        );
+
+        modelBuilder.Entity<Breed>().HasData(
+            // Cattle (AnimalTypeId = 1)
+            new Breed { BreedId = 1,  BreedName = "Angus",         IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 2,  BreedName = "Hereford",      IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 3,  BreedName = "Brahman",       IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 4,  BreedName = "Charolais",     IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 5,  BreedName = "Simmental",     IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 6,  BreedName = "Zebu",          IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 7,  BreedName = "Miniature Zebu",IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 8,  BreedName = "Longhorn",      IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 9,  BreedName = "Shorthorn",     IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 10, BreedName = "Limousin",      IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 11, BreedName = "Gelbvieh",      IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 12, BreedName = "Brangus",       IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 13, BreedName = "Beefmaster",    IsStandardBreed = true, AnimalTypeId = 1 },
+            new Breed { BreedId = 14, BreedName = "Mixed Breed",   IsStandardBreed = true, AnimalTypeId = 1 },
+            // Horse (AnimalTypeId = 2)
+            new Breed { BreedId = 15, BreedName = "Arabian",               IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 16, BreedName = "Quarter Horse",         IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 17, BreedName = "Thoroughbred",          IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 18, BreedName = "Paint",                 IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 19, BreedName = "Appaloosa",             IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 20, BreedName = "Morgan",                IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 21, BreedName = "Tennessee Walking Horse",IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 22, BreedName = "Draft",                 IsStandardBreed = true, AnimalTypeId = 2 },
+            new Breed { BreedId = 23, BreedName = "Mixed Breed",           IsStandardBreed = true, AnimalTypeId = 2 },
+            // Goat (AnimalTypeId = 3)
+            new Breed { BreedId = 24, BreedName = "Boer",        IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 25, BreedName = "Nubian",      IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 26, BreedName = "Alpine",      IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 27, BreedName = "Saanen",      IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 28, BreedName = "Kiko",        IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 29, BreedName = "Pygmy",       IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 30, BreedName = "LaMancha",    IsStandardBreed = true, AnimalTypeId = 3 },
+            new Breed { BreedId = 31, BreedName = "Mixed Breed", IsStandardBreed = true, AnimalTypeId = 3 },
+            // Sheep (AnimalTypeId = 4)
+            new Breed { BreedId = 32, BreedName = "Merino",      IsStandardBreed = true, AnimalTypeId = 4 },
+            new Breed { BreedId = 33, BreedName = "Dorset",      IsStandardBreed = true, AnimalTypeId = 4 },
+            new Breed { BreedId = 34, BreedName = "Suffolk",     IsStandardBreed = true, AnimalTypeId = 4 },
+            new Breed { BreedId = 35, BreedName = "Hampshire",   IsStandardBreed = true, AnimalTypeId = 4 },
+            new Breed { BreedId = 36, BreedName = "Katahdin",    IsStandardBreed = true, AnimalTypeId = 4 },
+            new Breed { BreedId = 37, BreedName = "Rambouillet", IsStandardBreed = true, AnimalTypeId = 4 },
+            new Breed { BreedId = 38, BreedName = "Mixed Breed", IsStandardBreed = true, AnimalTypeId = 4 },
+            // Chicken (AnimalTypeId = 5)
+            new Breed { BreedId = 39, BreedName = "Rhode Island Red", IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 40, BreedName = "Leghorn",          IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 41, BreedName = "Plymouth Rock",    IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 42, BreedName = "Buff Orpington",   IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 43, BreedName = "Australorp",       IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 44, BreedName = "Silkie",           IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 45, BreedName = "Bantam",           IsStandardBreed = true, AnimalTypeId = 5 },
+            new Breed { BreedId = 46, BreedName = "Mixed Breed",      IsStandardBreed = true, AnimalTypeId = 5 },
+            // Duck (AnimalTypeId = 6)
+            new Breed { BreedId = 47, BreedName = "Pekin",       IsStandardBreed = true, AnimalTypeId = 6 },
+            new Breed { BreedId = 48, BreedName = "Mallard",     IsStandardBreed = true, AnimalTypeId = 6 },
+            new Breed { BreedId = 49, BreedName = "Rouen",       IsStandardBreed = true, AnimalTypeId = 6 },
+            new Breed { BreedId = 50, BreedName = "Muscovy",     IsStandardBreed = true, AnimalTypeId = 6 },
+            new Breed { BreedId = 51, BreedName = "Cayuga",      IsStandardBreed = true, AnimalTypeId = 6 },
+            new Breed { BreedId = 52, BreedName = "Mixed Breed", IsStandardBreed = true, AnimalTypeId = 6 },
+            // Goose (AnimalTypeId = 7)
+            new Breed { BreedId = 53, BreedName = "African",     IsStandardBreed = true, AnimalTypeId = 7 },
+            new Breed { BreedId = 54, BreedName = "Chinese",     IsStandardBreed = true, AnimalTypeId = 7 },
+            new Breed { BreedId = 55, BreedName = "Embden",      IsStandardBreed = true, AnimalTypeId = 7 },
+            new Breed { BreedId = 56, BreedName = "Toulouse",    IsStandardBreed = true, AnimalTypeId = 7 },
+            new Breed { BreedId = 57, BreedName = "Mixed Breed", IsStandardBreed = true, AnimalTypeId = 7 },
+            // Pig (AnimalTypeId = 8)
+            new Breed { BreedId = 58, BreedName = "Yorkshire",    IsStandardBreed = true, AnimalTypeId = 8 },
+            new Breed { BreedId = 59, BreedName = "Berkshire",    IsStandardBreed = true, AnimalTypeId = 8 },
+            new Breed { BreedId = 60, BreedName = "Duroc",        IsStandardBreed = true, AnimalTypeId = 8 },
+            new Breed { BreedId = 61, BreedName = "Hampshire",    IsStandardBreed = true, AnimalTypeId = 8 },
+            new Breed { BreedId = 62, BreedName = "Landrace",     IsStandardBreed = true, AnimalTypeId = 8 },
+            new Breed { BreedId = 63, BreedName = "Chester White", IsStandardBreed = true, AnimalTypeId = 8 },
+            new Breed { BreedId = 64, BreedName = "Mixed Breed",  IsStandardBreed = true, AnimalTypeId = 8 }
+        );
     }
 }

@@ -5,6 +5,48 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CattleManager.Data.Repositories;
 
+public class AnimalTypeRepository : IAnimalTypeRepository
+{
+    private readonly CattleDbContext _db;
+    public AnimalTypeRepository(CattleDbContext db) => _db = db;
+
+    public async Task<IReadOnlyList<AnimalTypeDto>> GetAllAsync()
+    {
+        var list = await _db.AnimalTypes.OrderBy(t => t.TypeName).ToListAsync();
+        return list.Select(Map).ToList();
+    }
+
+    public async Task<AnimalTypeDto> AddAsync(AnimalTypeDto dto)
+    {
+        var e = new AnimalType { TypeName = dto.TypeName, GroupTerm = dto.GroupTerm, IsStandardType = false };
+        _db.AnimalTypes.Add(e);
+        await _db.SaveChangesAsync();
+        dto.AnimalTypeId = e.AnimalTypeId;
+        return dto;
+    }
+
+    public async Task UpdateAsync(AnimalTypeDto dto)
+    {
+        var e = await _db.AnimalTypes.FindAsync(dto.AnimalTypeId)
+            ?? throw new ArgumentException($"AnimalType {dto.AnimalTypeId} not found");
+        e.TypeName = dto.TypeName;
+        e.GroupTerm = dto.GroupTerm;
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var e = await _db.AnimalTypes.FindAsync(id);
+        if (e is not null) { _db.AnimalTypes.Remove(e); await _db.SaveChangesAsync(); }
+    }
+
+    private static AnimalTypeDto Map(AnimalType e) => new()
+    {
+        AnimalTypeId = e.AnimalTypeId, TypeName = e.TypeName,
+        GroupTerm = e.GroupTerm, IsStandardType = e.IsStandardType
+    };
+}
+
 public class HerdRepository : IHerdRepository
 {
     private readonly CattleDbContext _db;
@@ -12,13 +54,13 @@ public class HerdRepository : IHerdRepository
 
     public async Task<HerdDto?> GetByIdAsync(int id)
     {
-        var e = await _db.Herds.FindAsync(id);
+        var e = await _db.Herds.Include(h => h.AnimalType).FirstOrDefaultAsync(h => h.HerdId == id);
         return e is null ? null : Map(e);
     }
 
     public async Task<IReadOnlyList<HerdDto>> GetAllAsync(bool includeInactive = false)
     {
-        var query = _db.Herds.AsQueryable();
+        var query = _db.Herds.Include(h => h.AnimalType).AsQueryable();
         if (!includeInactive) query = query.Where(h => h.IsActive);
         var list = await query.OrderBy(h => h.HerdName).ToListAsync();
         return list.Select(Map).ToList();
@@ -29,7 +71,7 @@ public class HerdRepository : IHerdRepository
         var e = new Herd
         {
             FarmId = dto.FarmId, HerdName = dto.HerdName,
-            HerdType = dto.HerdType, IsActive = dto.IsActive,
+            AnimalTypeId = dto.AnimalTypeId, IsActive = dto.IsActive,
             IsSampleData = dto.IsSampleData, CreatedDate = DateTime.UtcNow
         };
         _db.Herds.Add(e);
@@ -42,7 +84,8 @@ public class HerdRepository : IHerdRepository
     {
         var e = await _db.Herds.FindAsync(dto.HerdId)
             ?? throw new ArgumentException($"Herd {dto.HerdId} not found");
-        e.HerdName = dto.HerdName; e.HerdType = dto.HerdType;
+        e.HerdName = dto.HerdName;
+        e.AnimalTypeId = dto.AnimalTypeId;
         e.IsActive = dto.IsActive;
         await _db.SaveChangesAsync();
         return dto;
@@ -76,7 +119,10 @@ public class HerdRepository : IHerdRepository
     private static HerdDto Map(Herd e) => new()
     {
         HerdId = e.HerdId, FarmId = e.FarmId, HerdName = e.HerdName,
-        HerdType = e.HerdType, IsActive = e.IsActive, IsSampleData = e.IsSampleData,
+        AnimalTypeId = e.AnimalTypeId,
+        AnimalTypeName = e.AnimalType?.TypeName ?? string.Empty,
+        GroupTerm = e.AnimalType?.GroupTerm ?? "Herd",
+        IsActive = e.IsActive, IsSampleData = e.IsSampleData,
         CreatedDate = e.CreatedDate
     };
 }
@@ -88,16 +134,23 @@ public class BreedRepository : IBreedRepository
 
     public async Task<IReadOnlyList<BreedDto>> GetAllAsync()
     {
-        var list = await _db.Breeds.OrderBy(b => b.BreedName).ToListAsync();
-        return list.Select(b => new BreedDto
-        {
-            BreedId = b.BreedId, BreedName = b.BreedName, IsStandardBreed = b.IsStandardBreed
-        }).ToList();
+        var list = await _db.Breeds.Include(b => b.AnimalType).OrderBy(b => b.BreedName).ToListAsync();
+        return list.Select(Map).ToList();
+    }
+
+    public async Task<IReadOnlyList<BreedDto>> GetByAnimalTypeAsync(int animalTypeId)
+    {
+        var list = await _db.Breeds
+            .Include(b => b.AnimalType)
+            .Where(b => b.AnimalTypeId == animalTypeId)
+            .OrderBy(b => b.BreedName)
+            .ToListAsync();
+        return list.Select(Map).ToList();
     }
 
     public async Task<BreedDto> AddAsync(BreedDto dto)
     {
-        var e = new Breed { BreedName = dto.BreedName, IsStandardBreed = false };
+        var e = new Breed { BreedName = dto.BreedName, IsStandardBreed = false, AnimalTypeId = dto.AnimalTypeId };
         _db.Breeds.Add(e);
         await _db.SaveChangesAsync();
         dto.BreedId = e.BreedId;
@@ -109,6 +162,12 @@ public class BreedRepository : IBreedRepository
         var e = await _db.Breeds.FindAsync(id);
         if (e is not null) { _db.Breeds.Remove(e); await _db.SaveChangesAsync(); }
     }
+
+    private static BreedDto Map(Breed b) => new()
+    {
+        BreedId = b.BreedId, BreedName = b.BreedName, IsStandardBreed = b.IsStandardBreed,
+        AnimalTypeId = b.AnimalTypeId, AnimalTypeName = b.AnimalType?.TypeName ?? string.Empty
+    };
 }
 
 public class FarmRepository : IFarmRepository

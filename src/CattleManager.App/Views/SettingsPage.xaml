@@ -7,6 +7,8 @@
 
     <Page.Resources>
         <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
     </Page.Resources>
 
     <DockPanel>
@@ -154,6 +156,145 @@
                                 <TextBox Text="{Binding FederalIncomeTaxRate, UpdateSourceTrigger=PropertyChanged}"
                                          Width="180" FontSize="14" Padding="8,6"
                                          ui:ControlHelper.PlaceholderText="e.g. 22"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Animal Types & Breeds -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Animal Types &amp; Breeds" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock FontSize="13" TextWrapping="Wrap" Margin="0,0,0,12"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Text="Manage the animal types available when creating herds, and the breeds associated with each type."/>
+
+                        <!-- Status message -->
+                        <TextBlock Text="{Binding AnimalTypeStatusMessage}" Foreground="#2E7D32"
+                                   FontSize="13" Margin="0,0,0,8" TextWrapping="Wrap"
+                                   Visibility="{Binding AnimalTypeStatusMessage, Converter={StaticResource NullToVisibility}}"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="24"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left: Animal Types -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Animal Types" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                        CornerRadius="4" Height="200">
+                                    <ListBox ItemsSource="{Binding AnimalTypeList}"
+                                             SelectedItem="{Binding SelectedAnimalTypeItem}"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                             BorderThickness="0">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding TypeName}" FontSize="13"/>
+                                                        <TextBlock Text="{Binding GroupTerm}" FontSize="11"
+                                                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1" Text="Standard" FontSize="10"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                               VerticalAlignment="Center" Margin="4,0,8,0"
+                                                               Visibility="{Binding IsStandardType, Converter={StaticResource BoolToVisibility}}"/>
+                                                    <Button Grid.Column="2" Content="✕" Padding="4,2" FontSize="11"
+                                                            Foreground="Red" Background="Transparent" BorderThickness="0"
+                                                            Visibility="{Binding IsStandardType, Converter={StaticResource InverseBoolToVisibility}}"
+                                                            Command="{Binding DataContext.DeleteAnimalTypeCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                            CommandParameter="{Binding}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Border>
+
+                                <!-- Add type inline form -->
+                                <StackPanel Visibility="{Binding IsAddingAnimalType, Converter={StaticResource BoolToVisibility}}"
+                                            Margin="0,8,0,0">
+                                    <TextBox Text="{Binding NewTypeName, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="13" Padding="6,4" Margin="0,0,0,4"
+                                             ui:ControlHelper.PlaceholderText="Type name (e.g. Alpaca)"/>
+                                    <ComboBox ItemsSource="{Binding GroupTermOptions}"
+                                              SelectedItem="{Binding NewTypeGroupTerm}"
+                                              FontSize="13" Margin="0,0,0,6"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Add" Command="{Binding ConfirmAddAnimalTypeCommand}"
+                                                Style="{StaticResource PrimaryButton}" Padding="12,6" Margin="0,0,8,0"/>
+                                        <Button Content="Cancel" Command="{Binding CancelAddAnimalTypeCommand}"
+                                                Padding="12,6"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Button Content="+ Add Type"
+                                        Visibility="{Binding IsAddingAnimalType, Converter={StaticResource InverseBoolToVisibility}}"
+                                        Command="{Binding BeginAddAnimalTypeCommand}"
+                                        Padding="10,6" Margin="0,8,0,0"/>
+                            </StackPanel>
+
+                            <!-- Right: Breeds for selected type -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6">
+                                    <TextBlock.Text>
+                                        <Binding Path="SelectedAnimalTypeItem.TypeName" StringFormat="Breeds — {0}"
+                                                 FallbackValue="Breeds — select a type"/>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                        CornerRadius="4" Height="200">
+                                    <ListBox ItemsSource="{Binding BreedsForSelectedType}"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                             BorderThickness="0">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="{Binding BreedName}"
+                                                               FontSize="13" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" Text="Standard" FontSize="10"
+                                                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                               VerticalAlignment="Center" Margin="4,0,8,0"
+                                                               Visibility="{Binding IsStandardBreed, Converter={StaticResource BoolToVisibility}}"/>
+                                                    <Button Grid.Column="2" Content="✕" Padding="4,2" FontSize="11"
+                                                            Foreground="Red" Background="Transparent" BorderThickness="0"
+                                                            Visibility="{Binding IsStandardBreed, Converter={StaticResource InverseBoolToVisibility}}"
+                                                            Command="{Binding DataContext.DeleteBreedCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                            CommandParameter="{Binding}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Border>
+
+                                <!-- Add breed inline form -->
+                                <StackPanel Visibility="{Binding IsAddingBreed, Converter={StaticResource BoolToVisibility}}"
+                                            Margin="0,8,0,0">
+                                    <TextBox Text="{Binding NewBreedName, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="13" Padding="6,4" Margin="0,0,0,6"
+                                             ui:ControlHelper.PlaceholderText="Breed name (e.g. Huacaya)"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Add" Command="{Binding ConfirmAddBreedCommand}"
+                                                Style="{StaticResource PrimaryButton}" Padding="12,6" Margin="0,0,8,0"/>
+                                        <Button Content="Cancel" Command="{Binding CancelAddBreedCommand}"
+                                                Padding="12,6"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Button Content="+ Add Breed"
+                                        Visibility="{Binding IsAddingBreed, Converter={StaticResource InverseBoolToVisibility}}"
+                                        Command="{Binding BeginAddBreedCommand}"
+                                        Padding="10,6" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

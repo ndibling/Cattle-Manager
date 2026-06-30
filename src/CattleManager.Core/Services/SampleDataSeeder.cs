@@ -58,7 +58,7 @@ public class SampleDataSeeder
         {
             FarmId = farm.FarmId,
             HerdName = "Rolling Hills Angus",
-            HerdType = "Angus",
+            AnimalTypeId = 1,
             IsActive = true,
             IsSampleData = true
         });

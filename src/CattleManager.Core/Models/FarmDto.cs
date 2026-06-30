@@ -8,11 +8,21 @@ public class FarmDto
     public string? ContactInfo { get; set; }
 }
 
+public class AnimalTypeDto
+{
+    public int AnimalTypeId { get; set; }
+    public string TypeName { get; set; } = string.Empty;
+    public string GroupTerm { get; set; } = "Herd";
+    public bool IsStandardType { get; set; }
+}
+
 public class BreedDto
 {
     public int BreedId { get; set; }
     public string BreedName { get; set; } = string.Empty;
     public bool IsStandardBreed { get; set; }
+    public int AnimalTypeId { get; set; }
+    public string AnimalTypeName { get; set; } = string.Empty;
 }
 
 public class AppSettingDto

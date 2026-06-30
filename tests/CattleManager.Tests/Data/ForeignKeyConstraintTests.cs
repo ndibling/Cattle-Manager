@@ -18,6 +18,8 @@ public class ForeignKeyConstraintTests : IDisposable
     private readonly AnimalRepository _animals;
     private readonly HerdRepository _herds;
     private readonly FarmRepository _farms;
+    private readonly BreedRepository _breeds;
+    private readonly AnimalTypeRepository _animalTypes;
 
     public ForeignKeyConstraintTests()
     {
@@ -33,6 +35,8 @@ public class ForeignKeyConstraintTests : IDisposable
         _animals = new AnimalRepository(_db);
         _herds = new HerdRepository(_db);
         _farms = new FarmRepository(_db);
+        _breeds = new BreedRepository(_db);
+        _animalTypes = new AnimalTypeRepository(_db);
     }
 
     public void Dispose()
@@ -75,7 +79,7 @@ public class ForeignKeyConstraintTests : IDisposable
         var farm = await _farms.UpsertAsync(new FarmDto { FarmName = "Test Farm" });
         var herd = await _herds.AddAsync(new HerdDto
         {
-            FarmId = farm.FarmId, HerdName = "Test Herd", HerdType = "Angus", IsActive = true
+            FarmId = farm.FarmId, HerdName = "Test Herd", AnimalTypeId = 1, IsActive = true
         });
 
         var dto = new AnimalDto
@@ -96,5 +100,52 @@ public class ForeignKeyConstraintTests : IDisposable
         // Assert
         saved.AnimalId.Should().BeGreaterThan(0);
         saved.HerdId.Should().Be(herd.HerdId);
+    }
+
+    [Fact]
+    public async Task AddBreed_WithNonExistentAnimalTypeId_ThrowsDbUpdateException()
+    {
+        var act = async () => await _breeds.AddAsync(new BreedDto
+        {
+            BreedName = "Ghost Breed", AnimalTypeId = 9999
+        });
+
+        await act.Should().ThrowAsync<DbUpdateException>();
+    }
+
+    [Fact]
+    public async Task AddHerd_WithNonExistentAnimalTypeId_ThrowsDbUpdateException()
+    {
+        var farm = await _farms.UpsertAsync(new FarmDto { FarmName = "Test Farm" });
+
+        var act = async () => await _herds.AddAsync(new HerdDto
+        {
+            FarmId = farm.FarmId, HerdName = "Ghost Herd", AnimalTypeId = 9999, IsActive = true
+        });
+
+        await act.Should().ThrowAsync<DbUpdateException>();
+    }
+
+    [Fact]
+    public async Task DeleteAnimalType_WithBreeds_ThrowsDbUpdateException()
+    {
+        var type = await _animalTypes.AddAsync(new AnimalTypeDto { TypeName = "Alpaca", GroupTerm = "Herd" });
+        await _breeds.AddAsync(new BreedDto { BreedName = "Huacaya", AnimalTypeId = type.AnimalTypeId });
+
+        var act = async () => await _animalTypes.DeleteAsync(type.AnimalTypeId);
+
+        await act.Should().ThrowAsync<DbUpdateException>();
+    }
+
+    [Fact]
+    public async Task DeleteAnimalType_WithHerds_ThrowsDbUpdateException()
+    {
+        var farm = await _farms.UpsertAsync(new FarmDto { FarmName = "Test Farm" });
+        var type = await _animalTypes.AddAsync(new AnimalTypeDto { TypeName = "Llama", GroupTerm = "Herd" });
+        await _herds.AddAsync(new HerdDto { FarmId = farm.FarmId, HerdName = "Llama Herd", AnimalTypeId = type.AnimalTypeId, IsActive = true });
+
+        var act = async () => await _animalTypes.DeleteAsync(type.AnimalTypeId);
+
+        await act.Should().ThrowAsync<DbUpdateException>();
     }
 }

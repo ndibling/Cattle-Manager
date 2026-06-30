@@ -55,6 +55,7 @@ public partial class App : Application
             {
                 await EnsureFinancialTablesExistAsync(db);
                 await EnsurePastureTableExistsAsync(db);
+                await EnsureAnimalTypesExistAsync(db);
                 bool schemaOk = await DatabaseSchemaIsValidAsync(db);
                 if (!schemaOk)
                 {
@@ -96,6 +97,7 @@ public partial class App : Application
         services.AddScoped<IAnimalRepository, AnimalRepository>();
         services.AddScoped<IHerdRepository, HerdRepository>();
         services.AddScoped<IBreedRepository, BreedRepository>();
+        services.AddScoped<IAnimalTypeRepository, AnimalTypeRepository>();
         services.AddScoped<IFarmRepository, FarmRepository>();
         services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
         services.AddScoped<IBreedingRecordRepository, BreedingRecordRepository>();
@@ -316,6 +318,90 @@ public partial class App : Application
         }
     }
 
+    private static async Task EnsureAnimalTypesExistAsync(CattleDbContext db)
+    {
+        var conn = db.Database.GetDbConnection();
+        bool wasOpen = conn.State == System.Data.ConnectionState.Open;
+        if (!wasOpen) await conn.OpenAsync();
+        try
+        {
+            // Create AnimalTypes table if missing
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = """
+                    CREATE TABLE IF NOT EXISTS "AnimalTypes" (
+                        "AnimalTypeId" INTEGER NOT NULL CONSTRAINT "PK_AnimalTypes" PRIMARY KEY AUTOINCREMENT,
+                        "TypeName"      TEXT    NOT NULL DEFAULT '',
+                        "GroupTerm"     TEXT    NOT NULL DEFAULT 'Herd',
+                        "IsStandardType" INTEGER NOT NULL DEFAULT 0
+                    )
+                    """;
+                await cmd.ExecuteNonQueryAsync();
+            }
+            Log.Information("Verified table AnimalTypes exists");
+
+            // Seed standard animal types if the table is empty
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT COUNT(*) FROM AnimalTypes";
+                var count = (long)(await cmd.ExecuteScalarAsync())!;
+                if (count == 0)
+                {
+                    cmd.CommandText = """
+                        INSERT INTO AnimalTypes (AnimalTypeId, TypeName, GroupTerm, IsStandardType) VALUES
+                        (1,'Cattle','Herd',1),(2,'Horse','Herd',1),(3,'Goat','Herd',1),
+                        (4,'Sheep','Flock',1),(5,'Chicken','Flock',1),(6,'Duck','Flock',1),
+                        (7,'Goose','Flock',1),(8,'Pig','Herd',1)
+                        """;
+                    await cmd.ExecuteNonQueryAsync();
+                    Log.Information("Seeded standard animal types");
+                }
+            }
+
+            // Add AnimalTypeId columns to Breeds and Herds (defaulting to Cattle = 1)
+            await EnsureTableColumnsAsync(conn, "Breeds", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["AnimalTypeId"] = "INTEGER NOT NULL DEFAULT 1"
+            });
+            await EnsureTableColumnsAsync(conn, "Herds", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["AnimalTypeId"] = "INTEGER NOT NULL DEFAULT 1"
+            });
+
+            // Seed non-cattle breeds if not present yet (INSERT OR IGNORE needs a unique constraint;
+            // use NOT EXISTS instead to be safe)
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT COUNT(*) FROM Breeds WHERE AnimalTypeId > 1";
+                var nonCattleCount = (long)(await cmd.ExecuteScalarAsync())!;
+                if (nonCattleCount == 0)
+                {
+                    cmd.CommandText = """
+                        INSERT INTO Breeds (BreedName, IsStandardBreed, AnimalTypeId) VALUES
+                        ('Arabian',1,2),('Quarter Horse',1,2),('Thoroughbred',1,2),('Paint',1,2),
+                        ('Appaloosa',1,2),('Morgan',1,2),('Tennessee Walking Horse',1,2),('Draft',1,2),('Mixed Breed',1,2),
+                        ('Boer',1,3),('Nubian',1,3),('Alpine',1,3),('Saanen',1,3),
+                        ('Kiko',1,3),('Pygmy',1,3),('LaMancha',1,3),('Mixed Breed',1,3),
+                        ('Merino',1,4),('Dorset',1,4),('Suffolk',1,4),('Hampshire',1,4),
+                        ('Katahdin',1,4),('Rambouillet',1,4),('Mixed Breed',1,4),
+                        ('Rhode Island Red',1,5),('Leghorn',1,5),('Plymouth Rock',1,5),
+                        ('Buff Orpington',1,5),('Australorp',1,5),('Silkie',1,5),('Bantam',1,5),('Mixed Breed',1,5),
+                        ('Pekin',1,6),('Mallard',1,6),('Rouen',1,6),('Muscovy',1,6),('Cayuga',1,6),('Mixed Breed',1,6),
+                        ('African',1,7),('Chinese',1,7),('Embden',1,7),('Toulouse',1,7),('Mixed Breed',1,7),
+                        ('Yorkshire',1,8),('Berkshire',1,8),('Duroc',1,8),('Hampshire',1,8),
+                        ('Landrace',1,8),('Chester White',1,8),('Mixed Breed',1,8)
+                        """;
+                    await cmd.ExecuteNonQueryAsync();
+                    Log.Information("Seeded non-cattle breeds for existing database");
+                }
+            }
+        }
+        finally
+        {
+            if (!wasOpen) await conn.CloseAsync();
+        }
+    }
+
     private static async Task EnsureColumnsExistAsync(CattleDbContext db)
     {
         var conn = db.Database.GetDbConnection();
@@ -394,6 +480,7 @@ UPDATE Animals SET Status = 0               WHERE Status = 4;";
             _ = await db.Herds.AnyAsync();
             _ = await db.Farms.AnyAsync();
             _ = await db.Breeds.AnyAsync();
+            _ = await db.AnimalTypes.AnyAsync();
             _ = await db.HealthRecords.AnyAsync();
             _ = await db.BreedingRecords.AnyAsync();
             _ = await db.AppSettings.AnyAsync();

@@ -121,7 +121,7 @@
                                             </Border>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding HerdType}" FontSize="13"
+                                            <TextBlock Text="{Binding TypeLabel}" FontSize="13"
                                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                                             <TextBlock Text=" · " FontSize="13"
                                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>

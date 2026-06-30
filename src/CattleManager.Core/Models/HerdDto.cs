@@ -5,7 +5,9 @@ public class HerdDto
     public int HerdId { get; set; }
     public int FarmId { get; set; }
     public string HerdName { get; set; } = string.Empty;
-    public string HerdType { get; set; } = string.Empty;
+    public int AnimalTypeId { get; set; }
+    public string AnimalTypeName { get; set; } = string.Empty;
+    public string GroupTerm { get; set; } = "Herd";
     public bool IsActive { get; set; }
     public bool IsSampleData { get; set; }
     public DateTime CreatedDate { get; set; }

@@ -134,15 +134,18 @@ public partial class AnimalFormViewModel : ObservableObject
     ];
 
     private readonly IPastureRepository _pastures;
+    private readonly IHerdRepository _herds;
     private List<PastureDto> _loadedPastures = [];
 
     public AnimalFormViewModel(IAnimalRepository animals,
-        IBreedRepository breeds, BreedingService breedingService,
+        IBreedRepository breeds, IHerdRepository herds,
+        BreedingService breedingService,
         NavigationService nav, DialogService dialog,
         IPastureRepository pastures)
     {
         _animals = animals;
         _breeds  = breeds;
+        _herds   = herds;
         _breedingService = breedingService;
         _nav = nav;
         _dialog = dialog;
@@ -154,8 +157,12 @@ public partial class AnimalFormViewModel : ObservableObject
         IsLoading = true;
         try
         {
-            var allBreeds = await _breeds.GetAllAsync();
-            Breeds2 = new ObservableCollection<BreedDto>(allBreeds);
+            // Load breeds filtered to this herd's animal type
+            var herd = HerdId > 0 ? await _herds.GetByIdAsync(HerdId) : null;
+            var breedList = herd is not null
+                ? await _breeds.GetByAnimalTypeAsync(herd.AnimalTypeId)
+                : await _breeds.GetAllAsync();
+            Breeds2 = new ObservableCollection<BreedDto>(breedList);
 
             var herdAnimals = HerdId > 0
                 ? await _animals.GetByHerdAsync(HerdId)

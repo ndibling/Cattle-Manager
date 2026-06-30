@@ -24,9 +24,18 @@ public interface IHerdRepository
     Task DeleteAsync(int herdId);
 }
 
+public interface IAnimalTypeRepository
+{
+    Task<IReadOnlyList<AnimalTypeDto>> GetAllAsync();
+    Task<AnimalTypeDto> AddAsync(AnimalTypeDto dto);
+    Task UpdateAsync(AnimalTypeDto dto);
+    Task DeleteAsync(int animalTypeId);
+}
+
 public interface IBreedRepository
 {
     Task<IReadOnlyList<BreedDto>> GetAllAsync();
+    Task<IReadOnlyList<BreedDto>> GetByAnimalTypeAsync(int animalTypeId);
     Task<BreedDto> AddAsync(BreedDto breed);
     Task DeleteAsync(int breedId);
 }

@@ -13,11 +13,13 @@ public sealed class HerdListItem
 {
     public int HerdId { get; init; }
     public string HerdName { get; init; } = string.Empty;
-    public string HerdType { get; init; } = string.Empty;
+    public string AnimalTypeName { get; init; } = string.Empty;
+    public string GroupTerm { get; init; } = "Herd";
     public bool IsActive { get; init; }
     public int AnimalCount { get; init; }
     public HerdDto Source { get; init; } = null!;
     public string AnimalCountLabel => AnimalCount == 1 ? "1 animal" : $"{AnimalCount} animals";
+    public string TypeLabel => $"{AnimalTypeName} {GroupTerm}";
 }
 
 public partial class HerdListViewModel : ObservableObject
@@ -54,12 +56,13 @@ public partial class HerdListViewModel : ObservableObject
                 var animals = await _animals.GetByHerdAsync(h.HerdId);
                 items.Add(new HerdListItem
                 {
-                    HerdId      = h.HerdId,
-                    HerdName    = h.HerdName,
-                    HerdType    = h.HerdType,
-                    IsActive    = h.IsActive,
-                    AnimalCount = animals.Count,
-                    Source      = h,
+                    HerdId         = h.HerdId,
+                    HerdName       = h.HerdName,
+                    AnimalTypeName = h.AnimalTypeName,
+                    GroupTerm      = h.GroupTerm,
+                    IsActive       = h.IsActive,
+                    AnimalCount    = animals.Count,
+                    Source         = h,
                 });
             }
             Herds2 = new ObservableCollection<HerdListItem>(items);

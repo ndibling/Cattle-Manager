@@ -70,6 +70,7 @@ public class SampleDataSeederTests : IDisposable
         var herds = await _db.Herds.Where(h => h.IsSampleData).ToListAsync();
         herds.Should().HaveCount(1);
         herds[0].HerdName.Should().Be("Rolling Hills Angus");
+        herds[0].AnimalTypeId.Should().Be(1); // Cattle
     }
 
     [Fact]

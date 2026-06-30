@@ -46,10 +46,10 @@
                                  FontSize="14" Padding="8,6" Margin="0,0,0,12"
                                  ui:ControlHelper.PlaceholderText="e.g. Rolling Hills Angus Herd"/>
 
-                        <TextBlock Text="Herd Type *" Style="{StaticResource FieldLabelStyle}"/>
-                        <ComboBox ItemsSource="{Binding HerdTypeOptions}"
-                                  Text="{Binding HerdType, UpdateSourceTrigger=PropertyChanged}"
-                                  IsEditable="True"
+                        <TextBlock Text="Animal Type *" Style="{StaticResource FieldLabelStyle}"/>
+                        <ComboBox ItemsSource="{Binding AnimalTypeOptions}"
+                                  SelectedItem="{Binding SelectedAnimalType}"
+                                  DisplayMemberPath="TypeName"
                                   FontSize="14" Margin="0,0,0,12"/>
 
                         <CheckBox Content="Active"
