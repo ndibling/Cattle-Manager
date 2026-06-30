@@ -127,18 +127,20 @@ public class ForeignKeyConstraintTests : IDisposable
     }
 
     [Fact]
-    public async Task DeleteAnimalType_WithBreeds_ThrowsDbUpdateException()
+    public async Task DeleteAnimalType_WithBreeds_ThrowsException()
     {
         var type = await _animalTypes.AddAsync(new AnimalTypeDto { TypeName = "Alpaca", GroupTerm = "Herd" });
         await _breeds.AddAsync(new BreedDto { BreedName = "Huacaya", AnimalTypeId = type.AnimalTypeId });
 
         var act = async () => await _animalTypes.DeleteAsync(type.AnimalTypeId);
 
-        await act.Should().ThrowAsync<DbUpdateException>();
+        // EF Core's change tracker detects the required-relationship violation before hitting
+        // the DB, so it raises InvalidOperationException rather than DbUpdateException.
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     [Fact]
-    public async Task DeleteAnimalType_WithHerds_ThrowsDbUpdateException()
+    public async Task DeleteAnimalType_WithHerds_ThrowsException()
     {
         var farm = await _farms.UpsertAsync(new FarmDto { FarmName = "Test Farm" });
         var type = await _animalTypes.AddAsync(new AnimalTypeDto { TypeName = "Llama", GroupTerm = "Herd" });
@@ -146,6 +148,8 @@ public class ForeignKeyConstraintTests : IDisposable
 
         var act = async () => await _animalTypes.DeleteAsync(type.AnimalTypeId);
 
-        await act.Should().ThrowAsync<DbUpdateException>();
+        // EF Core's change tracker detects the required-relationship violation before hitting
+        // the DB, so it raises InvalidOperationException rather than DbUpdateException.
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 }
