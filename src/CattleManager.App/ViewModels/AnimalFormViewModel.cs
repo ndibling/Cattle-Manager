@@ -54,6 +54,8 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private string? _breedersName;
     [ObservableProperty] private string? _currentOwner;
     [ObservableProperty] private string? _photoPath;
+    [ObservableProperty] private double _photoOffsetX = 0.5;
+    [ObservableProperty] private double _photoOffsetY = 0.5;
 
     // Acquisition
     [ObservableProperty] private bool _bornOnProperty = true;
@@ -260,6 +262,8 @@ public partial class AnimalFormViewModel : ObservableObject
         Height = a.Height; HeightUnit = a.HeightUnit;
         CurrentLocation = a.CurrentLocation; BreedersName = a.BreedersName; CurrentOwner = a.CurrentOwner;
         PhotoPath = a.PhotoPath;
+        PhotoOffsetX = a.PhotoOffsetX;
+        PhotoOffsetY = a.PhotoOffsetY;
         BornOnProperty = a.BornOnProperty; SellerName = a.SellerName; SellerAddress = a.SellerAddress;
         PurchaseDate = a.PurchaseDate; PurchasePrice = a.PurchasePrice;
         IsForSale = a.IsForSale;
@@ -364,7 +368,12 @@ public partial class AnimalFormViewModel : ObservableObject
     private void PickPhoto()
     {
         var path = _dialog.OpenImageFile();
-        if (path is not null) PhotoPath = path;
+        if (path is not null)
+        {
+            PhotoPath = path;
+            PhotoOffsetX = 0.5;
+            PhotoOffsetY = 0.5;
+        }
     }
 
     [RelayCommand]
@@ -515,6 +524,8 @@ public partial class AnimalFormViewModel : ObservableObject
         Height = Height, HeightUnit = HeightUnit,
         CurrentLocation = CurrentLocation, BreedersName = BreedersName, CurrentOwner = CurrentOwner,
         PhotoPath = PhotoPath,
+        PhotoOffsetX = PhotoOffsetX,
+        PhotoOffsetY = PhotoOffsetY,
         BornOnProperty = BornOnProperty,
         SellerName = BornOnProperty ? null : SellerName, SellerAddress = BornOnProperty ? null : SellerAddress,
         PurchaseDate = BornOnProperty ? null : PurchaseDate, PurchasePrice = BornOnProperty ? null : PurchasePrice,

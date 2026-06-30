@@ -114,6 +114,7 @@ public class AnimalRepository : IAnimalRepository
         Height = e.Height, HeightUnit = e.HeightUnit,
         Weight = e.Weight, WeightUnit = e.WeightUnit,
         Coloring = e.Coloring, PhotoPath = e.PhotoPath,
+        PhotoOffsetX = e.PhotoOffsetX, PhotoOffsetY = e.PhotoOffsetY,
         BirthDate = e.BirthDate, DateAcquired = e.DateAcquired,
         CurrentLocation = e.CurrentLocation, BreedersName = e.BreedersName, CurrentOwner = e.CurrentOwner,
         BornOnProperty = e.BornOnProperty,
@@ -154,6 +155,7 @@ public class AnimalRepository : IAnimalRepository
         e.Height = dto.Height; e.HeightUnit = dto.HeightUnit;
         e.Weight = dto.Weight; e.WeightUnit = dto.WeightUnit;
         e.Coloring = dto.Coloring; e.PhotoPath = dto.PhotoPath;
+        e.PhotoOffsetX = dto.PhotoOffsetX; e.PhotoOffsetY = dto.PhotoOffsetY;
         e.BirthDate = dto.BirthDate; e.DateAcquired = dto.DateAcquired;
         e.CurrentLocation = dto.CurrentLocation; e.BreedersName = dto.BreedersName;
         e.CurrentOwner = dto.CurrentOwner;

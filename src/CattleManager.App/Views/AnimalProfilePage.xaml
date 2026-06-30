@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:conv="clr-namespace:CattleManager.App.Converters"
+      xmlns:controls="clr-namespace:CattleManager.App.Controls"
       Title="Animal Profile">
 
     <Page.Resources>
@@ -62,10 +63,23 @@
                     <Border CornerRadius="8" ClipToBounds="True"
                             BorderThickness="3"
                             BorderBrush="{Binding Animal.Gender, Converter={StaticResource GenderToBorder}}"
+                            Width="258" Height="340"
                             Margin="0,0,0,16">
                         <Grid>
-                            <Image Source="{Binding Animal.PhotoPath, Converter={StaticResource PathToImage}}"
-                                   Width="258" Height="340" Stretch="UniformToFill"/>
+                            <!-- View mode: fixed position from saved offsets -->
+                            <controls:PhotoPositionControl
+                                Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisibility}}"
+                                ImagePath="{Binding Animal.PhotoPath}"
+                                OffsetX="{Binding Animal.PhotoOffsetX}"
+                                OffsetY="{Binding Animal.PhotoOffsetY}"
+                                IsInteractive="False"/>
+                            <!-- Edit mode: drag to reposition using edit copies of the offsets -->
+                            <controls:PhotoPositionControl
+                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"
+                                ImagePath="{Binding EditPhotoPath}"
+                                OffsetX="{Binding EditPhotoOffsetX, Mode=TwoWay}"
+                                OffsetY="{Binding EditPhotoOffsetY, Mode=TwoWay}"
+                                IsInteractive="True"/>
                             <Button Content="📷 Change Photo"
                                     Command="{Binding ChangePhotoCommand}"
                                     Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibility}}"

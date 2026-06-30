@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:conv="clr-namespace:CattleManager.App.Converters"
+      xmlns:controls="clr-namespace:CattleManager.App.Controls"
       xmlns:core="clr-namespace:CattleManager.Core.Models;assembly=CattleManager.Core"
       Title="Animal Form">
 
@@ -486,10 +487,14 @@
                     <StackPanel>
                         <TextBlock Text="Photo" Style="{StaticResource SectionHeaderStyle}"/>
                         <StackPanel Orientation="Horizontal">
-                            <Border Width="120" Height="160" CornerRadius="8" ClipToBounds="True"
+                            <Border Width="120" Height="160" CornerRadius="8"
                                     BorderThickness="1" BorderBrush="#CCCCCC" Margin="0,0,16,0">
-                                <Image Source="{Binding PhotoPath, Converter={StaticResource PathToImage}}"
-                                       Stretch="UniformToFill"/>
+                                <controls:PhotoPositionControl
+                                    ImagePath="{Binding PhotoPath}"
+                                    OffsetX="{Binding PhotoOffsetX, Mode=TwoWay}"
+                                    OffsetY="{Binding PhotoOffsetY, Mode=TwoWay}"
+                                    CornerRadius="7"
+                                    IsInteractive="True"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
                                 <Button Content="📷 Choose Photo" Command="{Binding PickPhotoCommand}"

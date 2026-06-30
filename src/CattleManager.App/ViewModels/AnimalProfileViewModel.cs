@@ -56,6 +56,8 @@ public partial class AnimalProfileViewModel : ObservableObject
     [ObservableProperty] private bool _isEditMode;
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string? _editPhotoPath;
+    [ObservableProperty] private double _editPhotoOffsetX = 0.5;
+    [ObservableProperty] private double _editPhotoOffsetY = 0.5;
     [ObservableProperty] private string _editBarnName = string.Empty;
     [ObservableProperty] private string? _editRegisteredName;
     [ObservableProperty] private string? _editColoring;
@@ -167,6 +169,8 @@ public partial class AnimalProfileViewModel : ObservableObject
         EditPastureState = Animal.PastureState;
         EditExpectedHeightAtMaturity = Animal.ExpectedHeightAtMaturity;
         EditPhotoPath = Animal.PhotoPath;
+        EditPhotoOffsetX = Animal.PhotoOffsetX;
+        EditPhotoOffsetY = Animal.PhotoOffsetY;
         EditIsForSale = Animal.IsForSale;
         IsEditMode = true;
     }
@@ -192,6 +196,8 @@ public partial class AnimalProfileViewModel : ObservableObject
         Animal.PastureState = EditPastureState;
         Animal.ExpectedHeightAtMaturity = EditExpectedHeightAtMaturity;
         Animal.PhotoPath = EditPhotoPath;
+        Animal.PhotoOffsetX = EditPhotoOffsetX;
+        Animal.PhotoOffsetY = EditPhotoOffsetY;
         Animal.IsForSale = EditIsForSale;
         await _animals.UpdateAsync(Animal);
         IsEditMode = false;
@@ -209,7 +215,12 @@ public partial class AnimalProfileViewModel : ObservableObject
     private void ChangePhoto()
     {
         var path = _dialog.OpenImageFile();
-        if (path is not null) EditPhotoPath = path;
+        if (path is not null)
+        {
+            EditPhotoPath = path;
+            EditPhotoOffsetX = 0.5;
+            EditPhotoOffsetY = 0.5;
+        }
     }
 
     [RelayCommand]

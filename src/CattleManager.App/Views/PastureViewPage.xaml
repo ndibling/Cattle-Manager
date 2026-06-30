@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:vm="clr-namespace:CattleManager.App.ViewModels"
+      xmlns:controls="clr-namespace:CattleManager.App.Controls"
       Background="{DynamicResource SystemControlBackgroundAltMediumBrush}">
 
     <Grid>
@@ -219,21 +220,22 @@
                                                                                     <TextBlock Text="🐄" FontSize="28"
                                                                                                HorizontalAlignment="Center"
                                                                                                VerticalAlignment="Center"/>
-                                                                                    <Image Stretch="UniformToFill"
-                                                                                           Source="{Binding PhotoPath, Converter={StaticResource PathToImage}}">
-                                                                                        <Image.Clip>
-                                                                                            <RectangleGeometry RadiusX="3" RadiusY="3" Rect="0,0,60,60"/>
-                                                                                        </Image.Clip>
-                                                                                        <Image.Style>
-                                                                                            <Style TargetType="Image">
+                                                                                    <controls:PhotoPositionControl
+                                                                                        ImagePath="{Binding PhotoPath}"
+                                                                                        OffsetX="{Binding PhotoOffsetX}"
+                                                                                        OffsetY="{Binding PhotoOffsetY}"
+                                                                                        CornerRadius="3"
+                                                                                        IsInteractive="False">
+                                                                                        <controls:PhotoPositionControl.Style>
+                                                                                            <Style TargetType="controls:PhotoPositionControl">
                                                                                                 <Style.Triggers>
                                                                                                     <DataTrigger Binding="{Binding PhotoPath}" Value="{x:Null}">
                                                                                                         <Setter Property="Visibility" Value="Collapsed"/>
                                                                                                     </DataTrigger>
                                                                                                 </Style.Triggers>
                                                                                             </Style>
-                                                                                        </Image.Style>
-                                                                                    </Image>
+                                                                                        </controls:PhotoPositionControl.Style>
+                                                                                    </controls:PhotoPositionControl>
                                                                                 </Grid>
                                                                                 <TextBlock Text="{Binding BarnName}"
                                                                                            FontSize="11" TextWrapping="Wrap"

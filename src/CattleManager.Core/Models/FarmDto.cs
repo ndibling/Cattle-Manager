@@ -37,6 +37,8 @@ public class PedigreeNodeDto
     public string? BarnName { get; set; }
     public string? RegisteredName { get; set; }
     public string? PhotoPath { get; set; }
+    public double PhotoOffsetX { get; set; } = 0.5;
+    public double PhotoOffsetY { get; set; } = 0.5;
     public Gender? Gender { get; set; }
     public string? BreedName { get; set; }
     public decimal? Height { get; set; }

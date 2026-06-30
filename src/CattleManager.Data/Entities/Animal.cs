@@ -19,6 +19,8 @@ public class Animal
     public WeightUnit WeightUnit { get; set; }
     public string? Coloring { get; set; }
     public string? PhotoPath { get; set; }
+    public double PhotoOffsetX { get; set; } = 0.5;
+    public double PhotoOffsetY { get; set; } = 0.5;
     public DateTime BirthDate { get; set; }
     public DateTime? DateAcquired { get; set; }
     public string? CurrentLocation { get; set; }

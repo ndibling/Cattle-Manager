@@ -420,6 +420,8 @@ public partial class App : Application
                 ["PastureState"]             = "TEXT",
                 ["ExpectedHeightAtMaturity"] = "REAL",
                 ["CurrentValue"]             = "REAL",
+                ["PhotoOffsetX"]             = "REAL NOT NULL DEFAULT 0.5",
+                ["PhotoOffsetY"]             = "REAL NOT NULL DEFAULT 0.5",
             });
             await EnsureTableColumnsAsync(conn, "Transactions", new System.Collections.Generic.Dictionary<string, string>
             {

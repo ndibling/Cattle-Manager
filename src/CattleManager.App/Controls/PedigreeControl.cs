@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace CattleManager.App.Controls;
@@ -226,19 +225,23 @@ public class PedigreeControl : Canvas
             ToolTip         = BuildTooltip(node)
         };
 
-        var photo = TryLoadPhoto(node.PhotoPath);
-        if (photo is not null)
+        var hasPhoto = !string.IsNullOrEmpty(node.PhotoPath) && File.Exists(node.PhotoPath);
+        if (hasPhoto)
         {
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(60) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
-            var imgBorder = new Border { CornerRadius = new CornerRadius(6, 0, 0, 6), ClipToBounds = true };
-            var img = new Image { Source = photo, Stretch = Stretch.UniformToFill };
-            RenderOptions.SetBitmapScalingMode(img, BitmapScalingMode.HighQuality);
-            imgBorder.Child = img;
-            Grid.SetColumn(imgBorder, 0);
-            grid.Children.Add(imgBorder);
+            var photo = new PhotoPositionControl
+            {
+                ImagePath    = node.PhotoPath,
+                OffsetX      = node.PhotoOffsetX,
+                OffsetY      = node.PhotoOffsetY,
+                CornerRadius = new CornerRadius(6, 0, 0, 6),
+                IsInteractive = false
+            };
+            Grid.SetColumn(photo, 0);
+            grid.Children.Add(photo);
 
             var text = BuildTextStack(node, isUnknown, genderColor, new Thickness(6, 6, 6, 6));
             Grid.SetColumn(text, 1);
@@ -296,23 +299,6 @@ public class PedigreeControl : Canvas
         });
 
         return stack;
-    }
-
-    private static BitmapImage? TryLoadPhoto(string? path)
-    {
-        if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
-        try
-        {
-            var img = new BitmapImage();
-            img.BeginInit();
-            img.UriSource        = new Uri(path, UriKind.Absolute);
-            img.CacheOption      = BitmapCacheOption.OnLoad;
-            img.DecodePixelHeight = (int)(NodeHeight - 4); // decode at display size for perf
-            img.EndInit();
-            img.Freeze();
-            return img;
-        }
-        catch { return null; }
     }
 
     private static ToolTip BuildTooltip(PedigreeNodeDto node)

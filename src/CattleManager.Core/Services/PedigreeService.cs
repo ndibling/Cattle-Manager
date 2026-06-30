@@ -26,6 +26,8 @@ public class PedigreeService
             BarnName = animal.BarnName,
             RegisteredName = animal.RegisteredName,
             PhotoPath = animal.PhotoPath,
+            PhotoOffsetX = animal.PhotoOffsetX,
+            PhotoOffsetY = animal.PhotoOffsetY,
             Gender = animal.Gender,
             BreedName = animal.BreedName,
             IsInHerd = true,
