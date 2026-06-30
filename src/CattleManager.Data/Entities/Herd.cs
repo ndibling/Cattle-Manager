@@ -16,6 +16,8 @@ public class Herd
     public int HerdId { get; set; }
     public int FarmId { get; set; }
     public string HerdName { get; set; } = string.Empty;
+    // Legacy column kept for existing-DB compatibility; always written as "" by EF.
+    public string HerdType { get; set; } = string.Empty;
     public int AnimalTypeId { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsSampleData { get; set; }

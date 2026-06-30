@@ -176,6 +176,13 @@ public class CattleDbContext : DbContext
             entity.Property(b => b.BudgetAmount).HasPrecision(10, 2);
         });
 
+        modelBuilder.Entity<Herd>(entity =>
+        {
+            entity.Property(h => h.HerdType)
+                  .HasMaxLength(100)
+                  .HasDefaultValue(string.Empty);
+        });
+
         modelBuilder.Entity<AnimalType>(entity =>
         {
             entity.HasKey(t => t.AnimalTypeId);

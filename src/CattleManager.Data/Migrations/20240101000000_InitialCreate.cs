@@ -47,6 +47,7 @@ public partial class InitialCreate : Migration
             HerdId = t.Column<int>(nullable: false).Annotation("Sqlite:Autoincrement", true),
             FarmId = t.Column<int>(nullable: false),
             HerdName = t.Column<string>(maxLength: 200, nullable: false),
+            HerdType = t.Column<string>(maxLength: 100, nullable: false, defaultValue: ""),
             AnimalTypeId = t.Column<int>(nullable: false, defaultValue: 1),
             IsActive = t.Column<bool>(nullable: false, defaultValue: true),
             IsSampleData = t.Column<bool>(nullable: false, defaultValue: false),
