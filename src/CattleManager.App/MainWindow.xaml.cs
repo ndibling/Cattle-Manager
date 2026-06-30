@@ -78,9 +78,24 @@ public partial class MainWindow : Window
         HighlightNav(BtnSettings);
     }
 
+    private void NavigateToHelp()
+    {
+        _nav.ClearBack();
+        _nav.NavigateTo(new HelpPage());
+        HighlightNav(BtnHelp);
+    }
+
+    private void BtnHelp_Click(object sender, RoutedEventArgs e) => NavigateToHelp();
+
+    protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        if (e.Key == System.Windows.Input.Key.F1) { NavigateToHelp(); e.Handled = true; }
+    }
+
     private void HighlightNav(Button active)
     {
-        foreach (var btn in new[] { BtnDashboard, BtnHerd, BtnPastureView, BtnAddAnimal, BtnFinancials, BtnSettings })
+        foreach (var btn in new[] { BtnDashboard, BtnHerd, BtnPastureView, BtnAddAnimal, BtnFinancials, BtnSettings, BtnHelp })
         {
             btn.Tag = btn == active ? "Active" : btn.Name.Replace("Btn", "");
         }

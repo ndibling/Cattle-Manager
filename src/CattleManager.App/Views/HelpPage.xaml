@@ -1,0 +1,379 @@
+<Page x:Class="CattleManager.App.Views.HelpPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Help &amp; About">
+    <DockPanel>
+
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="24,14,24,14"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <TextBlock Text="Help &amp; About" FontSize="22" FontWeight="SemiBold"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24,16,24,24" MaxWidth="900">
+
+                <!-- Quick Start strip -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Quick Start" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock FontSize="13" TextWrapping="Wrap" Margin="0,0,0,12"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                   Text="New to Herd Master? Here are the most common first steps:"/>
+                        <WrapPanel>
+                            <Border CornerRadius="6" BorderThickness="1" Padding="14,10" Margin="0,0,10,8"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                    Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                                <TextBlock FontSize="13" TextWrapping="Wrap">
+                                    <Run FontWeight="SemiBold">1.</Run>
+                                    <Run>Go to Herds → Add Herd</Run>
+                                </TextBlock>
+                            </Border>
+                            <Border CornerRadius="6" BorderThickness="1" Padding="14,10" Margin="0,0,10,8"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                    Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                                <TextBlock FontSize="13" TextWrapping="Wrap">
+                                    <Run FontWeight="SemiBold">2.</Run>
+                                    <Run>Use ➕ Add Animal to add livestock</Run>
+                                </TextBlock>
+                            </Border>
+                            <Border CornerRadius="6" BorderThickness="1" Padding="14,10" Margin="0,0,10,8"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                    Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                                <TextBlock FontSize="13" TextWrapping="Wrap">
+                                    <Run FontWeight="SemiBold">3.</Run>
+                                    <Run>Clear sample data in Settings → Data Management</Run>
+                                </TextBlock>
+                            </Border>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Getting Started -->
+                <Expander Header="Getting Started" IsExpanded="True" Margin="0,0,0,6"
+                          FontSize="15" FontWeight="SemiBold">
+                    <StackPanel Margin="4,8,4,8">
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="The app loaded with sample data — is that normal?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Yes. On first launch, Herd Master loads example cattle so you can see how everything works. When you're ready, go to Settings → Data Management → Clear All Data to wipe the sample records and start fresh. Your farm settings are preserved."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I create my first herd?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Click Herds in the sidebar, then + Add Herd. Give it a name, pick an animal type, and save. You can then add animals to it from the ➕ Add Animal button."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="Can I have more than one herd?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Yes. Each herd tracks a separate group of animals, typically by species or management group. The Dashboard shows stats for every herd at a glance."/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Herds -->
+                <Expander Header="Herds" IsExpanded="False" Margin="0,0,0,6"
+                          FontSize="15" FontWeight="SemiBold">
+                    <StackPanel Margin="4,8,4,8">
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="What is 'Animal Type'?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Animal Type (Cattle, Sheep, Chicken, etc.) controls which breeds are available when adding animals. You can add custom types in Settings → Animal Types &amp; Breeds."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="Why does it say 'Flock' instead of 'Herd'?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Some animal types use different group terms. Sheep and chickens belong to a Flock. The term is set when you create a custom animal type — standard types like Cattle and Goat have their terms pre-set."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I edit or delete a herd?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Herds, find the herd card, and click Edit or Delete. Deleting a herd also removes all animals assigned to it, so back up your data first if needed."/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Animals -->
+                <Expander Header="Animals" IsExpanded="False" Margin="0,0,0,6"
+                          FontSize="15" FontWeight="SemiBold">
+                    <StackPanel Margin="4,8,4,8">
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I add an animal?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Click ➕ Add Animal in the sidebar. A dialog will ask which herd to add to. Then fill in the animal's details on the form that opens. Fields marked with * are required."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I record a health event (worming, vaccination, vet visit)?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Open an animal's profile by clicking its name in the herd list, then scroll to Health Records. Click + Add Health Record and fill in the type, date, and notes."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How does breeding tracking work?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="From an animal's profile, scroll to Breeding Records. You can log a breeding date, expected due date, and sire information. Pregnant animals are automatically flagged on the Dashboard with their due dates."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="What is the Pedigree view?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="The Pedigree tab on an animal's profile shows a family tree — sire, dam, and up to two generations back. You can link existing animals in your herds as parents, or enter external names manually for animals you don't own."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="Can I attach photos?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Yes. On an animal's profile, scroll to Photos and click + Add Photo. Photos are stored locally on this computer and are not synced anywhere."/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Pasture View -->
+                <Expander Header="Pasture View" IsExpanded="False" Margin="0,0,0,6"
+                          FontSize="15" FontWeight="SemiBold">
+                    <StackPanel Margin="4,8,4,8">
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="What is Pasture View?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Pasture View is a visual layout of your pastures. You can create named pasture areas for a herd and drag-and-drop animals into them to track where each animal is located at any given time."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I create a pasture?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Click Pasture View in the sidebar, select a herd from the filter at the top, then type a name in the Add Pasture box and press Enter or click Add."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I move an animal to a different pasture?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="In Pasture View, drag the animal's card from one pasture column to another. The location saves automatically."/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Financials -->
+                <Expander Header="Financials" IsExpanded="False" Margin="0,0,0,6"
+                          FontSize="15" FontWeight="SemiBold">
+                    <StackPanel Margin="4,8,4,8">
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="What counts as a 'Transaction'?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Any money that comes in (income) or goes out (expense) for the farm: sale of an animal, purchase of feed, vet bills, fuel, equipment repairs, etc. Use + Add Income or + Add Expense on the Financials dashboard."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="What are Assets?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Capital items the farm owns that have lasting value: tractors, trailers, breeding stock, real estate. Go to Financials → Assets to add items and track depreciation over time. Livestock automatically appear as assets."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I track a farm loan?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Financials → Loans → + Add Loan. Enter the lender, principal, interest rate, and payment schedule. Each time you make a payment, log it on the loan's detail page to keep the balance current."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="What is the Budget tab?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="The Budget lets you enter planned income and expense amounts by category and month for the fiscal year. The Reports page then shows how actual transactions compare to your budget with variance columns."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do Reports work?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Financials → Reports generates a profit/loss summary, category breakdown, and tax-ready totals based on your recorded transactions for the selected year. Reports can be exported to PDF."/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- Settings -->
+                <Expander Header="Settings" IsExpanded="False" Margin="0,0,0,6"
+                          FontSize="15" FontWeight="SemiBold">
+                    <StackPanel Margin="4,8,4,8">
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I switch between Dark and Light mode?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Settings → Application Preferences → Color Theme. Select Dark or Light and click Save Settings. The change applies immediately."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I back up my data?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Settings → Data Backup &amp; Restore → Backup Now. Choose where to save the backup file. Keep a copy on a USB drive or cloud folder for safety."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I restore from a backup?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Settings → Data Backup &amp; Restore → Restore from Backup. Select your backup file. The app will restart after the restore completes."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I import animals from a spreadsheet?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Settings → Data Management → Download CSV Template to get a pre-formatted file. Fill it in with your animal data, then use Import Animals from CSV to load it. Do not remove or rename the header row."/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Margin="0,0,0,10" Padding="12,10" BorderThickness="3,0,0,0" CornerRadius="0,4,4,0"
+                                BorderBrush="{DynamicResource SystemControlForegroundAccentBrush}"
+                                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                            <StackPanel>
+                                <TextBlock Text="How do I add a custom animal type or breed?" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource SystemControlForegroundBaseMediumHighBrush}"
+                                           Text="Go to Settings → Animal Types &amp; Breeds. Use + Add Type to create a new species (e.g., Alpaca). Select that type in the list, then use + Add Breed to add breeds under it. Custom types and breeds can be deleted; standard ones cannot."/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Expander>
+
+                <!-- About card -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <TextBlock Text="About Herd Master" Style="{StaticResource SectionHeaderStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Version"
+                                       Style="{StaticResource FieldLabelStyle}" Margin="0,0,24,10" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtVersion"
+                                       FontSize="13" VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Folder"
+                                       Style="{StaticResource FieldLabelStyle}" Margin="0,0,24,10" VerticalAlignment="Top"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtDataPath"
+                                       FontSize="13" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Support"
+                                       Style="{StaticResource FieldLabelStyle}" Margin="0,0,24,0" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" FontSize="13" TextWrapping="Wrap"
+                                       Text="For issues or feedback, visit the GitHub repository or contact support."/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Page>
