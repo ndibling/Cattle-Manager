@@ -1,8 +1,10 @@
 using CattleManager.Core.Models;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace CattleManager.App.Controls;
@@ -202,7 +204,7 @@ public class PedigreeControl : Canvas
 
     private Border CreateNodeElement(PedigreeNodeDto node)
     {
-        var isUnknown  = !node.IsInHerd && node.AnimalId is null;
+        var isUnknown   = !node.IsInHerd && node.AnimalId is null;
         var genderColor = node.Gender == Gender.Male
             ? Color.FromRgb(21, 101, 192)
             : node.Gender == Gender.Female
@@ -219,28 +221,68 @@ public class PedigreeControl : Canvas
             Background      = isUnknown
                 ? new SolidColorBrush(Color.FromArgb(30, 200, 200, 200))
                 : new SolidColorBrush(Color.FromArgb(20, genderColor.R, genderColor.G, genderColor.B)),
-            Cursor  = node.IsInHerd ? Cursors.Hand : Cursors.Arrow,
-            ToolTip = BuildTooltip(node)
+            ClipToBounds    = true,
+            Cursor          = node.IsInHerd ? Cursors.Hand : Cursors.Arrow,
+            ToolTip         = BuildTooltip(node)
         };
 
-        var stack = new StackPanel { Margin = new Thickness(8, 6, 8, 6) };
+        var photo = TryLoadPhoto(node.PhotoPath);
+        if (photo is not null)
+        {
+            var grid = new Grid();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(60) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            var imgBorder = new Border { CornerRadius = new CornerRadius(6, 0, 0, 6), ClipToBounds = true };
+            var img = new Image { Source = photo, Stretch = Stretch.UniformToFill };
+            RenderOptions.SetBitmapScalingMode(img, BitmapScalingMode.HighQuality);
+            imgBorder.Child = img;
+            Grid.SetColumn(imgBorder, 0);
+            grid.Children.Add(imgBorder);
+
+            var text = BuildTextStack(node, isUnknown, genderColor, new Thickness(6, 6, 6, 6));
+            Grid.SetColumn(text, 1);
+            grid.Children.Add(text);
+
+            border.Child = grid;
+        }
+        else
+        {
+            border.Child = BuildTextStack(node, isUnknown, genderColor, new Thickness(8, 6, 8, 6));
+        }
+
+        if (node.IsInHerd)
+        {
+            border.MouseLeftButtonDown += (s, e) =>
+            {
+                NodeClicked?.Invoke(this, node);
+                e.Handled = true;
+            };
+        }
+
+        return border;
+    }
+
+    private static StackPanel BuildTextStack(PedigreeNodeDto node, bool isUnknown, Color genderColor, Thickness margin)
+    {
+        var stack = new StackPanel { Margin = margin };
 
         stack.Children.Add(new TextBlock
         {
-            Text        = node.BarnName ?? "Unknown",
-            FontWeight  = FontWeights.SemiBold,
-            FontSize    = 12,
+            Text         = node.BarnName ?? "Unknown",
+            FontWeight   = FontWeights.SemiBold,
+            FontSize     = 12,
             TextTrimming = TextTrimming.CharacterEllipsis,
-            Foreground  = isUnknown ? Brushes.Gray : Brushes.Black
+            Foreground   = isUnknown ? Brushes.Gray : Brushes.Black
         });
 
         if (!string.IsNullOrEmpty(node.RegisteredName))
         {
             stack.Children.Add(new TextBlock
             {
-                Text        = node.RegisteredName,
-                FontSize    = 10,
-                Foreground  = Brushes.Gray,
+                Text         = node.RegisteredName,
+                FontSize     = 10,
+                Foreground   = Brushes.Gray,
                 TextTrimming = TextTrimming.CharacterEllipsis
             });
         }
@@ -253,18 +295,24 @@ public class PedigreeControl : Canvas
             HorizontalAlignment = HorizontalAlignment.Right
         });
 
-        border.Child = stack;
+        return stack;
+    }
 
-        if (node.IsInHerd)
+    private static BitmapImage? TryLoadPhoto(string? path)
+    {
+        if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
+        try
         {
-            border.MouseLeftButtonDown += (s, e) =>
-            {
-                NodeClicked?.Invoke(this, node);
-                e.Handled = true;
-            };
+            var img = new BitmapImage();
+            img.BeginInit();
+            img.UriSource        = new Uri(path, UriKind.Absolute);
+            img.CacheOption      = BitmapCacheOption.OnLoad;
+            img.DecodePixelHeight = (int)(NodeHeight - 4); // decode at display size for perf
+            img.EndInit();
+            img.Freeze();
+            return img;
         }
-
-        return border;
+        catch { return null; }
     }
 
     private static ToolTip BuildTooltip(PedigreeNodeDto node)
