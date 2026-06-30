@@ -86,7 +86,13 @@ public class PhotoPositionControl : FrameworkElement
     {
         _transform = new TranslateTransform();
 
-        _image = new Image { Stretch = Stretch.None, RenderTransform = _transform };
+        _image = new Image
+        {
+            Stretch = Stretch.None,
+            RenderTransform = _transform,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top
+        };
         RenderOptions.SetBitmapScalingMode(_image, BitmapScalingMode.HighQuality);
 
         _hint = new TextBlock
