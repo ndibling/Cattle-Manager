@@ -8,9 +8,9 @@ using System.Windows.Media.Imaging;
 namespace CattleManager.App.Controls;
 
 /// <summary>
-/// Displays a photo fitted to its bounds (UniformToFill) with an optional drag-to-reposition
-/// interaction. OffsetX/OffsetY (0–1) represent the anchor point in the source image that
-/// maps to the center of the frame; 0.5,0.5 = centered (default).
+/// Displays a photo at UniformToFill scale with optional drag-to-reposition.
+/// OffsetX/OffsetY (0–1, default 0.5) are the anchor fractions of the scaled image
+/// that align to the top-left of the frame: 0 = left/top edge, 1 = right/bottom edge.
 /// </summary>
 public class PhotoPositionControl : FrameworkElement
 {
@@ -71,11 +71,16 @@ public class PhotoPositionControl : FrameworkElement
 
     #endregion
 
+    // Canvas lets the Image overflow its layout slot — Grid/Border would clip it to frame size.
+    // Stretch.Fill makes the Image render at exactly _image.Width x _image.Height.
+    // Canvas.SetLeft/Top position the (oversized) image so the right region is visible.
+    // The outer Border.ClipToBounds=true provides the visual crop.
     private readonly Border _clip;
+    private readonly Canvas _imageCanvas;
     private readonly Image _image;
     private readonly TextBlock _hint;
-    private readonly TranslateTransform _transform;
     private BitmapImage? _bitmap;
+    private double _scaledW, _scaledH;
 
     private bool _isDragging;
     private Point _dragStart;
@@ -84,15 +89,7 @@ public class PhotoPositionControl : FrameworkElement
 
     public PhotoPositionControl()
     {
-        _transform = new TranslateTransform();
-
-        _image = new Image
-        {
-            Stretch = Stretch.None,
-            RenderTransform = _transform,
-            HorizontalAlignment = HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Top
-        };
+        _image = new Image { Stretch = Stretch.Fill };
         RenderOptions.SetBitmapScalingMode(_image, BitmapScalingMode.HighQuality);
 
         _hint = new TextBlock
@@ -109,16 +106,23 @@ public class PhotoPositionControl : FrameworkElement
             IsHitTestVisible = false
         };
 
-        var grid = new Grid();
-        grid.Children.Add(_image);
-        grid.Children.Add(_hint);
+        // Canvas is the key: it arranges children at their DesiredSize rather than
+        // constraining them to the Canvas's own layout slot, so the Image can be
+        // 240 px wide inside a 120 px frame and still render at 240 px.
+        _imageCanvas = new Canvas();
+        _imageCanvas.Children.Add(_image);
 
-        _clip = new Border { ClipToBounds = true, Child = grid };
+        // Grid overlays the hint over the canvas without affecting image sizing.
+        var overlay = new Grid();
+        overlay.Children.Add(_imageCanvas);
+        overlay.Children.Add(_hint);
+
+        _clip = new Border { ClipToBounds = true, Child = overlay };
 
         AddVisualChild(_clip);
         AddLogicalChild(_clip);
 
-        SizeChanged += (_, _) => ApplyTransform();
+        SizeChanged += (_, _) => UpdateScaling();
 
         _clip.MouseEnter += OnMouseEnter;
         _clip.MouseLeave += OnMouseLeave;
@@ -139,7 +143,7 @@ public class PhotoPositionControl : FrameworkElement
     protected override Size ArrangeOverride(Size final)
     {
         _clip.Arrange(new Rect(final));
-        ApplyTransform();
+        UpdateScaling();
         return final;
     }
 
@@ -147,13 +151,10 @@ public class PhotoPositionControl : FrameworkElement
         => ((PhotoPositionControl)d).LoadImage((string?)e.NewValue);
 
     private static void OnOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        => ((PhotoPositionControl)d).ApplyTransform();
+        => ((PhotoPositionControl)d).Reposition();
 
     private static void OnIsInteractiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var ctrl = (PhotoPositionControl)d;
-        ctrl._clip.Cursor = (bool)e.NewValue ? Cursors.SizeAll : null;
-    }
+        => ((PhotoPositionControl)d)._clip.Cursor = (bool)e.NewValue ? Cursors.SizeAll : null;
 
     private static void OnCornerRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         => ((PhotoPositionControl)d)._clip.CornerRadius = (CornerRadius)e.NewValue;
@@ -161,6 +162,8 @@ public class PhotoPositionControl : FrameworkElement
     private void LoadImage(string? path)
     {
         _bitmap = null;
+        _scaledW = 0;
+        _scaledH = 0;
         _image.Source = null;
         _image.Width = double.NaN;
         _image.Height = double.NaN;
@@ -177,37 +180,40 @@ public class PhotoPositionControl : FrameworkElement
             bmp.Freeze();
             _bitmap = bmp;
             _image.Source = bmp;
-            ApplyTransform();
+            UpdateScaling();
         }
         catch { }
     }
 
-    private void ApplyTransform()
+    // Computes the UniformToFill scale and sets the Image's explicit Width/Height.
+    // Must run after both the bitmap and the frame size are known.
+    private void UpdateScaling()
     {
         if (_bitmap is null || ActualWidth <= 0 || ActualHeight <= 0) return;
 
-        double frameW = ActualWidth;
-        double frameH = ActualHeight;
-        double scale  = Math.Max(frameW / _bitmap.PixelWidth, frameH / _bitmap.PixelHeight);
-        double scaledW = _bitmap.PixelWidth  * scale;
-        double scaledH = _bitmap.PixelHeight * scale;
-
-        _image.Width  = scaledW;
-        _image.Height = scaledH;
-
-        _transform.X = -OffsetX * Math.Max(0, scaledW - frameW);
-        _transform.Y = -OffsetY * Math.Max(0, scaledH - frameH);
-    }
-
-    private (double overflowX, double overflowY) GetOverflow()
-    {
-        if (_bitmap is null || ActualWidth <= 0 || ActualHeight <= 0) return (0, 0);
         double scale = Math.Max(ActualWidth / _bitmap.PixelWidth, ActualHeight / _bitmap.PixelHeight);
-        return (
-            Math.Max(0, _bitmap.PixelWidth  * scale - ActualWidth),
-            Math.Max(0, _bitmap.PixelHeight * scale - ActualHeight)
-        );
+        _scaledW = _bitmap.PixelWidth  * scale;
+        _scaledH = _bitmap.PixelHeight * scale;
+
+        // Stretch.Fill + explicit Width/Height = image renders at exactly these dimensions.
+        _image.Width  = _scaledW;
+        _image.Height = _scaledH;
+
+        Reposition();
     }
+
+    // Moves the (oversized) image within the Canvas so that the OffsetX/Y region is visible.
+    private void Reposition()
+    {
+        if (_scaledW <= 0) return;
+        Canvas.SetLeft(_image, -OffsetX * Math.Max(0, _scaledW - ActualWidth));
+        Canvas.SetTop (_image, -OffsetY * Math.Max(0, _scaledH - ActualHeight));
+    }
+
+    private (double ox, double oy) Overflow() => (
+        Math.Max(0, _scaledW - ActualWidth),
+        Math.Max(0, _scaledH - ActualHeight)
+    );
 
     private void OnMouseEnter(object sender, MouseEventArgs e)
     {
@@ -240,9 +246,9 @@ public class PhotoPositionControl : FrameworkElement
     {
         if (!_isDragging) return;
         var pos = e.GetPosition(_clip);
-        var (overflowX, overflowY) = GetOverflow();
-        OffsetX = overflowX > 0 ? Math.Clamp(_offsetXAtDragStart - (pos.X - _dragStart.X) / overflowX, 0, 1) : 0.5;
-        OffsetY = overflowY > 0 ? Math.Clamp(_offsetYAtDragStart - (pos.Y - _dragStart.Y) / overflowY, 0, 1) : 0.5;
+        var (ox, oy) = Overflow();
+        if (ox > 0) OffsetX = Math.Clamp(_offsetXAtDragStart - (pos.X - _dragStart.X) / ox, 0, 1);
+        if (oy > 0) OffsetY = Math.Clamp(_offsetYAtDragStart - (pos.Y - _dragStart.Y) / oy, 0, 1);
         e.Handled = true;
     }
 
