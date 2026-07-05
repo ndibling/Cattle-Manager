@@ -179,6 +179,7 @@ public partial class AnimalProfileViewModel : ObservableObject
     private async Task SaveChangesAsync()
     {
         if (Animal is null) return;
+        var previousPhotoPath = Animal.PhotoPath;
         Animal.BarnName = EditBarnName;
         Animal.RegisteredName = EditRegisteredName;
         Animal.Coloring = EditColoring;
@@ -200,6 +201,23 @@ public partial class AnimalProfileViewModel : ObservableObject
         Animal.PhotoOffsetY = EditPhotoOffsetY;
         Animal.IsForSale = EditIsForSale;
         await _animals.UpdateAsync(Animal);
+
+        // Keep gallery in sync: if the profile photo changed, add it to the gallery
+        // so all photos ever used as the profile are preserved in one place.
+        if (!string.IsNullOrEmpty(EditPhotoPath) && EditPhotoPath != previousPhotoPath)
+        {
+            var currentPhotos = await _photos.GetByAnimalAsync(AnimalId);
+            if (!currentPhotos.Any(p => p.FilePath == EditPhotoPath))
+            {
+                await _photos.AddAsync(new AnimalPhotoDto
+                {
+                    AnimalId  = AnimalId,
+                    FilePath  = EditPhotoPath,
+                    SortOrder = currentPhotos.Count
+                });
+            }
+        }
+
         IsEditMode = false;
         await LoadAsync();
     }
