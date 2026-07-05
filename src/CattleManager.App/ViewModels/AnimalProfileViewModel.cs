@@ -23,70 +23,32 @@ public partial class AnimalProfileViewModel : ObservableObject
 
     public int AnimalId { get; set; }
 
-    public IReadOnlyList<ChondroStatus> ChondroOptions { get; } = Enum.GetValues<ChondroStatus>();
-    public IReadOnlyList<string> YesNoUnknownOptions { get; } = ["Unknown", "Yes", "No"];
-    public IReadOnlyList<string> StateOptions { get; } =
-    [
-        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
-        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
-        "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
-        "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-        "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-        "Wisconsin", "Wyoming"
-    ];
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFemale))]
     [NotifyPropertyChangedFor(nameof(ShowSaleDetails))]
     private AnimalDto? _animal;
-    public bool IsFemale => Animal?.Gender == Gender.Female;
-    public bool ShowSaleDetails => EditIsForSale || Animal?.Status == AnimalStatus.Sold;
 
-    partial void OnEditIsForSaleChanged(bool _) => OnPropertyChanged(nameof(ShowSaleDetails));
-    [ObservableProperty] private ObservableCollection<HealthRecordDto> _healthHistory = [];
-    [ObservableProperty] private ObservableCollection<BreedingRecordDto> _breedingHistory = [];
-    [ObservableProperty] private ObservableCollection<AnimalDto> _offspring = [];
-    [ObservableProperty] private ObservableCollection<string> _upcomingTasks = [];
-    [ObservableProperty] private ObservableCollection<AnimalPhotoDto> _animalPhotos = [];
-    [ObservableProperty] private ObservableCollection<AnimalAttachmentDto> _animalAttachments = [];
+    public bool IsFemale      => Animal?.Gender == Gender.Female;
+    public bool ShowSaleDetails => Animal?.IsForSale == true || Animal?.Status == AnimalStatus.Sold;
+
+    [ObservableProperty] private ObservableCollection<HealthRecordDto>       _healthHistory      = [];
+    [ObservableProperty] private ObservableCollection<BreedingRecordDto>     _breedingHistory    = [];
+    [ObservableProperty] private ObservableCollection<AnimalDto>             _offspring          = [];
+    [ObservableProperty] private ObservableCollection<string>                _upcomingTasks      = [];
+    [ObservableProperty] private ObservableCollection<AnimalPhotoDto>        _animalPhotos       = [];
+    [ObservableProperty] private ObservableCollection<AnimalAttachmentDto>   _animalAttachments  = [];
     [ObservableProperty] private ObservableCollection<BullExposureRecordDto> _bullExposureRecords = [];
     [ObservableProperty] private bool _hasNoUpcomingTasks = true;
-    [ObservableProperty] private bool _isEditMode;
     [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private string? _editPhotoPath;
-    [ObservableProperty] private double _editPhotoOffsetX = 0.5;
-    [ObservableProperty] private double _editPhotoOffsetY = 0.5;
-    [ObservableProperty] private string _editBarnName = string.Empty;
-    [ObservableProperty] private string? _editRegisteredName;
-    [ObservableProperty] private string? _editColoring;
-    [ObservableProperty] private string? _editLocation;
-    [ObservableProperty] private string? _editHealthNotes;
-    [ObservableProperty] private DateTime? _editLastWorming;
-    [ObservableProperty] private DateTime? _editLastVaccination;
-    [ObservableProperty] private DateTime? _editLastHealthCheck;
-    [ObservableProperty] private DateTime? _editLastHoofTrimming;
-
-    // Additional attribute inline edits
-    [ObservableProperty] private string? _editTagNumber;
-    [ObservableProperty] private ChondroStatus _editChondro;
-    [ObservableProperty] private string _editHornsSelection = "Unknown";
-    [ObservableProperty] private string _editIsGoodMotherSelection = "Unknown";
-    [ObservableProperty] private string? _editPastureLocation;
-    [ObservableProperty] private string? _editPastureState;
-    [ObservableProperty] private decimal? _editExpectedHeightAtMaturity;
-
-    [ObservableProperty] private bool _editIsForSale;
 
     // Bull exposure add form
     [ObservableProperty] private bool _isAddingExposure;
-    [ObservableProperty] private DateTime _newExposureStartDate = DateTime.Today;
+    [ObservableProperty] private DateTime  _newExposureStartDate        = DateTime.Today;
     [ObservableProperty] private DateTime? _newExposureEndDate;
     [ObservableProperty] private AnimalDto? _newExposureSire;
-    [ObservableProperty] private string? _newExposureExternalSireName;
-    [ObservableProperty] private bool _newExposureSireInHerd = true;
-    [ObservableProperty] private string? _newExposureNotes;
+    [ObservableProperty] private string?   _newExposureExternalSireName;
+    [ObservableProperty] private bool      _newExposureSireInHerd       = true;
+    [ObservableProperty] private string?   _newExposureNotes;
     [ObservableProperty] private ObservableCollection<AnimalDto> _availableSires = [];
 
     public AnimalProfileViewModel(IAnimalRepository animals, IHealthRecordRepository healthRecords,
@@ -112,7 +74,6 @@ public partial class AnimalProfileViewModel : ObservableObject
         {
             Animal = await _animals.GetByIdAsync(AnimalId);
             if (Animal is null) return;
-            EditIsForSale = Animal.IsForSale;
 
             var health = await _healthRecords.GetByAnimalAsync(AnimalId);
             HealthHistory = new ObservableCollection<HealthRecordDto>(health);
@@ -145,99 +106,6 @@ public partial class AnimalProfileViewModel : ObservableObject
         finally
         {
             IsLoading = false;
-        }
-    }
-
-    [RelayCommand]
-    private void EnterEditMode()
-    {
-        if (Animal is null) return;
-        EditBarnName = Animal.BarnName;
-        EditRegisteredName = Animal.RegisteredName;
-        EditColoring = Animal.Coloring;
-        EditLocation = Animal.CurrentLocation;
-        EditHealthNotes = Animal.HealthNotes;
-        EditLastWorming = Animal.LastWormingDate;
-        EditLastVaccination = Animal.LastVaccinationDate;
-        EditLastHealthCheck = Animal.LastHealthCheckDate;
-        EditLastHoofTrimming = Animal.LastHoofTrimmingDate;
-        EditTagNumber = Animal.TagNumber;
-        EditChondro = Animal.Chondro;
-        EditHornsSelection = Animal.Horns == true ? "Yes" : Animal.Horns == false ? "No" : "Unknown";
-        EditIsGoodMotherSelection = Animal.IsGoodMother == true ? "Yes" : Animal.IsGoodMother == false ? "No" : "Unknown";
-        EditPastureLocation = Animal.PastureLocation;
-        EditPastureState = Animal.PastureState;
-        EditExpectedHeightAtMaturity = Animal.ExpectedHeightAtMaturity;
-        EditPhotoPath = Animal.PhotoPath;
-        EditPhotoOffsetX = Animal.PhotoOffsetX;
-        EditPhotoOffsetY = Animal.PhotoOffsetY;
-        EditIsForSale = Animal.IsForSale;
-        IsEditMode = true;
-    }
-
-    [RelayCommand]
-    private async Task SaveChangesAsync()
-    {
-        if (Animal is null) return;
-        var previousPhotoPath = Animal.PhotoPath;
-        Animal.BarnName = EditBarnName;
-        Animal.RegisteredName = EditRegisteredName;
-        Animal.Coloring = EditColoring;
-        Animal.CurrentLocation = EditLocation;
-        Animal.HealthNotes = EditHealthNotes;
-        Animal.LastWormingDate = EditLastWorming;
-        Animal.LastVaccinationDate = EditLastVaccination;
-        Animal.LastHealthCheckDate = EditLastHealthCheck;
-        Animal.LastHoofTrimmingDate = EditLastHoofTrimming;
-        Animal.TagNumber = EditTagNumber;
-        Animal.Chondro = EditChondro;
-        Animal.Horns = EditHornsSelection == "Yes" ? true : EditHornsSelection == "No" ? false : (bool?)null;
-        Animal.IsGoodMother = EditIsGoodMotherSelection == "Yes" ? true : EditIsGoodMotherSelection == "No" ? false : (bool?)null;
-        Animal.PastureLocation = EditPastureLocation;
-        Animal.PastureState = EditPastureState;
-        Animal.ExpectedHeightAtMaturity = EditExpectedHeightAtMaturity;
-        Animal.PhotoPath = EditPhotoPath;
-        Animal.PhotoOffsetX = EditPhotoOffsetX;
-        Animal.PhotoOffsetY = EditPhotoOffsetY;
-        Animal.IsForSale = EditIsForSale;
-        await _animals.UpdateAsync(Animal);
-
-        // Keep gallery in sync: if the profile photo changed, add it to the gallery
-        // so all photos ever used as the profile are preserved in one place.
-        if (!string.IsNullOrEmpty(EditPhotoPath) && EditPhotoPath != previousPhotoPath)
-        {
-            var currentPhotos = await _photos.GetByAnimalAsync(AnimalId);
-            if (!currentPhotos.Any(p => p.FilePath == EditPhotoPath))
-            {
-                await _photos.AddAsync(new AnimalPhotoDto
-                {
-                    AnimalId  = AnimalId,
-                    FilePath  = EditPhotoPath,
-                    SortOrder = currentPhotos.Count
-                });
-            }
-        }
-
-        IsEditMode = false;
-        await LoadAsync();
-    }
-
-    [RelayCommand]
-    private void CancelEdit()
-    {
-        EditIsForSale = Animal?.IsForSale ?? false;
-        IsEditMode = false;
-    }
-
-    [RelayCommand]
-    private void ChangePhoto()
-    {
-        var path = _dialog.OpenImageFile();
-        if (path is not null)
-        {
-            EditPhotoPath = path;
-            EditPhotoOffsetX = 0.5;
-            EditPhotoOffsetY = 0.5;
         }
     }
 
