@@ -30,7 +30,7 @@ public class PedigreeService
             PhotoOffsetY = animal.PhotoOffsetY,
             Gender = animal.Gender,
             BreedName = animal.BreedName,
-            IsInHerd = true,
+            IsInHerd = !animal.IsExternalAncestor,
             Generation = generation,
             Role = generation == 0 ? "Subject" : (animal.Gender == Gender.Male ? "Sire" : "Dam")
         };
@@ -72,15 +72,34 @@ public class PedigreeService
     {
         var child = await _animals.GetByIdAsync(childAnimalId)
             ?? throw new ArgumentException($"Animal {childAnimalId} not found");
+
+        // When the parent is external (no in-herd ID), create a real Animal record for them
+        // so their own ancestors can be added later via the same "+" buttons.
+        if (parentAnimalId is null && !string.IsNullOrWhiteSpace(externalName))
+        {
+            var gender = role == "Sire" ? Gender.Male : Gender.Female;
+            var ancestor = await _animals.AddAsync(new AnimalDto
+            {
+                HerdId             = child.HerdId,
+                BarnName           = externalName,
+                Gender             = gender,
+                BreedId            = child.BreedId,
+                Status             = AnimalStatus.Inactive,
+                BirthDate          = new DateTime(1900, 1, 1),
+                IsExternalAncestor = true,
+            });
+            parentAnimalId = ancestor.AnimalId;
+        }
+
         if (role == "Sire")
         {
             child.SireId = parentAnimalId;
-            child.ExternalSireName = parentAnimalId is null ? externalName : null;
+            child.ExternalSireName = null;
         }
         else
         {
             child.DamId = parentAnimalId;
-            child.ExternalDamName = parentAnimalId is null ? externalName : null;
+            child.ExternalDamName = null;
         }
         await _animals.UpdateAsync(child);
     }

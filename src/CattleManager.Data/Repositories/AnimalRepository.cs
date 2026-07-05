@@ -27,7 +27,7 @@ public class AnimalRepository : IAnimalRepository
             .Include(a => a.Breed)
             .Include(a => a.Sire)
             .Include(a => a.Dam)
-            .Where(a => a.HerdId == herdId)
+            .Where(a => a.HerdId == herdId && !a.IsExternalAncestor)
             .OrderBy(a => a.BarnName)
             .ToListAsync();
         return entities.Select(MapToDto).ToList();
@@ -37,6 +37,7 @@ public class AnimalRepository : IAnimalRepository
     {
         var entities = await _db.Animals
             .Include(a => a.Breed)
+            .Where(a => !a.IsExternalAncestor)
             .OrderBy(a => a.BarnName)
             .ToListAsync();
         return entities.Select(MapToDto).ToList();
@@ -87,7 +88,7 @@ public class AnimalRepository : IAnimalRepository
         var lower = searchTerm.ToLower();
         var entities = await _db.Animals
             .Include(a => a.Breed)
-            .Where(a => a.HerdId == herdId &&
+            .Where(a => a.HerdId == herdId && !a.IsExternalAncestor &&
                 (a.BarnName.ToLower().Contains(lower) ||
                  (a.RegisteredName != null && a.RegisteredName.ToLower().Contains(lower))))
             .OrderBy(a => a.BarnName)
@@ -136,6 +137,7 @@ public class AnimalRepository : IAnimalRepository
         PregnancySireId = e.PregnancySireId, ExpectedDueDate = e.ExpectedDueDate,
         BreedingDate = e.BreedingDate, ReproductionNotes = e.ReproductionNotes,
         MaleBreedingStatus = e.MaleBreedingStatus,
+        IsExternalAncestor = e.IsExternalAncestor,
         IsSampleData = e.IsSampleData, CreatedDate = e.CreatedDate, ModifiedDate = e.ModifiedDate
     };
 
@@ -177,6 +179,7 @@ public class AnimalRepository : IAnimalRepository
         e.PregnancySireId = dto.PregnancySireId; e.ExpectedDueDate = dto.ExpectedDueDate;
         e.BreedingDate = dto.BreedingDate; e.ReproductionNotes = dto.ReproductionNotes;
         e.MaleBreedingStatus = dto.MaleBreedingStatus;
+        e.IsExternalAncestor = dto.IsExternalAncestor;
         e.IsSampleData = dto.IsSampleData;
     }
 }

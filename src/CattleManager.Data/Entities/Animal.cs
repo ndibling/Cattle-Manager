@@ -68,6 +68,7 @@ public class Animal
     public DateTime? BreedingDate { get; set; }
     public string? ReproductionNotes { get; set; }
     public MaleBreedingStatus? MaleBreedingStatus { get; set; }
+    public bool IsExternalAncestor { get; set; }
     public bool IsSampleData { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime ModifiedDate { get; set; }

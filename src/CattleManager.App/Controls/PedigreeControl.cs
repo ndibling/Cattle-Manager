@@ -135,8 +135,8 @@ public class PedigreeControl : Canvas
     {
         double btnX = nodeX + NodeWidth + BtnOffset;
 
-        // [+] Sire — add sire parent
-        if (node.IsInHerd && node.Sire is null && node.Generation < MaxGen)
+        // [+] Sire — add sire parent (available for any node with a real DB record)
+        if (node.AnimalId.HasValue && node.Sire is null && node.Generation < MaxGen)
         {
             var btn = MakeActionButton("♂+", "#1565C0", "Assign Sire");
             SetLeft(btn, btnX);
@@ -150,8 +150,8 @@ public class PedigreeControl : Canvas
             Children.Add(btn);
         }
 
-        // [+] Dam — add dam parent
-        if (node.IsInHerd && node.Dam is null && node.Generation < MaxGen)
+        // [+] Dam — add dam parent (available for any node with a real DB record)
+        if (node.AnimalId.HasValue && node.Dam is null && node.Generation < MaxGen)
         {
             var btn = MakeActionButton("♀+", "#AD1457", "Assign Dam");
             SetLeft(btn, btnX);

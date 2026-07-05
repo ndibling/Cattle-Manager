@@ -422,6 +422,7 @@ public partial class App : Application
                 ["CurrentValue"]             = "REAL",
                 ["PhotoOffsetX"]             = "REAL NOT NULL DEFAULT 0.5",
                 ["PhotoOffsetY"]             = "REAL NOT NULL DEFAULT 0.5",
+                ["IsExternalAncestor"]       = "INTEGER NOT NULL DEFAULT 0",
             });
             await EnsureTableColumnsAsync(conn, "Transactions", new System.Collections.Generic.Dictionary<string, string>
             {
