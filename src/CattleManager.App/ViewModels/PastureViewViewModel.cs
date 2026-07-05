@@ -1,7 +1,10 @@
 using CattleManager.App.Services;
+using CattleManager.App.Views;
 using CattleManager.Core.Models;
 using CattleManager.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Collections.ObjectModel;
 
@@ -39,6 +42,7 @@ public partial class PastureViewViewModel : ObservableObject
     private readonly IAnimalRepository  _animals;
     private readonly IHerdRepository    _herds;
     private readonly DialogService      _dialog;
+    private readonly NavigationService  _nav;
 
     private List<AnimalDto> _allAnimals = [];
     private List<HerdDto>   _allHerds   = [];
@@ -49,12 +53,21 @@ public partial class PastureViewViewModel : ObservableObject
     [ObservableProperty] private HerdDto? _selectedHerd;
 
     public PastureViewViewModel(IPastureRepository pastures, IAnimalRepository animals,
-        IHerdRepository herds, DialogService dialog)
+        IHerdRepository herds, DialogService dialog, NavigationService nav)
     {
         _pastures = pastures;
         _animals  = animals;
         _herds    = herds;
         _dialog   = dialog;
+        _nav      = nav;
+    }
+
+    [RelayCommand]
+    private void ViewAnimal(AnimalDto animal)
+    {
+        var vm = App.Services.GetRequiredService<AnimalProfileViewModel>();
+        vm.AnimalId = animal.AnimalId;
+        _nav.NavigateTo(new AnimalProfilePage(vm));
     }
 
     public async Task LoadAsync()
