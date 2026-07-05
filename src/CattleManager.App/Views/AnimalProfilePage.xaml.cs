@@ -1,7 +1,9 @@
 using CattleManager.App.ViewModels;
 using CattleManager.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CattleManager.App.Views;
 
@@ -17,9 +19,18 @@ public partial class AnimalProfilePage : Page
         Loaded += async (_, _) => await _vm.LoadAsync();
     }
 
-    private void Offspring_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    private void Offspring_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is DataGrid grid && grid.SelectedItem is AnimalDto animal)
             _vm.ViewOffspringCommand.Execute(animal);
+    }
+
+    private void PhotoCard_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not FrameworkElement el || el.Tag is not AnimalPhotoDto photo) return;
+        var lightbox = new PhotoLightboxWindow(_vm.AnimalPhotos.ToList(), photo);
+        lightbox.Owner = Window.GetWindow(this);
+        lightbox.ShowDialog();
+        e.Handled = true;
     }
 }

@@ -94,6 +94,7 @@ public class AnimalPhoto
     public string? Caption { get; set; }
     public int SortOrder { get; set; }
     public bool IsSampleData { get; set; }
+    public DateTime AddedDate { get; set; }
 
     public Animal Animal { get; set; } = null!;
 }

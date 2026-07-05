@@ -142,8 +142,10 @@ public partial class AnimalProfileViewModel : ObservableObject
         if (path is null) return;
         var dto = new AnimalPhotoDto
         {
-            AnimalId = AnimalId, FilePath = path,
-            SortOrder = AnimalPhotos.Count
+            AnimalId  = AnimalId,
+            FilePath  = path,
+            SortOrder = AnimalPhotos.Count,
+            AddedDate = DateTime.Now,
         };
         await _photos.AddAsync(dto);
         var updated = await _photos.GetByAnimalAsync(AnimalId);

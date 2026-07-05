@@ -429,6 +429,10 @@ public partial class App : Application
                 ["TaxRate"]   = "REAL NOT NULL DEFAULT 0.0",
                 ["TaxAmount"] = "REAL NOT NULL DEFAULT 0.0",
             });
+            await EnsureTableColumnsAsync(conn, "AnimalPhotos", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["AddedDate"] = "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'",
+            });
             await MigrateRemovedStatusValuesAsync(conn);
         }
         finally

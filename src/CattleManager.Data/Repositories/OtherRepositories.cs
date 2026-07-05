@@ -337,7 +337,7 @@ public class AnimalPhotoRepository : IAnimalPhotoRepository
     {
         var list = await _db.AnimalPhotos
             .Where(p => p.AnimalId == animalId)
-            .OrderBy(p => p.SortOrder)
+            .OrderBy(p => p.AddedDate)
             .ToListAsync();
         return list.Select(Map).ToList();
     }
@@ -348,7 +348,8 @@ public class AnimalPhotoRepository : IAnimalPhotoRepository
         {
             AnimalId = dto.AnimalId, FilePath = dto.FilePath,
             Caption = dto.Caption, SortOrder = dto.SortOrder,
-            IsSampleData = dto.IsSampleData
+            IsSampleData = dto.IsSampleData,
+            AddedDate = dto.AddedDate != default ? dto.AddedDate : DateTime.Now,
         };
         _db.AnimalPhotos.Add(e);
         await _db.SaveChangesAsync();
@@ -373,7 +374,8 @@ public class AnimalPhotoRepository : IAnimalPhotoRepository
     {
         AnimalPhotoId = e.AnimalPhotoId, AnimalId = e.AnimalId,
         FilePath = e.FilePath, Caption = e.Caption,
-        SortOrder = e.SortOrder, IsSampleData = e.IsSampleData
+        SortOrder = e.SortOrder, IsSampleData = e.IsSampleData,
+        AddedDate = e.AddedDate,
     };
 }
 

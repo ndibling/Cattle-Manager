@@ -8,4 +8,5 @@ public class AnimalPhotoDto
     public string? Caption { get; set; }
     public int SortOrder { get; set; }
     public bool IsSampleData { get; set; }
+    public DateTime AddedDate { get; set; }
 }

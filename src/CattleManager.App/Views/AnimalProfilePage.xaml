@@ -410,18 +410,23 @@
                                 <Button Content="+ Add Photo" Command="{Binding AddPhotoCommand}"
                                         HorizontalAlignment="Right" Padding="12,4" FontSize="12"/>
                             </Grid>
-                            <WrapPanel>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                          VerticalScrollBarVisibility="Disabled"
+                                          Height="148">
                                 <ItemsControl ItemsSource="{Binding AnimalPhotos}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <WrapPanel/>
+                                            <StackPanel Orientation="Horizontal"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid Margin="4">
                                                 <Border Width="120" Height="120" CornerRadius="6" ClipToBounds="True"
-                                                        BorderThickness="1" BorderBrush="#CCCCCC">
+                                                        BorderThickness="1" BorderBrush="#CCCCCC"
+                                                        Cursor="Hand"
+                                                        Tag="{Binding}"
+                                                        MouseDoubleClick="PhotoCard_MouseDoubleClick">
                                                     <Image Source="{Binding FilePath, Converter={StaticResource PathToImage}}"
                                                            Stretch="UniformToFill"/>
                                                 </Border>
@@ -437,7 +442,7 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                            </WrapPanel>
+                            </ScrollViewer>
                         </StackPanel>
                     </Border>
 
