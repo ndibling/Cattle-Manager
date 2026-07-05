@@ -185,17 +185,28 @@ public class PhotoPositionControl : FrameworkElement
         catch { }
     }
 
-    // Computes the UniformToFill scale and sets the Image's explicit Width/Height.
+    // Computes the scale and sets the Image's explicit Width/Height.
     // Must run after both the bitmap and the frame size are known.
     private void UpdateScaling()
     {
         if (_bitmap is null || ActualWidth <= 0 || ActualHeight <= 0) return;
 
-        double scale = Math.Max(ActualWidth / _bitmap.PixelWidth, ActualHeight / _bitmap.PixelHeight);
+        double frameW = ActualWidth;
+        double frameH = ActualHeight;
+
+        // UniformToFill guarantees the frame is covered, but one dimension always
+        // fills exactly — meaning zero overflow and no panning in that direction.
+        // Add a minimum pad so both dimensions always overflow the frame, enabling
+        // panning in both X and Y regardless of photo orientation vs. frame shape.
+        double fillScale = Math.Max(frameW / _bitmap.PixelWidth, frameH / _bitmap.PixelHeight);
+        double pad       = Math.Min(frameW, frameH) * 0.15;
+        double scale     = Math.Max(fillScale,
+                           Math.Max((frameW + pad) / _bitmap.PixelWidth,
+                                    (frameH + pad) / _bitmap.PixelHeight));
+
         _scaledW = _bitmap.PixelWidth  * scale;
         _scaledH = _bitmap.PixelHeight * scale;
 
-        // Stretch.Fill + explicit Width/Height = image renders at exactly these dimensions.
         _image.Width  = _scaledW;
         _image.Height = _scaledH;
 
