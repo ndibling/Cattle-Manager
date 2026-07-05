@@ -426,7 +426,7 @@
                                                         BorderThickness="1" BorderBrush="#CCCCCC"
                                                         Cursor="Hand"
                                                         Tag="{Binding}"
-                                                        MouseDoubleClick="PhotoCard_MouseDoubleClick">
+                                                        MouseLeftButtonDown="PhotoCard_MouseLeftButtonDown">
                                                     <Image Source="{Binding FilePath, Converter={StaticResource PathToImage}}"
                                                            Stretch="UniformToFill"/>
                                                 </Border>

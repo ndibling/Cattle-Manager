@@ -25,8 +25,9 @@ public partial class AnimalProfilePage : Page
             _vm.ViewOffspringCommand.Execute(animal);
     }
 
-    private void PhotoCard_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void PhotoCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (e.ClickCount < 2) return;
         if (sender is not FrameworkElement el || el.Tag is not AnimalPhotoDto photo) return;
         var lightbox = new PhotoLightboxWindow(_vm.AnimalPhotos.ToList(), photo);
         lightbox.Owner = Window.GetWindow(this);

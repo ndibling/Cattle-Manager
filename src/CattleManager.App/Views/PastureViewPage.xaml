@@ -204,7 +204,7 @@
                                                                                 BorderThickness="1" Cursor="SizeAll"
                                                                                 ToolTip="{Binding BarnName}"
                                                                                 MouseMove="AnimalCard_MouseMove"
-                                                                                MouseDoubleClick="AnimalCard_MouseDoubleClick"
+                                                                                MouseLeftButtonDown="AnimalCard_MouseLeftButtonDown"
                                                                                 Tag="{Binding}">
                                                                             <Border.Style>
                                                                                 <Style TargetType="Border">

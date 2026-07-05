@@ -25,8 +25,9 @@ public partial class PastureViewPage : Page
         DragDrop.DoDragDrop(el, animal, DragDropEffects.Move);
     }
 
-    private void AnimalCard_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void AnimalCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (e.ClickCount < 2) return;
         if (sender is not FrameworkElement el || el.Tag is not AnimalDto animal) return;
         _vm.ViewAnimalCommand.Execute(animal);
         e.Handled = true;
