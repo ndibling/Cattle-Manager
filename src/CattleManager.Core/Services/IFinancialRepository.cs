@@ -18,6 +18,7 @@ public interface IAssetRepository
     Task<IReadOnlyList<AssetDto>> GetAllAsync();
     Task<IReadOnlyList<AssetDto>> GetActiveAsync();
     Task<IReadOnlyList<AssetDto>> GetByAnimalAsync(int animalId);
+    Task<AssetDto?> GetByTransactionIdAsync(int transactionId);
     Task<AssetDto> AddAsync(AssetDto dto);
     Task<AssetDto> UpdateAsync(AssetDto dto);
     Task DeleteAsync(int id);

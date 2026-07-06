@@ -153,6 +153,12 @@ public class AssetRepository : IAssetRepository
         return list.Select(Map).ToList();
     }
 
+    public async Task<AssetDto?> GetByTransactionIdAsync(int transactionId)
+    {
+        var e = await _db.Assets.FirstOrDefaultAsync(a => a.LinkedTransactionId == transactionId);
+        return e is null ? null : Map(e);
+    }
+
     public async Task<AssetDto> AddAsync(AssetDto dto)
     {
         var e = new Asset
@@ -166,6 +172,7 @@ public class AssetRepository : IAssetRepository
             UsefulLifeYears = dto.UsefulLifeYears,
             SalvageValue = dto.SalvageValue,
             LinkedAnimalId = dto.LinkedAnimalId,
+            LinkedTransactionId = dto.LinkedTransactionId,
             DisposedDate = dto.DisposedDate,
             DisposalPrice = dto.DisposalPrice,
             Notes = dto.Notes,
@@ -191,6 +198,7 @@ public class AssetRepository : IAssetRepository
         e.UsefulLifeYears = dto.UsefulLifeYears;
         e.SalvageValue = dto.SalvageValue;
         e.LinkedAnimalId = dto.LinkedAnimalId;
+        e.LinkedTransactionId = dto.LinkedTransactionId;
         e.DisposedDate = dto.DisposedDate;
         e.DisposalPrice = dto.DisposalPrice;
         e.Notes = dto.Notes;
@@ -224,6 +232,7 @@ public class AssetRepository : IAssetRepository
         SalvageValue = e.SalvageValue,
         LinkedAnimalId = e.LinkedAnimalId,
         LinkedAnimalName = e.LinkedAnimal?.BarnName,
+        LinkedTransactionId = e.LinkedTransactionId,
         DisposedDate = e.DisposedDate,
         DisposalPrice = e.DisposalPrice,
         Notes = e.Notes,

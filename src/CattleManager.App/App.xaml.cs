@@ -449,6 +449,10 @@ public partial class App : Application
             {
                 ["PaymentDayOfMonth"] = "INTEGER NOT NULL DEFAULT 1",
             });
+            await EnsureTableColumnsAsync(conn, "Assets", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["LinkedTransactionId"] = "INTEGER NULL",
+            });
             await MigrateRemovedStatusValuesAsync(conn);
         }
         finally

@@ -36,6 +36,7 @@ public class Asset
     public int UsefulLifeYears { get; set; }
     public decimal SalvageValue { get; set; }
     public int? LinkedAnimalId { get; set; }
+    public int? LinkedTransactionId { get; set; }
     public DateTime? DisposedDate { get; set; }
     public decimal? DisposalPrice { get; set; }
     public string? Notes { get; set; }

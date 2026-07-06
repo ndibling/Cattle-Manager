@@ -15,13 +15,15 @@ public record CategoryOption(string Key, string Display);
 public partial class TransactionFormViewModel : ObservableObject
 {
     private readonly ITransactionRepository _transactions;
-    private readonly IAnimalRepository _animals;
-    private readonly NavigationService _nav;
-    private readonly DialogService _dialog;
-    private readonly ExportService _export;
-    private readonly IFarmRepository _farms;
+    private readonly IAssetRepository       _assets;
+    private readonly IAnimalRepository      _animals;
+    private readonly NavigationService      _nav;
+    private readonly DialogService          _dialog;
+    private readonly ExportService          _export;
+    private readonly IFarmRepository        _farms;
 
     private int? _pendingLinkedAnimalId;
+    private int? _linkedAssetId; // set when editing a transaction that already has a linked asset
 
     private static readonly System.Collections.Generic.HashSet<string> _imageExtensions =
         new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff" };
@@ -68,6 +70,25 @@ public partial class TransactionFormViewModel : ObservableObject
         new("Other",             "Other"),
     ];
 
+    // Asset category and depreciation options (mirrors AssetFormViewModel)
+    public IReadOnlyList<CategoryOption> AssetCategoryOptions { get; } =
+    [
+        new("Livestock",          "Livestock"),
+        new("MachineryEquipment", "Machinery & Equipment"),
+        new("Land",               "Land"),
+        new("Building",           "Building"),
+        new("Vehicle",            "Vehicle"),
+        new("Other",              "Other"),
+    ];
+
+    public IReadOnlyList<CategoryOption> AssetDepreciationOptions { get; } =
+    [
+        new("StraightLine", "Straight Line"),
+        new("DB150",        "150% Declining Balance"),
+        new("Section179",   "Section 179 (full year 1)"),
+    ];
+
+    // --- Core transaction fields ---
     [ObservableProperty] private int _transactionId;
     [ObservableProperty] private string _transactionTypeStr = "Expense";
     [ObservableProperty] private DateTime _date = DateTime.Today;
@@ -87,11 +108,38 @@ public partial class TransactionFormViewModel : ObservableObject
     [ObservableProperty] private IReadOnlyList<CategoryOption> _categoryOptions = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _animalOptions = [];
 
+    // --- Asset purchase fields ---
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowAssetSection))]
+    private bool _isAssetPurchase;
+
+    [ObservableProperty] private string _assetName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowAssetDepreciationDetails))]
+    private CategoryOption? _selectedAssetCategory;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowAssetDepreciationDetails))]
+    private CategoryOption? _selectedAssetDepreciation;
+
+    [ObservableProperty] private string _assetUsefulLifeText = "7";
+    [ObservableProperty] private string _assetSalvageValueText = "0";
+
+    // ---
+
     public IReadOnlyList<string> TypeOptions { get; } = ["Income", "Expense", "Capital"];
 
     public string FormTitle => IsNew
         ? $"Add {TransactionTypeStr} Transaction"
         : $"Edit {TransactionTypeStr} Transaction";
+
+    public bool IsExpenseType => CurrentType == TransactionType.Expense;
+
+    public bool ShowAssetSection => IsExpenseType && IsAssetPurchase;
+
+    public bool ShowAssetDepreciationDetails =>
+        SelectedAssetDepreciation?.Key is null or "StraightLine" or "DB150";
 
     private TransactionType CurrentType => TransactionTypeStr switch
     {
@@ -101,16 +149,20 @@ public partial class TransactionFormViewModel : ObservableObject
     };
 
     public TransactionFormViewModel(ITransactionRepository transactions,
-        IAnimalRepository animals, NavigationService nav, DialogService dialog,
+        IAssetRepository assets, IAnimalRepository animals,
+        NavigationService nav, DialogService dialog,
         ExportService export, IFarmRepository farms)
     {
         _transactions = transactions;
+        _assets       = assets;
         _animals      = animals;
         _nav          = nav;
         _dialog       = dialog;
         _export       = export;
         _farms        = farms;
         UpdateCategoryOptions();
+        SelectedAssetCategory    = AssetCategoryOptions[0];
+        SelectedAssetDepreciation = AssetDepreciationOptions[0];
     }
 
     public void InitNew(TransactionType type)
@@ -118,7 +170,7 @@ public partial class TransactionFormViewModel : ObservableObject
         IsNew = true;
         TransactionTypeStr = type switch
         {
-            TransactionType.Income       => "Income",
+            TransactionType.Income        => "Income",
             TransactionType.CapitalInflux => "Capital",
             _                             => "Expense"
         };
@@ -154,6 +206,24 @@ public partial class TransactionFormViewModel : ObservableObject
         AnimalOptions = new ObservableCollection<AnimalDto>(list.OrderBy(a => a.BarnName));
         if (_pendingLinkedAnimalId.HasValue)
             LinkedAnimal = AnimalOptions.FirstOrDefault(a => a.AnimalId == _pendingLinkedAnimalId.Value);
+
+        // For edit: load linked asset if one exists for this transaction
+        if (!IsNew && TransactionId > 0)
+        {
+            var linked = await _assets.GetByTransactionIdAsync(TransactionId);
+            if (linked is not null)
+            {
+                _linkedAssetId         = linked.AssetId;
+                IsAssetPurchase        = true;
+                AssetName              = linked.AssetName;
+                SelectedAssetCategory  = AssetCategoryOptions.FirstOrDefault(
+                    c => c.Key == linked.Category.ToString()) ?? AssetCategoryOptions[0];
+                SelectedAssetDepreciation = AssetDepreciationOptions.FirstOrDefault(
+                    d => d.Key == linked.DepreciationMethod.ToString()) ?? AssetDepreciationOptions[0];
+                AssetUsefulLifeText    = linked.UsefulLifeYears.ToString();
+                AssetSalvageValueText  = linked.SalvageValue.ToString("F2");
+            }
+        }
     }
 
     partial void OnTransactionTypeStrChanged(string value)
@@ -161,6 +231,30 @@ public partial class TransactionFormViewModel : ObservableObject
         UpdateCategoryOptions();
         SelectedCategory = CategoryOptions.Count > 0 ? CategoryOptions[0] : null;
         OnPropertyChanged(nameof(FormTitle));
+        OnPropertyChanged(nameof(IsExpenseType));
+        OnPropertyChanged(nameof(ShowAssetSection));
+        // Clear asset purchase flag when switching away from Expense
+        if (CurrentType != TransactionType.Expense)
+            IsAssetPurchase = false;
+    }
+
+    partial void OnIsAssetPurchaseChanged(bool value)
+    {
+        // Pre-fill asset name from description when first checking the box
+        if (value && string.IsNullOrWhiteSpace(AssetName) && !string.IsNullOrWhiteSpace(Description))
+            AssetName = Description;
+        // Pre-select asset category based on expense category
+        if (value && SelectedCategory is not null)
+            SelectedAssetCategory = SuggestAssetCategory(SelectedCategory.Key);
+    }
+
+    partial void OnSelectedAssetDepreciationChanged(CategoryOption? value)
+    {
+        if (value?.Key == "Section179")
+        {
+            AssetUsefulLifeText  = "1";
+            AssetSalvageValueText = "0";
+        }
     }
 
     partial void OnAmountTextChanged(string value)  => RecalcTax();
@@ -170,7 +264,7 @@ public partial class TransactionFormViewModel : ObservableObject
     {
         CategoryOptions = CurrentType switch
         {
-            TransactionType.Income       => IncomeCategories,
+            TransactionType.Income        => IncomeCategories,
             TransactionType.CapitalInflux => CapitalCategories,
             _                             => ExpenseCategories
         };
@@ -183,6 +277,17 @@ public partial class TransactionFormViewModel : ObservableObject
         TaxAmount   = Math.Round(amount * ratePercent / 100, 2);
         NetProceeds = amount - TaxAmount;
     }
+
+    private CategoryOption SuggestAssetCategory(string expenseCategoryKey) =>
+        expenseCategoryKey switch
+        {
+            "LivestockPurchase" =>
+                AssetCategoryOptions.First(c => c.Key == "Livestock"),
+            "FuelOil" or "RepairsMaintenance" or "SuppliesMiscellaneous" =>
+                AssetCategoryOptions.First(c => c.Key == "MachineryEquipment"),
+            _ =>
+                AssetCategoryOptions.First(c => c.Key == "MachineryEquipment"),
+        };
 
     [RelayCommand]
     private void BrowseAttachment()
@@ -211,12 +316,45 @@ public partial class TransactionFormViewModel : ObservableObject
             saved = await _transactions.UpdateAsync(dto);
 
         await UpdateLinkedAnimalAsync(saved);
+        await SyncLinkedAssetAsync(saved);
         if (IsNew) await TryGenerateBillOfSaleAsync(saved);
         _nav.GoBack();
     }
 
     [RelayCommand]
     private void Cancel() => _nav.GoBack();
+
+    private async Task SyncLinkedAssetAsync(TransactionDto tx)
+    {
+        if (!IsAssetPurchase || tx.TransactionType != TransactionType.Expense) return;
+
+        decimal.TryParse(AmountText,             out var amount);
+        decimal.TryParse(AssetSalvageValueText,  out var salvage);
+        int.TryParse(AssetUsefulLifeText,        out var life);
+
+        var assetDto = new AssetDto
+        {
+            AssetId             = _linkedAssetId ?? 0,
+            AssetName           = string.IsNullOrWhiteSpace(AssetName) ? tx.Description : AssetName.Trim(),
+            Category            = Enum.Parse<AssetCategory>(SelectedAssetCategory!.Key),
+            PurchaseDate        = tx.Date,
+            PurchasePrice       = amount,
+            DepreciationMethod  = Enum.Parse<DepreciationMethod>(SelectedAssetDepreciation!.Key),
+            UsefulLifeYears     = life > 0 ? life : 7,
+            SalvageValue        = salvage,
+            LinkedAnimalId      = tx.LinkedAnimalId,
+            LinkedTransactionId = tx.TransactionId,
+            Notes               = tx.Notes,
+        };
+
+        if (_linkedAssetId.HasValue)
+            await _assets.UpdateAsync(assetDto);
+        else
+        {
+            var added = await _assets.AddAsync(assetDto);
+            _linkedAssetId = added.AssetId;
+        }
+    }
 
     private async Task TryGenerateBillOfSaleAsync(TransactionDto saved)
     {
@@ -259,6 +397,13 @@ public partial class TransactionFormViewModel : ObservableObject
             return "Description is required.";
         if (SelectedCategory is null)
             return "Category is required.";
+        if (IsAssetPurchase && IsExpenseType)
+        {
+            if (SelectedAssetCategory is null)
+                return "Asset category is required.";
+            if (SelectedAssetDepreciation is null)
+                return "Depreciation method is required.";
+        }
         return null;
     }
 
@@ -268,19 +413,19 @@ public partial class TransactionFormViewModel : ObservableObject
         decimal.TryParse(TaxRateText, out var ratePercent);
         return new TransactionDto
         {
-            TransactionId  = TransactionId,
+            TransactionId   = TransactionId,
             TransactionType = CurrentType,
-            Category       = SelectedCategory!.Key,
-            Date           = Date,
-            Amount         = amount,
-            Description    = Description.Trim(),
-            PayeePayer     = string.IsNullOrWhiteSpace(PayeePayer)     ? null : PayeePayer.Trim(),
-            PaymentMethod  = string.IsNullOrWhiteSpace(PaymentMethod)  ? null : PaymentMethod.Trim(),
-            Notes          = string.IsNullOrWhiteSpace(Notes)          ? null : Notes.Trim(),
-            AttachmentPath = AttachmentPath,
-            LinkedAnimalId = LinkedAnimal?.AnimalId,
-            TaxRate        = ratePercent / 100,
-            TaxAmount      = TaxAmount,
+            Category        = SelectedCategory!.Key,
+            Date            = Date,
+            Amount          = amount,
+            Description     = Description.Trim(),
+            PayeePayer      = string.IsNullOrWhiteSpace(PayeePayer)    ? null : PayeePayer.Trim(),
+            PaymentMethod   = string.IsNullOrWhiteSpace(PaymentMethod) ? null : PaymentMethod.Trim(),
+            Notes           = string.IsNullOrWhiteSpace(Notes)         ? null : Notes.Trim(),
+            AttachmentPath  = AttachmentPath,
+            LinkedAnimalId  = LinkedAnimal?.AnimalId,
+            TaxRate         = ratePercent / 100,
+            TaxAmount       = TaxAmount,
         };
     }
 

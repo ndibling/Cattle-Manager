@@ -8,6 +8,7 @@
     <Page.Resources>
         <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
         <conv:PathToImageConverter x:Key="PathToImage"/>
     </Page.Resources>
 
@@ -151,6 +152,74 @@
                                       SelectedItem="{Binding LinkedAnimal}"
                                       DisplayMemberPath="BarnName"
                                       FontSize="14"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION: Asset Purchase -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0"
+                        Visibility="{Binding IsExpenseType, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="Asset Purchase" Style="{StaticResource SectionHeaderStyle}"/>
+                        <CheckBox Content="This expense is an asset purchase — add it to the asset list"
+                                  IsChecked="{Binding IsAssetPurchase}"
+                                  FontSize="13" Margin="0,0,0,4"/>
+                        <TextBlock FontSize="12" Margin="0,0,0,0"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   Visibility="{Binding IsAssetPurchase, Converter={StaticResource InverseBoolToVisibility}}"
+                                   Text="Check this box if the purchase is a long-term asset (equipment, vehicle, land, building, livestock). It will be added to your asset list and tracked for depreciation."/>
+
+                        <!-- Asset detail fields — shown only when checkbox is checked -->
+                        <StackPanel Visibility="{Binding ShowAssetSection, Converter={StaticResource BoolToVisibility}}"
+                                    Margin="0,10,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Asset Name *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding AssetName, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="14" Padding="8,6"
+                                             ui:ControlHelper.PlaceholderText="e.g. John Deere 5075E Tractor"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Asset Category *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <ComboBox ItemsSource="{Binding AssetCategoryOptions}"
+                                              SelectedItem="{Binding SelectedAssetCategory}"
+                                              DisplayMemberPath="Display" FontSize="14"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                    <TextBlock Text="Depreciation Method *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <ComboBox ItemsSource="{Binding AssetDepreciationOptions}"
+                                              SelectedItem="{Binding SelectedAssetDepreciation}"
+                                              DisplayMemberPath="Display" FontSize="14"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="0,0,12,0"
+                                            Visibility="{Binding ShowAssetDepreciationDetails, Converter={StaticResource BoolToVisibility}}">
+                                    <TextBlock Text="Useful Life (years)" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding AssetUsefulLifeText, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="14" Padding="8,6"
+                                             ui:ControlHelper.PlaceholderText="7"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2"
+                                            Visibility="{Binding ShowAssetDepreciationDetails, Converter={StaticResource BoolToVisibility}}">
+                                    <TextBlock Text="Salvage Value ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox Text="{Binding AssetSalvageValueText, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="14" Padding="8,6"
+                                             ui:ControlHelper.PlaceholderText="0.00"/>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                     </StackPanel>
                 </Border>
