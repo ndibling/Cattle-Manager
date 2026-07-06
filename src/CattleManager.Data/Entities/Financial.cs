@@ -56,6 +56,7 @@ public class Loan
     public DateTime? MaturityDate { get; set; }
     public PaymentFrequency PaymentFrequency { get; set; }
     public decimal PaymentAmount { get; set; }
+    public int PaymentDayOfMonth { get; set; } = 1;
     public bool IsActive { get; set; } = true;
     public string? Notes { get; set; }
     public bool IsSampleData { get; set; }

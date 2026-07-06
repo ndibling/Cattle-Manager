@@ -445,6 +445,10 @@ public partial class App : Application
             {
                 ["AddedDate"] = "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'",
             });
+            await EnsureTableColumnsAsync(conn, "Loans", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["PaymentDayOfMonth"] = "INTEGER NOT NULL DEFAULT 1",
+            });
             await MigrateRemovedStatusValuesAsync(conn);
         }
         finally

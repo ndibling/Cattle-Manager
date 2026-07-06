@@ -47,6 +47,7 @@ public partial class LoanFormViewModel : ObservableObject
     [ObservableProperty] private DateTime?       _maturityDate;
     [ObservableProperty] private CategoryOption? _selectedFrequency;
     [ObservableProperty] private string          _paymentAmountText      = string.Empty;
+    [ObservableProperty] private string          _paymentDayOfMonthText  = "1";
     [ObservableProperty] private bool            _isActive               = true;
     [ObservableProperty] private string          _notes                  = string.Empty;
     [ObservableProperty] private string          _errorText              = string.Empty;
@@ -81,6 +82,7 @@ public partial class LoanFormViewModel : ObservableObject
         StartDate             = dto.StartDate;
         MaturityDate          = dto.MaturityDate;
         PaymentAmountText     = dto.PaymentAmount.ToString("F2");
+        PaymentDayOfMonthText = dto.PaymentDayOfMonth.ToString();
         IsActive              = dto.IsActive;
         Notes                 = dto.Notes ?? string.Empty;
         SelectedLoanType      = _loanTypeOptions.FirstOrDefault(o => o.Key == dto.LoanType.ToString())
@@ -107,6 +109,8 @@ public partial class LoanFormViewModel : ObservableObject
             { ErrorText = "Select a payment frequency."; return; }
         if (!decimal.TryParse(PaymentAmountText, out var payment) || payment <= 0)
             { ErrorText = "Enter a valid payment amount greater than zero."; return; }
+        if (!int.TryParse(PaymentDayOfMonthText, out var payDay) || payDay < 1 || payDay > 31)
+            { ErrorText = "Payment day of month must be between 1 and 31."; return; }
 
         IsSaving = true;
         try
@@ -122,6 +126,7 @@ public partial class LoanFormViewModel : ObservableObject
                 MaturityDate      = MaturityDate,
                 PaymentFrequency  = Enum.Parse<PaymentFrequency>(SelectedFrequency.Key),
                 PaymentAmount     = payment,
+                PaymentDayOfMonth = payDay,
                 IsActive          = IsActive,
                 Notes             = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
             };

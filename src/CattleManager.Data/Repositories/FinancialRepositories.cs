@@ -278,6 +278,7 @@ public class LoanRepository : ILoanRepository
             MaturityDate = dto.MaturityDate,
             PaymentFrequency = dto.PaymentFrequency,
             PaymentAmount = dto.PaymentAmount,
+            PaymentDayOfMonth = dto.PaymentDayOfMonth,
             IsActive = dto.IsActive,
             Notes = dto.Notes,
             IsSampleData = dto.IsSampleData,
@@ -301,6 +302,7 @@ public class LoanRepository : ILoanRepository
         e.MaturityDate = dto.MaturityDate;
         e.PaymentFrequency = dto.PaymentFrequency;
         e.PaymentAmount = dto.PaymentAmount;
+        e.PaymentDayOfMonth = dto.PaymentDayOfMonth;
         e.IsActive = dto.IsActive;
         e.Notes = dto.Notes;
         await _db.SaveChangesAsync();
@@ -358,6 +360,7 @@ public class LoanRepository : ILoanRepository
         MaturityDate = e.MaturityDate,
         PaymentFrequency = e.PaymentFrequency,
         PaymentAmount = e.PaymentAmount,
+        PaymentDayOfMonth = e.PaymentDayOfMonth,
         IsActive = e.IsActive,
         Notes = e.Notes,
         IsSampleData = e.IsSampleData,

@@ -92,6 +92,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Margin="0,0,12,0">
@@ -106,7 +107,13 @@
                                          FontSize="14" Padding="8,6"
                                          ui:ControlHelper.PlaceholderText="0.00"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="2">
+                            <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                                <TextBlock Text="Payment Day of Month *" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding PaymentDayOfMonthText, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6"
+                                         ui:ControlHelper.PlaceholderText="1–31"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="3">
                                 <TextBlock Text="Maturity Date" Style="{StaticResource FieldLabelStyle}"/>
                                 <DatePicker SelectedDate="{Binding MaturityDate}" FontSize="14"/>
                             </StackPanel>
