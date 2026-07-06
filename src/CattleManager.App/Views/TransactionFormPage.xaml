@@ -224,8 +224,9 @@
                     </StackPanel>
                 </Border>
 
-                <!-- SECTION: Tax Details -->
-                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,16">
+                <!-- SECTION: Tax Details — income only -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,16"
+                        Visibility="{Binding IsIncomeType, Converter={StaticResource BoolToVisibility}}">
                     <StackPanel>
                         <TextBlock Text="Tax Details" Style="{StaticResource SectionHeaderStyle}"/>
                         <Grid>

@@ -136,6 +136,7 @@ public partial class TransactionFormViewModel : ObservableObject
         : $"Edit {TransactionTypeStr} Transaction";
 
     public bool IsExpenseType => CurrentType == TransactionType.Expense;
+    public bool IsIncomeType  => CurrentType == TransactionType.Income;
 
     public bool ShowAssetSection => IsExpenseType && IsAssetPurchase;
 
@@ -233,6 +234,7 @@ public partial class TransactionFormViewModel : ObservableObject
         SelectedCategory = CategoryOptions.Count > 0 ? CategoryOptions[0] : null;
         OnPropertyChanged(nameof(FormTitle));
         OnPropertyChanged(nameof(IsExpenseType));
+        OnPropertyChanged(nameof(IsIncomeType));
         OnPropertyChanged(nameof(ShowAssetSection));
         // Clear asset purchase flag when switching away from Expense
         if (CurrentType != TransactionType.Expense)
