@@ -38,6 +38,7 @@ public partial class TransactionFormViewModel : ObservableObject
         new("FeedHay",               "Feed & Hay"),
         new("VeterinaryMedical",     "Veterinary & Medical"),
         new("BreedingFees",          "Breeding Fees / AI"),
+        new("FarmEquipment",         "Farm Equipment"),
         new("FuelOil",               "Fuel & Oil"),
         new("RepairsMaintenance",    "Repairs & Maintenance"),
         new("Utilities",             "Utilities"),
@@ -283,8 +284,6 @@ public partial class TransactionFormViewModel : ObservableObject
         {
             "LivestockPurchase" =>
                 AssetCategoryOptions.First(c => c.Key == "Livestock"),
-            "FuelOil" or "RepairsMaintenance" or "SuppliesMiscellaneous" =>
-                AssetCategoryOptions.First(c => c.Key == "MachineryEquipment"),
             _ =>
                 AssetCategoryOptions.First(c => c.Key == "MachineryEquipment"),
         };

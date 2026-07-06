@@ -91,6 +91,7 @@ public partial class BudgetViewModel : ObservableObject
         ("FeedHay",               "Feed & Hay",                 "Expense"),
         ("VeterinaryMedical",     "Veterinary & Medical",       "Expense"),
         ("BreedingFees",          "Breeding Fees / AI",         "Expense"),
+        ("FarmEquipment",         "Farm Equipment",              "Expense"),
         ("FuelOil",               "Fuel & Oil",                 "Expense"),
         ("RepairsMaintenance",    "Repairs & Maintenance",      "Expense"),
         ("Utilities",             "Utilities",                  "Expense"),

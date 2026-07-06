@@ -39,8 +39,10 @@ public partial class AssetFormViewModel : ObservableObject
     // Map asset category → expense category key
     private static string ExpenseCategoryKey(string assetCategoryKey) => assetCategoryKey switch
     {
-        "Livestock" => "LivestockPurchase",
-        _           => "Other",
+        "Livestock"          => "LivestockPurchase",
+        "MachineryEquipment" => "FarmEquipment",
+        "Vehicle"            => "FarmEquipment",
+        _                    => "Other",
     };
 
     [ObservableProperty] private int _assetId;
