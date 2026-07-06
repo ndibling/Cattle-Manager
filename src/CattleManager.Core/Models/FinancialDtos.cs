@@ -59,7 +59,8 @@ public class AssetDto
         _ => Category.ToString()
     };
 
-    public string DepreciationMethodDisplay => DepreciationMethod switch
+    public string DepreciationMethodDisplay => Category == AssetCategory.Livestock ? "N/A" :
+        DepreciationMethod switch
     {
         DepreciationMethod.StraightLine => "Straight Line",
         DepreciationMethod.DB150        => "150% Declining Balance",
