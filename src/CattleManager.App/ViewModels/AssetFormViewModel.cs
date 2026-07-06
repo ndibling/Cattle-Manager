@@ -59,6 +59,7 @@ public partial class AssetFormViewModel : ObservableObject
     public string FormTitle => IsNew ? "Add Asset" : $"Edit Asset — {AssetName}";
 
     public bool IsDepreciable => SelectedCategory?.Key != "Livestock";
+    public bool IsLivestock   => SelectedCategory?.Key == "Livestock";
 
     public bool ShowDepreciationDetails =>
         IsDepreciable && SelectedDepreciation?.Key is null or "StraightLine" or "DB150";
@@ -117,6 +118,7 @@ public partial class AssetFormViewModel : ObservableObject
     partial void OnSelectedCategoryChanged(CategoryOption? value)
     {
         OnPropertyChanged(nameof(IsDepreciable));
+        OnPropertyChanged(nameof(IsLivestock));
         OnPropertyChanged(nameof(ShowDepreciationDetails));
     }
 

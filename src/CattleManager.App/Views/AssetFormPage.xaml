@@ -139,7 +139,8 @@
                 </Border>
 
                 <!-- SECTION: Animal Linkage -->
-                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0"
+                        Visibility="{Binding IsLivestock, Converter={StaticResource BoolToVisibility}}">
                     <StackPanel>
                         <TextBlock Text="Animal Linkage (Optional)" Style="{StaticResource SectionHeaderStyle}"/>
                         <TextBlock FontSize="12" Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
