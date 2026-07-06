@@ -368,6 +368,18 @@ public partial class App : Application
                 ["AnimalTypeId"] = "INTEGER NOT NULL DEFAULT 1"
             });
 
+            // Add HasHooves to AnimalTypes (defaults to 1=true for any custom types added before this column existed)
+            await EnsureTableColumnsAsync(conn, "AnimalTypes", new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["HasHooves"] = "INTEGER NOT NULL DEFAULT 1"
+            });
+            // Set correct HasHooves values for the standard bird/poultry types
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "UPDATE AnimalTypes SET HasHooves = 0 WHERE AnimalTypeId IN (5,6,7)";
+                await cmd.ExecuteNonQueryAsync();
+            }
+
             // Seed non-cattle breeds if not present yet (INSERT OR IGNORE needs a unique constraint;
             // use NOT EXISTS instead to be safe)
             using (var cmd = conn.CreateCommand())

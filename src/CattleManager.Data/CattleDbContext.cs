@@ -202,14 +202,14 @@ public class CattleDbContext : DbContext
     private static void SeedData(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AnimalType>().HasData(
-            new AnimalType { AnimalTypeId = 1, TypeName = "Cattle",  GroupTerm = "Herd",  IsStandardType = true },
-            new AnimalType { AnimalTypeId = 2, TypeName = "Horse",   GroupTerm = "Herd",  IsStandardType = true },
-            new AnimalType { AnimalTypeId = 3, TypeName = "Goat",    GroupTerm = "Herd",  IsStandardType = true },
-            new AnimalType { AnimalTypeId = 4, TypeName = "Sheep",   GroupTerm = "Flock", IsStandardType = true },
-            new AnimalType { AnimalTypeId = 5, TypeName = "Chicken", GroupTerm = "Flock", IsStandardType = true },
-            new AnimalType { AnimalTypeId = 6, TypeName = "Duck",    GroupTerm = "Flock", IsStandardType = true },
-            new AnimalType { AnimalTypeId = 7, TypeName = "Goose",   GroupTerm = "Flock", IsStandardType = true },
-            new AnimalType { AnimalTypeId = 8, TypeName = "Pig",     GroupTerm = "Herd",  IsStandardType = true }
+            new AnimalType { AnimalTypeId = 1, TypeName = "Cattle",  GroupTerm = "Herd",  IsStandardType = true, HasHooves = true  },
+            new AnimalType { AnimalTypeId = 2, TypeName = "Horse",   GroupTerm = "Herd",  IsStandardType = true, HasHooves = true  },
+            new AnimalType { AnimalTypeId = 3, TypeName = "Goat",    GroupTerm = "Herd",  IsStandardType = true, HasHooves = true  },
+            new AnimalType { AnimalTypeId = 4, TypeName = "Sheep",   GroupTerm = "Flock", IsStandardType = true, HasHooves = true  },
+            new AnimalType { AnimalTypeId = 5, TypeName = "Chicken", GroupTerm = "Flock", IsStandardType = true, HasHooves = false },
+            new AnimalType { AnimalTypeId = 6, TypeName = "Duck",    GroupTerm = "Flock", IsStandardType = true, HasHooves = false },
+            new AnimalType { AnimalTypeId = 7, TypeName = "Goose",   GroupTerm = "Flock", IsStandardType = true, HasHooves = false },
+            new AnimalType { AnimalTypeId = 8, TypeName = "Pig",     GroupTerm = "Herd",  IsStandardType = true, HasHooves = true  }
         );
 
         modelBuilder.Entity<Breed>().HasData(

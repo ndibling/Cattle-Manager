@@ -25,10 +25,12 @@ public partial class AnimalProfileViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFemale))]
+    [NotifyPropertyChangedFor(nameof(HasHooves))]
     [NotifyPropertyChangedFor(nameof(ShowSaleDetails))]
     private AnimalDto? _animal;
 
     public bool IsFemale      => Animal?.Gender == Gender.Female;
+    public bool HasHooves     => Animal?.HasHooves ?? true;
     public bool ShowSaleDetails => Animal?.IsForSale == true || Animal?.Status == AnimalStatus.Sold;
 
     [ObservableProperty] private ObservableCollection<HealthRecordDto>       _healthHistory      = [];

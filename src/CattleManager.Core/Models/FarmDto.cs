@@ -14,6 +14,7 @@ public class AnimalTypeDto
     public string TypeName { get; set; } = string.Empty;
     public string GroupTerm { get; set; } = "Herd";
     public bool IsStandardType { get; set; }
+    public bool HasHooves { get; set; } = true;
 }
 
 public class BreedDto
@@ -23,6 +24,7 @@ public class BreedDto
     public bool IsStandardBreed { get; set; }
     public int AnimalTypeId { get; set; }
     public string AnimalTypeName { get; set; } = string.Empty;
+    public bool AnimalTypeHasHooves { get; set; } = true;
 }
 
 public class AppSettingDto

@@ -401,7 +401,8 @@
                                 <TextBlock Text="Last Health Check Date" Style="{StaticResource FieldLabelStyle}"/>
                                 <DatePicker SelectedDate="{Binding LastHealthCheckDate}" FontSize="14"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1">
+                            <StackPanel Grid.Column="1"
+                                        Visibility="{Binding HasHooves, Converter={StaticResource BoolToVisibility}}">
                                 <TextBlock Text="Last Hoof Trimming Date" Style="{StaticResource FieldLabelStyle}"/>
                                 <DatePicker SelectedDate="{Binding LastHoofTrimmingDate}" FontSize="14"/>
                             </StackPanel>

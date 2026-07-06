@@ -30,8 +30,12 @@ public partial class AnimalFormViewModel : ObservableObject
     [ObservableProperty] private string? _registeredName;
     [ObservableProperty] private string? _registrationNumber;
     [ObservableProperty] private string? _registrationOrganization;
-    [ObservableProperty] private BreedDto? _selectedBreed;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasHooves))]
+    private BreedDto? _selectedBreed;
     [ObservableProperty] private ObservableCollection<BreedDto> _breeds2 = [];
+
+    public bool HasHooves => SelectedBreed?.AnimalTypeHasHooves ?? true;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFemale))]
     private Gender _gender;

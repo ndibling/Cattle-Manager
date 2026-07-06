@@ -6,6 +6,7 @@ public class AnimalType
     public string TypeName { get; set; } = string.Empty;
     public string GroupTerm { get; set; } = "Herd";
     public bool IsStandardType { get; set; }
+    public bool HasHooves { get; set; } = true;
 
     public ICollection<Herd> Herds { get; set; } = new List<Herd>();
     public ICollection<Breed> Breeds { get; set; } = new List<Breed>();

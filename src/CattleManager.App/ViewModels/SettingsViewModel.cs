@@ -60,6 +60,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isAddingAnimalType;
     [ObservableProperty] private string _newTypeName = string.Empty;
     [ObservableProperty] private string _newTypeGroupTerm = "Herd";
+    [ObservableProperty] private bool _newTypeHasHooves = true;
     [ObservableProperty] private bool _isAddingBreed;
     [ObservableProperty] private string _newBreedName = string.Empty;
     [ObservableProperty] private string? _animalTypeStatusMessage;
@@ -88,6 +89,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         NewTypeName = string.Empty;
         NewTypeGroupTerm = "Herd";
+        NewTypeHasHooves = true;
         IsAddingAnimalType = true;
     }
 
@@ -100,7 +102,8 @@ public partial class SettingsViewModel : ObservableObject
             var added = await _animalTypes.AddAsync(new AnimalTypeDto
             {
                 TypeName = NewTypeName.Trim(),
-                GroupTerm = NewTypeGroupTerm
+                GroupTerm = NewTypeGroupTerm,
+                HasHooves = NewTypeHasHooves
             });
             AnimalTypeList.Add(added);
             SelectedAnimalTypeItem = added;

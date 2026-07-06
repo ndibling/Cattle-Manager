@@ -227,6 +227,9 @@
                                     <ComboBox ItemsSource="{Binding GroupTermOptions}"
                                               SelectedItem="{Binding NewTypeGroupTerm}"
                                               FontSize="13" Margin="0,0,0,6"/>
+                                    <CheckBox Content="Requires hoof trimming"
+                                              IsChecked="{Binding NewTypeHasHooves}"
+                                              FontSize="13" Margin="0,0,0,8"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="Add" Command="{Binding ConfirmAddAnimalTypeCommand}"
                                                 Style="{StaticResource PrimaryButton}" Padding="12,6" Margin="0,0,8,0"/>

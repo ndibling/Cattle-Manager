@@ -18,7 +18,7 @@ public class AnimalTypeRepository : IAnimalTypeRepository
 
     public async Task<AnimalTypeDto> AddAsync(AnimalTypeDto dto)
     {
-        var e = new AnimalType { TypeName = dto.TypeName, GroupTerm = dto.GroupTerm, IsStandardType = false };
+        var e = new AnimalType { TypeName = dto.TypeName, GroupTerm = dto.GroupTerm, IsStandardType = false, HasHooves = dto.HasHooves };
         _db.AnimalTypes.Add(e);
         await _db.SaveChangesAsync();
         dto.AnimalTypeId = e.AnimalTypeId;
@@ -31,6 +31,7 @@ public class AnimalTypeRepository : IAnimalTypeRepository
             ?? throw new ArgumentException($"AnimalType {dto.AnimalTypeId} not found");
         e.TypeName = dto.TypeName;
         e.GroupTerm = dto.GroupTerm;
+        e.HasHooves = dto.HasHooves;
         await _db.SaveChangesAsync();
     }
 
@@ -43,7 +44,7 @@ public class AnimalTypeRepository : IAnimalTypeRepository
     private static AnimalTypeDto Map(AnimalType e) => new()
     {
         AnimalTypeId = e.AnimalTypeId, TypeName = e.TypeName,
-        GroupTerm = e.GroupTerm, IsStandardType = e.IsStandardType
+        GroupTerm = e.GroupTerm, IsStandardType = e.IsStandardType, HasHooves = e.HasHooves
     };
 }
 
@@ -166,7 +167,8 @@ public class BreedRepository : IBreedRepository
     private static BreedDto Map(Breed b) => new()
     {
         BreedId = b.BreedId, BreedName = b.BreedName, IsStandardBreed = b.IsStandardBreed,
-        AnimalTypeId = b.AnimalTypeId, AnimalTypeName = b.AnimalType?.TypeName ?? string.Empty
+        AnimalTypeId = b.AnimalTypeId, AnimalTypeName = b.AnimalType?.TypeName ?? string.Empty,
+        AnimalTypeHasHooves = b.AnimalType?.HasHooves ?? true
     };
 }
 

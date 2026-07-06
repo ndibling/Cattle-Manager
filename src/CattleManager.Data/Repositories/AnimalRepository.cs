@@ -14,7 +14,7 @@ public class AnimalRepository : IAnimalRepository
     public async Task<AnimalDto?> GetByIdAsync(int animalId)
     {
         var entity = await _db.Animals
-            .Include(a => a.Breed)
+            .Include(a => a.Breed).ThenInclude(b => b.AnimalType)
             .Include(a => a.Sire)
             .Include(a => a.Dam)
             .FirstOrDefaultAsync(a => a.AnimalId == animalId);
@@ -24,7 +24,7 @@ public class AnimalRepository : IAnimalRepository
     public async Task<IReadOnlyList<AnimalDto>> GetByHerdAsync(int herdId)
     {
         var entities = await _db.Animals
-            .Include(a => a.Breed)
+            .Include(a => a.Breed).ThenInclude(b => b.AnimalType)
             .Include(a => a.Sire)
             .Include(a => a.Dam)
             .Where(a => a.HerdId == herdId && !a.IsExternalAncestor)
@@ -36,7 +36,7 @@ public class AnimalRepository : IAnimalRepository
     public async Task<IReadOnlyList<AnimalDto>> GetAllAsync()
     {
         var entities = await _db.Animals
-            .Include(a => a.Breed)
+            .Include(a => a.Breed).ThenInclude(b => b.AnimalType)
             .Where(a => !a.IsExternalAncestor)
             .OrderBy(a => a.BarnName)
             .ToListAsync();
@@ -76,7 +76,7 @@ public class AnimalRepository : IAnimalRepository
     public async Task<IReadOnlyList<AnimalDto>> GetOffspringAsync(int parentId)
     {
         var entities = await _db.Animals
-            .Include(a => a.Breed)
+            .Include(a => a.Breed).ThenInclude(b => b.AnimalType)
             .Where(a => a.SireId == parentId || a.DamId == parentId)
             .OrderBy(a => a.BirthDate)
             .ToListAsync();
@@ -87,7 +87,7 @@ public class AnimalRepository : IAnimalRepository
     {
         var lower = searchTerm.ToLower();
         var entities = await _db.Animals
-            .Include(a => a.Breed)
+            .Include(a => a.Breed).ThenInclude(b => b.AnimalType)
             .Where(a => a.HerdId == herdId && !a.IsExternalAncestor &&
                 (a.BarnName.ToLower().Contains(lower) ||
                  (a.RegisteredName != null && a.RegisteredName.ToLower().Contains(lower))))
@@ -111,6 +111,7 @@ public class AnimalRepository : IAnimalRepository
         BarnName = e.BarnName, RegisteredName = e.RegisteredName,
         RegistrationNumber = e.RegistrationNumber, RegistrationOrganization = e.RegistrationOrganization,
         BreedId = e.BreedId, BreedName = e.Breed?.BreedName ?? string.Empty,
+        HasHooves = e.Breed?.AnimalType?.HasHooves ?? true,
         Gender = e.Gender, Status = e.Status,
         Height = e.Height, HeightUnit = e.HeightUnit,
         Weight = e.Weight, WeightUnit = e.WeightUnit,
