@@ -106,7 +106,7 @@
                 </StackPanel>
                 <!-- Add category -->
                 <Button Grid.Column="2"
-                        Content="+ Add Category"
+                        Content="+ Add Budget Line"
                         Command="{Binding AddCategoryCommand}"
                         Padding="14,8" FontSize="13"
                         VerticalAlignment="Center"/>
