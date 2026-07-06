@@ -100,6 +100,7 @@ public partial class BudgetViewModel : ObservableObject
         ("PropertyTaxes",         "Property Taxes",             "Expense"),
         ("MarketingAuction",      "Marketing / Auction Fees",   "Expense"),
         ("SuppliesMiscellaneous", "Supplies & Miscellaneous",   "Expense"),
+        ("LoanPayments",          "Loan Payments",              "Expense"),
         ("Other",                 "Other",                      "Expense"),
     ];
 

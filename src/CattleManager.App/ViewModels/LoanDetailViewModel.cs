@@ -28,9 +28,10 @@ public sealed class AmortizationRow
 
 public partial class LoanDetailViewModel : ObservableObject
 {
-    private readonly ILoanRepository   _loans;
-    private readonly NavigationService _nav;
-    private readonly DialogService     _dialog;
+    private readonly ILoanRepository        _loans;
+    private readonly ITransactionRepository _transactions;
+    private readonly NavigationService      _nav;
+    private readonly DialogService          _dialog;
 
     private LoanDto _loan = new();
 
@@ -57,11 +58,13 @@ public partial class LoanDetailViewModel : ObservableObject
         decimal.TryParse(NewPrincipalText, out var p) && decimal.TryParse(NewInterestText, out var i)
             ? (p + i).ToString("C") : "—";
 
-    public LoanDetailViewModel(ILoanRepository loans, NavigationService nav, DialogService dialog)
+    public LoanDetailViewModel(ILoanRepository loans, ITransactionRepository transactions,
+        NavigationService nav, DialogService dialog)
     {
-        _loans  = loans;
-        _nav    = nav;
-        _dialog = dialog;
+        _loans        = loans;
+        _transactions = transactions;
+        _nav          = nav;
+        _dialog       = dialog;
     }
 
     public void Init(LoanDto loan)
@@ -206,6 +209,19 @@ public partial class LoanDetailViewModel : ObservableObject
                 Notes            = string.IsNullOrWhiteSpace(NewNotesText) ? null : NewNotesText.Trim()
             };
             await _loans.AddPaymentAsync(dto);
+
+            // Record as an expense transaction so it appears in actuals
+            await _transactions.AddAsync(new TransactionDto
+            {
+                TransactionType = TransactionType.Expense,
+                Category        = "LoanPayments",
+                Date            = NewPaymentDate,
+                Amount          = principal + interest,
+                Description     = $"Loan payment — {_loan.LenderName}",
+                PayeePayer      = _loan.LenderName,
+                Notes           = string.IsNullOrWhiteSpace(NewNotesText) ? null : NewNotesText.Trim(),
+            });
+
             IsRecordingPayment = false;
             await LoadAsync();
         }

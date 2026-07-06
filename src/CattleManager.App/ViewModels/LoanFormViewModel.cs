@@ -9,6 +9,7 @@ namespace CattleManager.App.ViewModels;
 public partial class LoanFormViewModel : ObservableObject
 {
     private readonly ILoanRepository   _loans;
+    private readonly IBudgetRepository _budgets;
     private readonly NavigationService _nav;
     private readonly DialogService     _dialog;
 
@@ -51,11 +52,13 @@ public partial class LoanFormViewModel : ObservableObject
     [ObservableProperty] private string          _errorText              = string.Empty;
     [ObservableProperty] private bool            _isSaving;
 
-    public LoanFormViewModel(ILoanRepository loans, NavigationService nav, DialogService dialog)
+    public LoanFormViewModel(ILoanRepository loans, IBudgetRepository budgets,
+        NavigationService nav, DialogService dialog)
     {
-        _loans  = loans;
-        _nav    = nav;
-        _dialog = dialog;
+        _loans   = loans;
+        _budgets = budgets;
+        _nav     = nav;
+        _dialog  = dialog;
     }
 
     public void InitNew()
@@ -123,13 +126,72 @@ public partial class LoanFormViewModel : ObservableObject
                 Notes             = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim()
             };
 
-            if (_isNew) await _loans.AddAsync(dto);
-            else        await _loans.UpdateAsync(dto);
+            if (_isNew)
+            {
+                await _loans.AddAsync(dto);
+                await AddBudgetEntriesForLoanAsync(dto);
+            }
+            else
+            {
+                await _loans.UpdateAsync(dto);
+            }
 
             _nav.GoBack();
         }
         catch (Exception ex) { ErrorText = $"Save failed: {ex.Message}"; }
         finally { IsSaving = false; }
+    }
+
+    private async Task AddBudgetEntriesForLoanAsync(LoanDto loan)
+    {
+        var maxDate = loan.MaturityDate ?? loan.StartDate.AddYears(5);
+        var paymentDates = ComputePaymentDates(loan, loan.StartDate, maxDate);
+
+        // Group by fiscal year and upsert budget entries, accumulating with any existing amounts
+        var byYear = paymentDates.GroupBy(d => d.Year);
+        foreach (var yearGroup in byYear)
+        {
+            int year = yearGroup.Key;
+            var existing = await _budgets.GetByFiscalYearAsync(year);
+            var loanEntries = existing
+                .Where(e => e.Category == "LoanPayments")
+                .ToDictionary(e => e.Month);
+
+            foreach (var date in yearGroup)
+            {
+                loanEntries.TryGetValue(date.Month, out var prev);
+                await _budgets.UpsertAsync(new BudgetEntryDto
+                {
+                    BudgetEntryId   = prev?.BudgetEntryId ?? 0,
+                    FiscalYear      = year,
+                    Category        = "LoanPayments",
+                    TransactionType = TransactionType.Expense,
+                    Month           = date.Month,
+                    BudgetAmount    = (prev?.BudgetAmount ?? 0m) + loan.PaymentAmount,
+                });
+            }
+        }
+    }
+
+    private static IReadOnlyList<DateTime> ComputePaymentDates(LoanDto loan, DateTime from, DateTime maxDate)
+    {
+        int monthsPerPeriod = loan.PaymentFrequency switch
+        {
+            PaymentFrequency.Quarterly  => 3,
+            PaymentFrequency.SemiAnnual => 6,
+            PaymentFrequency.Annual     => 12,
+            _                           => 1,
+        };
+
+        var dates = new List<DateTime>();
+        var date = loan.StartDate.AddMonths(monthsPerPeriod);
+        while (date <= maxDate)
+        {
+            if (date >= from)
+                dates.Add(date);
+            date = date.AddMonths(monthsPerPeriod);
+        }
+        return dates;
     }
 
     [RelayCommand]
