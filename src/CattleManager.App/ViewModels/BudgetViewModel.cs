@@ -69,7 +69,6 @@ public partial class BudgetViewModel : ObservableObject
     [ObservableProperty] private int _fiscalYear = DateTime.Today.Year;
     [ObservableProperty] private ObservableCollection<BudgetCategoryViewModel> _categories = [];
     [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private BudgetCategoryOption? _selectedCategoryToAdd;
 
     public bool HasNoCategories => Categories.Count == 0;
 
@@ -104,12 +103,7 @@ public partial class BudgetViewModel : ObservableObject
         ("Other",                 "Other",                      "Expense"),
     ];
 
-    private ObservableCollection<BudgetCategoryOption> _availableToAdd = [];
-    public ObservableCollection<BudgetCategoryOption> AvailableToAdd
-    {
-        get => _availableToAdd;
-        private set => SetProperty(ref _availableToAdd, value);
-    }
+    private List<BudgetCategoryOption> _availableToAdd = [];
 
     public BudgetViewModel(IBudgetRepository budgets, ITransactionRepository transactions,
         NavigationService nav, DialogService dialog)
@@ -190,20 +184,31 @@ public partial class BudgetViewModel : ObservableObject
     private void RefreshAvailableToAdd()
     {
         var active = Categories.Select(c => c.Category).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        AvailableToAdd = new ObservableCollection<BudgetCategoryOption>(
-            AllCategories
-                .Where(c => !active.Contains(c.Key))
-                .Select(c => new BudgetCategoryOption(c.Key, c.Display, c.Type)));
-        SelectedCategoryToAdd = null;
+        _availableToAdd = AllCategories
+            .Where(c => !active.Contains(c.Key))
+            .Select(c => new BudgetCategoryOption(c.Key, c.Display, c.Type))
+            .ToList();
     }
 
     [RelayCommand]
     private async Task AddCategoryAsync()
     {
-        if (SelectedCategoryToAdd is null) return;
-        var cat = AllCategories.First(c => c.Key == SelectedCategoryToAdd.Key);
+        if (_availableToAdd.Count == 0)
+        {
+            _dialog.ShowInfo("All available categories have already been added to this budget.", "All Categories Added");
+            return;
+        }
 
-        // Load existing actuals for this year so the new category shows real numbers
+        var window = new AddBudgetCategoryWindow(_availableToAdd)
+        {
+            Owner = System.Windows.Application.Current.MainWindow
+        };
+        window.ShowDialog();
+        if (window.Result is null) return;
+
+        var r = window.Result;
+        var cat = AllCategories.First(c => c.Key == r.CategoryKey);
+
         var from    = new DateTime(FiscalYear, 1, 1);
         var to      = new DateTime(FiscalYear, 12, 31);
         var actuals = await _transactions.GetByDateRangeAsync(from, to);
@@ -212,6 +217,9 @@ public partial class BudgetViewModel : ObservableObject
             .ToDictionary(g => g.Key, g => g.Sum(t => t.Amount));
 
         var catVm = BuildCategoryVm(cat, [], actualByMonth);
+        for (int i = 0; i < 12; i++)
+            catVm.Months[i].BudgetAmount = r.MonthlyAmounts[i];
+
         Categories.Add(catVm);
         RefreshAvailableToAdd();
     }

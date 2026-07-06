@@ -104,23 +104,17 @@
                               Width="120" FontSize="14"/>
                 </StackPanel>
                 <!-- Add category -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Add category:" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"
-                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-                    <ComboBox ItemsSource="{Binding AvailableToAdd}"
-                              SelectedItem="{Binding SelectedCategoryToAdd}"
-                              DisplayMemberPath="FullDisplay"
-                              Width="260" FontSize="13" Margin="0,0,8,0"/>
-                    <Button Content="+ Add"
-                            Command="{Binding AddCategoryCommand}"
-                            Padding="12,8" FontSize="13"/>
-                </StackPanel>
+                <Button Grid.Column="2"
+                        Content="+ Add Category"
+                        Command="{Binding AddCategoryCommand}"
+                        Padding="14,8" FontSize="13"
+                        VerticalAlignment="Center"/>
             </Grid>
         </Border>
 
         <!-- Empty state -->
         <TextBlock DockPanel.Dock="Top"
-                   Text="No categories in this budget yet. Use 'Add category' above to get started."
+                   Text="No categories in this budget yet. Click '+ Add Category' above to get started."
                    FontSize="14" Margin="24,24" TextWrapping="Wrap"
                    Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                    Visibility="{Binding HasNoCategories, Converter={StaticResource BoolToVisibility}}"/>
