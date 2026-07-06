@@ -10,6 +10,14 @@ using System.Globalization;
 
 namespace CattleManager.App.ViewModels;
 
+public record BudgetChartMonth(
+    string Label,           // "Jan", "Feb", …
+    decimal BudgetedIncome,
+    decimal ActualIncome,
+    decimal BudgetedExpense,
+    decimal ActualExpense
+);
+
 public partial class BudgetMonthViewModel : ObservableObject
 {
     public int Month { get; init; }
@@ -72,8 +80,13 @@ public partial class BudgetViewModel : ObservableObject
 
     public bool HasNoCategories => Categories.Count == 0;
 
+    [ObservableProperty] private IReadOnlyList<BudgetChartMonth> _monthlyChartData = [];
+
     partial void OnCategoriesChanged(ObservableCollection<BudgetCategoryViewModel> _)
-        => OnPropertyChanged(nameof(HasNoCategories));
+    {
+        OnPropertyChanged(nameof(HasNoCategories));
+        RefreshChartData();
+    }
 
     public IReadOnlyList<int> FiscalYearOptions { get; } =
         Enumerable.Range(DateTime.Today.Year - 4, 6).Reverse().ToList();
@@ -190,6 +203,34 @@ public partial class BudgetViewModel : ObservableObject
             .Where(c => !active.Contains(c.Key))
             .Select(c => new BudgetCategoryOption(c.Key, c.Display, c.Type))
             .ToList();
+    }
+
+    private void RefreshChartData()
+    {
+        var data = new BudgetChartMonth[12];
+        var fmt  = CultureInfo.CurrentCulture.DateTimeFormat;
+        for (int m = 0; m < 12; m++)
+        {
+            decimal budgIncome = 0, actIncome = 0, budgExpense = 0, actExpense = 0;
+            foreach (var cat in Categories)
+            {
+                var month = cat.Months[m];
+                if (cat.TypeDisplay == "Income")
+                {
+                    budgIncome += month.BudgetAmount;
+                    actIncome  += month.ActualAmount;
+                }
+                else
+                {
+                    budgExpense += month.BudgetAmount;
+                    actExpense  += month.ActualAmount;
+                }
+            }
+            data[m] = new BudgetChartMonth(
+                fmt.GetAbbreviatedMonthName(m + 1),
+                budgIncome, actIncome, budgExpense, actExpense);
+        }
+        MonthlyChartData = data;
     }
 
     [RelayCommand]

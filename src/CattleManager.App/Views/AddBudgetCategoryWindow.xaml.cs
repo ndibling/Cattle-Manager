@@ -116,6 +116,9 @@ public partial class AddBudgetCategoryWindow : Window
         UpdateSaveButton();
     }
 
+    private void RecurringAmount_Changed(object sender, TextChangedEventArgs e)
+        => ApplyToAll_Click(sender, e);
+
     private void ApplyToAll_Click(object sender, RoutedEventArgs e)
     {
         if (!decimal.TryParse(RecurringAmountBox.Text.Trim(), NumberStyles.Number,
