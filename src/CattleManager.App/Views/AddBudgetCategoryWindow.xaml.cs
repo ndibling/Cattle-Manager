@@ -117,7 +117,10 @@ public partial class AddBudgetCategoryWindow : Window
     }
 
     private void RecurringAmount_Changed(object sender, TextChangedEventArgs e)
-        => ApplyToAll_Click(sender, e);
+    {
+        if (_recurringAmounts[0] is null) return; // rows not built yet during InitializeComponent
+        ApplyToAll_Click(sender, e);
+    }
 
     private void ApplyToAll_Click(object sender, RoutedEventArgs e)
     {
