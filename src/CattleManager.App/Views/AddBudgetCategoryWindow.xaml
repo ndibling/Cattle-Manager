@@ -4,8 +4,8 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="Add Budget Category"
-        Width="500" Height="640"
-        MinHeight="400" MaxHeight="800"
+        Width="500" SizeToContent="Height"
+        MinHeight="320" MaxHeight="800"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
 
@@ -52,12 +52,22 @@
                 </StackPanel>
             </StackPanel>
 
-            <!-- Section 4a: One-time month picker -->
+            <!-- Section 4a: One-time date + amount -->
             <StackPanel x:Name="OneTimeSection" Visibility="Collapsed" Margin="0,0,0,24">
-                <TextBlock Text="Select the month(s) and enter budget amounts"
+                <TextBlock Text="When is this purchase planned?"
                            FontSize="13" Margin="0,0,0,12"
                            Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-                <StackPanel x:Name="OneTimeMonthsPanel"/>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="Purchase Date" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <DatePicker x:Name="OneTimeDatePicker" FontSize="13" Width="160"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Amount ($)" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <TextBox x:Name="OneTimeAmountBox"
+                                 Width="130" Padding="6,5" FontSize="13" Text="0.00"/>
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
 
             <!-- Section 4b: Recurring month amounts -->

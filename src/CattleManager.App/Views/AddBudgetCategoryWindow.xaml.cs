@@ -20,9 +20,7 @@ public partial class AddBudgetCategoryWindow : Window
     private string? _selectedCategoryDisplay;
     private bool _isRecurring;
 
-    private readonly CheckBox[] _oneTimeChecks  = new CheckBox[12];
-    private readonly TextBox[]  _oneTimeAmounts = new TextBox[12];
-    private readonly TextBox[]  _recurringAmounts = new TextBox[12];
+    private readonly TextBox[] _recurringAmounts = new TextBox[12];
 
     public BudgetCategoryResult? Result { get; private set; }
 
@@ -30,51 +28,24 @@ public partial class AddBudgetCategoryWindow : Window
     {
         _available = available;
         InitializeComponent();
-        BuildMonthRows();
+        OneTimeDatePicker.SelectedDate = DateTime.Today;
+        BuildRecurringRows();
     }
 
-    private void BuildMonthRows()
+    private void BuildRecurringRows()
     {
         for (int i = 0; i < 12; i++)
         {
             var monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i + 1);
 
-            // One-time row: checkbox (label) + amount TextBox
-            var check = new CheckBox
-            {
-                Content = monthName,
-                FontSize = 13,
-                MinWidth = 130,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
-            var otBox = new TextBox
-            {
-                Width = 120,
-                Padding = new Thickness(6, 4, 6, 4),
-                FontSize = 13,
-                Text = "0.00",
-                IsEnabled = false,
-                HorizontalAlignment = HorizontalAlignment.Left,
-            };
-            check.Checked   += (_, _) => otBox.IsEnabled = true;
-            check.Unchecked += (_, _) => { otBox.IsEnabled = false; otBox.Text = "0.00"; };
-            _oneTimeChecks[i]  = check;
-            _oneTimeAmounts[i] = otBox;
-
-            var otRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 3, 0, 3) };
-            otRow.Children.Add(check);
-            otRow.Children.Add(otBox);
-            OneTimeMonthsPanel.Children.Add(otRow);
-
-            // Recurring row: month label + amount TextBox
-            var recLabel = new TextBlock
+            var label = new TextBlock
             {
                 Text = monthName,
                 FontSize = 13,
                 MinWidth = 130,
                 VerticalAlignment = VerticalAlignment.Center,
             };
-            var recBox = new TextBox
+            var box = new TextBox
             {
                 Width = 120,
                 Padding = new Thickness(6, 4, 6, 4),
@@ -82,12 +53,12 @@ public partial class AddBudgetCategoryWindow : Window
                 Text = "0.00",
                 HorizontalAlignment = HorizontalAlignment.Left,
             };
-            _recurringAmounts[i] = recBox;
+            _recurringAmounts[i] = box;
 
-            var recRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 3, 0, 3) };
-            recRow.Children.Add(recLabel);
-            recRow.Children.Add(recBox);
-            RecurringMonthsPanel.Children.Add(recRow);
+            var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 3, 0, 3) };
+            row.Children.Add(label);
+            row.Children.Add(box);
+            RecurringMonthsPanel.Children.Add(row);
         }
     }
 
@@ -96,16 +67,13 @@ public partial class AddBudgetCategoryWindow : Window
         if (sender is not Button btn || btn.Tag is not string type) return;
         _selectedType = type;
 
-        // Highlight the selected type button using PrimaryButton style
         var primary = (Style)FindResource("PrimaryButton");
         ExpenseBtn.Style = type == "Expense" ? primary : null;
         IncomeBtn.Style  = type == "Income"  ? primary : null;
 
-        // Populate category combo filtered to this type
-        CategoryCombo.ItemsSource = _available.Where(c => c.Type == type).ToList();
+        CategoryCombo.ItemsSource   = _available.Where(c => c.Type == type).ToList();
         CategoryCombo.SelectedIndex = -1;
 
-        // Show category section; hide all downstream sections
         CategorySection.Visibility   = Visibility.Visible;
         RecurrenceSection.Visibility = Visibility.Collapsed;
         OneTimeSection.Visibility    = Visibility.Collapsed;
@@ -148,8 +116,6 @@ public partial class AddBudgetCategoryWindow : Window
         UpdateSaveButton();
     }
 
-    private void RecurringAmount_Changed(object sender, TextChangedEventArgs e) { }
-
     private void ApplyToAll_Click(object sender, RoutedEventArgs e)
     {
         if (!decimal.TryParse(RecurringAmountBox.Text.Trim(), NumberStyles.Number,
@@ -163,18 +129,20 @@ public partial class AddBudgetCategoryWindow : Window
         if (_selectedCategoryKey is null || _selectedCategoryDisplay is null || _selectedType is null) return;
 
         var amounts = new decimal[12];
-        for (int i = 0; i < 12; i++)
+
+        if (_isRecurring)
         {
-            if (_isRecurring)
-            {
+            for (int i = 0; i < 12; i++)
                 decimal.TryParse(_recurringAmounts[i].Text.Trim(), NumberStyles.Number,
                     CultureInfo.CurrentCulture, out amounts[i]);
-            }
-            else if (_oneTimeChecks[i].IsChecked == true)
-            {
-                decimal.TryParse(_oneTimeAmounts[i].Text.Trim(), NumberStyles.Number,
-                    CultureInfo.CurrentCulture, out amounts[i]);
-            }
+        }
+        else
+        {
+            // One-time: place the amount in the month of the selected date
+            var date = OneTimeDatePicker.SelectedDate ?? DateTime.Today;
+            if (decimal.TryParse(OneTimeAmountBox.Text.Trim(), NumberStyles.Number,
+                    CultureInfo.CurrentCulture, out var amt))
+                amounts[date.Month - 1] = amt;
         }
 
         Result = new BudgetCategoryResult(_selectedCategoryKey, _selectedCategoryDisplay, _selectedType, amounts);
