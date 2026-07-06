@@ -167,7 +167,7 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <!-- Depreciation Method -->
-                <DataGridTextColumn Header="Method" Binding="{Binding DepreciationMethodDisplay}" Width="160"/>
+                <DataGridTextColumn Header="Depreciation Method" Binding="{Binding DepreciationMethodDisplay}" Width="180"/>
                 <!-- Annual Depreciation -->
                 <DataGridTextColumn Header="Annual Depr." Binding="{Binding AnnualDepreciationDisplay}" Width="110">
                     <DataGridTextColumn.ElementStyle>
