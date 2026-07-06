@@ -155,6 +155,47 @@
                     </StackPanel>
                 </Border>
 
+                <!-- SECTION: Purchase Expense -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Purchase Expense" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <!-- Already linked — show sync status -->
+                        <StackPanel Visibility="{Binding HasLinkedExpense, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock FontSize="13"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       TextWrapping="Wrap"
+                                       Text="This asset is linked to an expense transaction. The purchase amount and date will be kept synchronized whenever you save."/>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <TextBlock Text="Vendor / Purchased From" Style="{StaticResource FieldLabelStyle}"
+                                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBox Text="{Binding ExpenseVendorName, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6" Width="280"
+                                         ui:ControlHelper.PlaceholderText="Optional vendor name"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Not yet linked — offer to create one -->
+                        <StackPanel Visibility="{Binding HasLinkedExpense, Converter={StaticResource InverseBoolToVisibility}}">
+                            <CheckBox Content="Create an expense transaction for this purchase"
+                                      IsChecked="{Binding CreateExpense}"
+                                      FontSize="13" Margin="0,0,0,4"/>
+                            <TextBlock FontSize="12" Margin="0,0,0,0"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       Visibility="{Binding CreateExpense, Converter={StaticResource InverseBoolToVisibility}}"
+                                       TextWrapping="Wrap"
+                                       Text="Check this box to automatically add the purchase price as an expense in the transaction list, linked to this asset."/>
+                            <StackPanel Visibility="{Binding ShowExpenseFields, Converter={StaticResource BoolToVisibility}}"
+                                        Margin="0,8,0,0">
+                                <TextBlock Text="Vendor / Purchased From" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox Text="{Binding ExpenseVendorName, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="14" Padding="8,6" MaxWidth="360" HorizontalAlignment="Left"
+                                         ui:ControlHelper.PlaceholderText="Optional — vendor or seller name"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- SECTION: Disposal — only shown when editing an active asset -->
                 <Border Style="{StaticResource CardStyle}" Margin="0,8,0,16"
                         Visibility="{Binding CanDispose, Converter={StaticResource BoolToVisibility}}">

@@ -9,12 +9,15 @@ namespace CattleManager.App.ViewModels;
 
 public partial class AssetFormViewModel : ObservableObject
 {
-    private readonly IAssetRepository _assets;
-    private readonly IAnimalRepository _animals;
-    private readonly NavigationService _nav;
-    private readonly DialogService _dialog;
+    private readonly IAssetRepository       _assets;
+    private readonly ITransactionRepository _transactions;
+    private readonly IAnimalRepository      _animals;
+    private readonly NavigationService      _nav;
+    private readonly DialogService          _dialog;
 
-    private int? _pendingLinkedAnimalId;
+    private int?           _pendingLinkedAnimalId;
+    private int?           _linkedTransactionId;    // set from dto on edit, or after creating a new tx
+    private TransactionDto? _linkedTransaction;     // full tx loaded on edit, for in-place update
 
     private static readonly IReadOnlyList<CategoryOption> AssetCategoryOptions =
     [
@@ -32,6 +35,13 @@ public partial class AssetFormViewModel : ObservableObject
         new("DB150",        "150% Declining Balance"),
         new("Section179",   "Section 179 (full year 1)"),
     ];
+
+    // Map asset category → expense category key
+    private static string ExpenseCategoryKey(string assetCategoryKey) => assetCategoryKey switch
+    {
+        "Livestock" => "LivestockPurchase",
+        _           => "Other",
+    };
 
     [ObservableProperty] private int _assetId;
     [ObservableProperty] private string _assetName = string.Empty;
@@ -53,7 +63,22 @@ public partial class AssetFormViewModel : ObservableObject
     [ObservableProperty] private string? _validationError;
     [ObservableProperty] private ObservableCollection<AnimalDto> _animalOptions = [];
 
-    public IReadOnlyList<CategoryOption> CategoryOptions { get; } = AssetCategoryOptions;
+    // --- Expense-link fields ---
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowExpenseFields))]
+    private bool _createExpense = true;
+
+    [ObservableProperty] private string _expenseVendorName = string.Empty;
+
+    // True when no linked transaction exists yet (new, or edit without prior link)
+    public bool HasLinkedExpense => _linkedTransactionId.HasValue;
+
+    // Show the vendor / note fields only when user wants to create one and none exists yet
+    public bool ShowExpenseFields => CreateExpense && !HasLinkedExpense;
+
+    // ---
+
+    public IReadOnlyList<CategoryOption> CategoryOptions          { get; } = AssetCategoryOptions;
     public IReadOnlyList<CategoryOption> DepreciationMethodOptions { get; } = DepreciationOptions;
 
     public string FormTitle => IsNew ? "Add Asset" : $"Edit Asset — {AssetName}";
@@ -66,20 +91,22 @@ public partial class AssetFormViewModel : ObservableObject
 
     public bool CanDispose => !IsNew && IsActive;
 
-    public AssetFormViewModel(IAssetRepository assets, IAnimalRepository animals,
-        NavigationService nav, DialogService dialog)
+    public AssetFormViewModel(IAssetRepository assets, ITransactionRepository transactions,
+        IAnimalRepository animals, NavigationService nav, DialogService dialog)
     {
-        _assets  = assets;
-        _animals = animals;
-        _nav     = nav;
-        _dialog  = dialog;
-        SelectedCategory    = AssetCategoryOptions[0];
+        _assets       = assets;
+        _transactions = transactions;
+        _animals      = animals;
+        _nav          = nav;
+        _dialog       = dialog;
+        SelectedCategory     = AssetCategoryOptions[0];
         SelectedDepreciation = DepreciationOptions[0];
     }
 
     public void InitNew()
     {
-        IsNew = true;
+        IsNew         = true;
+        CreateExpense = true;
         OnPropertyChanged(nameof(FormTitle));
     }
 
@@ -96,15 +123,21 @@ public partial class AssetFormViewModel : ObservableObject
         SalvageValueText    = dto.SalvageValue.ToString("F2");
         Notes               = dto.Notes ?? string.Empty;
         _pendingLinkedAnimalId = dto.LinkedAnimalId;
+        _linkedTransactionId   = dto.LinkedTransactionId;
 
         SelectedCategory = CategoryOptions.FirstOrDefault(
             c => c.Key == dto.Category.ToString()) ?? CategoryOptions[0];
         SelectedDepreciation = DepreciationMethodOptions.FirstOrDefault(
             d => d.Key == dto.DepreciationMethod.ToString()) ?? DepreciationMethodOptions[0];
 
+        // If already linked, CreateExpense = true (always sync); no vendor field needed
+        CreateExpense = _linkedTransactionId.HasValue;
+
         OnPropertyChanged(nameof(FormTitle));
         OnPropertyChanged(nameof(CanDispose));
         OnPropertyChanged(nameof(ShowDepreciationDetails));
+        OnPropertyChanged(nameof(HasLinkedExpense));
+        OnPropertyChanged(nameof(ShowExpenseFields));
     }
 
     public async Task LoadAsync()
@@ -113,6 +146,14 @@ public partial class AssetFormViewModel : ObservableObject
         AnimalOptions = new ObservableCollection<AnimalDto>(list.OrderBy(a => a.BarnName));
         if (_pendingLinkedAnimalId.HasValue)
             LinkedAnimal = AnimalOptions.FirstOrDefault(a => a.AnimalId == _pendingLinkedAnimalId.Value);
+
+        // Load linked transaction for edit so we can update it in-place (preserving payee, notes, etc.)
+        if (_linkedTransactionId.HasValue)
+        {
+            _linkedTransaction = await _transactions.GetByIdAsync(_linkedTransactionId.Value);
+            if (_linkedTransaction is not null)
+                ExpenseVendorName = _linkedTransaction.PayeePayer ?? string.Empty;
+        }
     }
 
     partial void OnSelectedCategoryChanged(CategoryOption? value)
@@ -157,13 +198,66 @@ public partial class AssetFormViewModel : ObservableObject
         if (error is not null) { ValidationError = error; return; }
         ValidationError = null;
 
-        var dto = BuildDto();
+        decimal.TryParse(PurchasePriceText, out var purchasePrice);
+        var assetDto = BuildDto();
+
         if (IsNew)
-            await _assets.AddAsync(dto);
+        {
+            var saved = await _assets.AddAsync(assetDto);
+            AssetId = saved.AssetId;
+            await SyncExpenseAsync(saved, purchasePrice);
+        }
         else
-            await _assets.UpdateAsync(dto);
+        {
+            await _assets.UpdateAsync(assetDto);
+            await SyncExpenseAsync(assetDto, purchasePrice);
+        }
 
         _nav.GoBack();
+    }
+
+    private async Task SyncExpenseAsync(AssetDto asset, decimal purchasePrice)
+    {
+        if (!CreateExpense) return;
+
+        if (_linkedTransactionId.HasValue && _linkedTransaction is not null)
+        {
+            // Update the existing transaction: keep all original fields, sync price / date / description
+            _linkedTransaction.Amount        = purchasePrice;
+            _linkedTransaction.Date          = PurchaseDate;
+            _linkedTransaction.Description   = string.IsNullOrWhiteSpace(AssetName)
+                                                ? _linkedTransaction.Description
+                                                : AssetName.Trim();
+            _linkedTransaction.LinkedAnimalId = LinkedAnimal?.AnimalId;
+            if (!string.IsNullOrWhiteSpace(ExpenseVendorName))
+                _linkedTransaction.PayeePayer = ExpenseVendorName.Trim();
+            await _transactions.UpdateAsync(_linkedTransaction);
+        }
+        else
+        {
+            // Create a new expense and link it back to the asset
+            var tx = await _transactions.AddAsync(new TransactionDto
+            {
+                TransactionType = TransactionType.Expense,
+                Category        = ExpenseCategoryKey(SelectedCategory?.Key ?? "Other"),
+                Date            = PurchaseDate,
+                Amount          = purchasePrice,
+                Description     = string.IsNullOrWhiteSpace(AssetName) ? "Asset purchase" : AssetName.Trim(),
+                PayeePayer      = string.IsNullOrWhiteSpace(ExpenseVendorName) ? null : ExpenseVendorName.Trim(),
+                LinkedAnimalId  = LinkedAnimal?.AnimalId,
+                Notes           = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
+            });
+
+            _linkedTransactionId = tx.TransactionId;
+            _linkedTransaction   = tx;
+
+            // Write the link back onto the asset record
+            asset.LinkedTransactionId = tx.TransactionId;
+            await _assets.UpdateAsync(asset);
+
+            OnPropertyChanged(nameof(HasLinkedExpense));
+            OnPropertyChanged(nameof(ShowExpenseFields));
+        }
     }
 
     [RelayCommand]
@@ -188,30 +282,31 @@ public partial class AssetFormViewModel : ObservableObject
     private AssetDto BuildDto()
     {
         decimal.TryParse(PurchasePriceText, out var purchasePrice);
-        decimal.TryParse(CurrentValueText, out var currentValue);
-        decimal.TryParse(SalvageValueText, out var salvageValue);
-        int.TryParse(UsefulLifeYearsText, out var usefulLife);
+        decimal.TryParse(CurrentValueText,  out var currentValue);
+        decimal.TryParse(SalvageValueText,  out var salvageValue);
+        int.TryParse(UsefulLifeYearsText,   out var usefulLife);
 
-        DateTime? disposedDate  = IsDisposalExpanded ? DisposalDate : null;
-        decimal? disposalPrice  = null;
+        DateTime? disposedDate = IsDisposalExpanded ? DisposalDate : null;
+        decimal? disposalPrice = null;
         if (IsDisposalExpanded && decimal.TryParse(DisposalPriceText, out var dp))
             disposalPrice = dp;
 
         return new AssetDto
         {
-            AssetId          = AssetId,
-            AssetName        = AssetName.Trim(),
-            Category         = Enum.Parse<AssetCategory>(SelectedCategory!.Key),
-            PurchaseDate     = PurchaseDate,
-            PurchasePrice    = purchasePrice,
-            CurrentValue     = string.IsNullOrWhiteSpace(CurrentValueText) ? null : currentValue,
-            DepreciationMethod = Enum.Parse<DepreciationMethod>(SelectedDepreciation!.Key),
-            UsefulLifeYears  = usefulLife,
-            SalvageValue     = salvageValue,
-            LinkedAnimalId   = LinkedAnimal?.AnimalId,
-            Notes            = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
-            DisposedDate     = disposedDate,
-            DisposalPrice    = disposalPrice,
+            AssetId             = AssetId,
+            AssetName           = AssetName.Trim(),
+            Category            = Enum.Parse<AssetCategory>(SelectedCategory!.Key),
+            PurchaseDate        = PurchaseDate,
+            PurchasePrice       = purchasePrice,
+            CurrentValue        = string.IsNullOrWhiteSpace(CurrentValueText) ? null : currentValue,
+            DepreciationMethod  = Enum.Parse<DepreciationMethod>(SelectedDepreciation!.Key),
+            UsefulLifeYears     = usefulLife,
+            SalvageValue        = salvageValue,
+            LinkedAnimalId      = LinkedAnimal?.AnimalId,
+            LinkedTransactionId = _linkedTransactionId,
+            Notes               = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
+            DisposedDate        = disposedDate,
+            DisposalPrice       = disposalPrice,
         };
     }
 }

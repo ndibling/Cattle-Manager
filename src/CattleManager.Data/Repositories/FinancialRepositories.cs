@@ -39,6 +39,14 @@ public class TransactionRepository : ITransactionRepository
         return list.Select(Map).ToList();
     }
 
+    public async Task<TransactionDto?> GetByIdAsync(int id)
+    {
+        var e = await _db.Transactions
+            .Include(t => t.LinkedAnimal)
+            .FirstOrDefaultAsync(t => t.TransactionId == id);
+        return e is null ? null : Map(e);
+    }
+
     public async Task<TransactionDto> AddAsync(TransactionDto dto)
     {
         var e = new Transaction

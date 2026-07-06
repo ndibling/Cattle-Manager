@@ -7,6 +7,7 @@ public interface ITransactionRepository
     Task<IReadOnlyList<TransactionDto>> GetAllAsync();
     Task<IReadOnlyList<TransactionDto>> GetByDateRangeAsync(DateTime from, DateTime to);
     Task<IReadOnlyList<TransactionDto>> GetByTypeAsync(TransactionType type);
+    Task<TransactionDto?> GetByIdAsync(int id);
     Task<TransactionDto> AddAsync(TransactionDto dto);
     Task<TransactionDto> UpdateAsync(TransactionDto dto);
     Task DeleteAsync(int id);
