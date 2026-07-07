@@ -82,19 +82,26 @@ public partial class FinancialDashboardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void AddExpense()
+    private void AddTransaction()
     {
-        var vm = App.Services.GetRequiredService<TransactionFormViewModel>();
-        vm.InitNew(TransactionType.Expense);
-        _nav.NavigateTo(new TransactionFormPage(vm));
-    }
+        var win = new TransactionPickerWindow { Owner = System.Windows.Application.Current.MainWindow };
+        if (win.ShowDialog() != true || win.Result is not { } mode) return;
 
-    [RelayCommand]
-    private void AddIncome()
-    {
         var vm = App.Services.GetRequiredService<TransactionFormViewModel>();
-        vm.InitNew(TransactionType.Income);
-        _nav.NavigateTo(new TransactionFormPage(vm));
+        vm.InitNew(mode);
+        System.Windows.Controls.Page page = mode switch
+        {
+            TransactionMode.SellAnimal           => new SellAnimalFormPage(vm),
+            TransactionMode.SellEquipment        => new SellEquipmentFormPage(vm),
+            TransactionMode.FarmServicesProducts => new FarmServicesProductsFormPage(vm),
+            TransactionMode.OtherIncome          => new OtherIncomeFormPage(vm),
+            TransactionMode.OperatingExpense     => new OperatingExpenseFormPage(vm),
+            TransactionMode.BuyCapitalAsset      => new BuyCapitalAssetFormPage(vm),
+            TransactionMode.BuyLivestock         => new BuyLivestockFormPage(vm),
+            TransactionMode.CapitalInflux        => new CapitalInfluxFormPage(vm),
+            _                                    => new OperatingExpenseFormPage(vm),
+        };
+        _nav.NavigateTo(page);
     }
 
     [RelayCommand]

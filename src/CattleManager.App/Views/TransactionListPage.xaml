@@ -30,18 +30,10 @@
                     </Border>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Content="+ Add Income"
-                            Command="{Binding AddTransactionCommand}" CommandParameter="Income"
-                            Background="#2E7D32" Foreground="White"
-                            Padding="14,8" Margin="0,0,6,0" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
-                    <Button Content="+ Add Expense"
-                            Command="{Binding AddTransactionCommand}" CommandParameter="Expense"
-                            Background="#C62828" Foreground="White"
-                            Padding="14,8" Margin="0,0,6,0" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
-                    <Button Content="+ Add Capital"
-                            Command="{Binding AddTransactionCommand}" CommandParameter="Capital"
-                            Background="#1565C0" Foreground="White"
-                            Padding="14,8" FontWeight="SemiBold" BorderThickness="0" Cursor="Hand"/>
+                    <Button Content="+ Record Transaction"
+                            Command="{Binding AddTransactionCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            Padding="14,8" FontWeight="SemiBold"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -1,0 +1,179 @@
+<Window x:Class="CattleManager.App.Views.TransactionPickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Title="Record Transaction"
+        Width="680" SizeToContent="Height"
+        MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="ChoiceCard" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="16,18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightAccentBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListMediumBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="GroupHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="28,24,28,24">
+
+        <TextBlock Text="What would you like to record?"
+                   FontSize="20" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+        <!-- INCOME -->
+        <TextBlock Text="INCOME — Money coming in" Style="{StaticResource GroupHeader}"/>
+        <Grid Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="SellAnimal_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F404;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Sell Animal" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Livestock sale" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="SellEquipment_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F69C;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Sell Equipment" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Asset sale" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="FarmServicesProducts_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F33E;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Farm Services / Products" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock Text="Custom work, crops, breeding" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="OtherIncome_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F4B0;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Other Income" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Gov. payments, insurance, misc." FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- EXPENSES -->
+        <TextBlock Text="EXPENSES — Money going out" Style="{StaticResource GroupHeader}"/>
+        <Grid Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="OperatingExpense_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F9FE;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Operating Expense" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Feed, vet, repairs, utilities…" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="BuyCapitalAsset_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F3D7;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Buy Capital Asset" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Equipment, buildings, vehicles" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="BuyLivestock_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F414;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Buy Livestock" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Animal purchase" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- CAPITAL -->
+        <TextBlock Text="CAPITAL — Farm financing" Style="{StaticResource GroupHeader}"/>
+        <Grid Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="CapitalInflux_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F4B8;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Capital Influx" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Grant, equity, share purchase" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Cancel -->
+        <Button Content="Cancel" Click="Cancel_Click"
+                HorizontalAlignment="Right" Padding="20,8" FontSize="14"/>
+
+    </StackPanel>
+</Window>

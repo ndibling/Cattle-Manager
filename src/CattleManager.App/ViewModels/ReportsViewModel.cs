@@ -177,8 +177,8 @@ public partial class ReportsViewModel : ObservableObject
     private void CreateSaleTransaction()
     {
         var vm = App.Services.GetRequiredService<TransactionFormViewModel>();
-        vm.InitNew(TransactionType.Income);
-        _nav.NavigateTo(new TransactionFormPage(vm));
+        vm.InitNew(TransactionMode.SellAnimal);
+        _nav.NavigateTo(new SellAnimalFormPage(vm));
     }
 
     [RelayCommand]

@@ -102,17 +102,28 @@ public partial class TransactionListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void AddTransaction(string? typeStr)
+    private void AddTransaction() => OpenTransactionPicker();
+
+    private void OpenTransactionPicker()
     {
-        var type = typeStr switch
-        {
-            "Expense" => TransactionType.Expense,
-            "Capital" => TransactionType.CapitalInflux,
-            _         => TransactionType.Income
-        };
+        var win = new TransactionPickerWindow { Owner = System.Windows.Application.Current.MainWindow };
+        if (win.ShowDialog() != true || win.Result is not { } mode) return;
+
         var vm = App.Services.GetRequiredService<TransactionFormViewModel>();
-        vm.InitNew(type);
-        _nav.NavigateTo(new TransactionFormPage(vm));
+        vm.InitNew(mode);
+        System.Windows.Controls.Page page = mode switch
+        {
+            TransactionMode.SellAnimal           => new SellAnimalFormPage(vm),
+            TransactionMode.SellEquipment        => new SellEquipmentFormPage(vm),
+            TransactionMode.FarmServicesProducts => new FarmServicesProductsFormPage(vm),
+            TransactionMode.OtherIncome          => new OtherIncomeFormPage(vm),
+            TransactionMode.OperatingExpense     => new OperatingExpenseFormPage(vm),
+            TransactionMode.BuyCapitalAsset      => new BuyCapitalAssetFormPage(vm),
+            TransactionMode.BuyLivestock         => new BuyLivestockFormPage(vm),
+            TransactionMode.CapitalInflux        => new CapitalInfluxFormPage(vm),
+            _                                    => new OperatingExpenseFormPage(vm),
+        };
+        _nav.NavigateTo(page);
     }
 
     [RelayCommand]

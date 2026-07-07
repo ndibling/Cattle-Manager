@@ -24,6 +24,7 @@ public partial class TransactionFormViewModel : ObservableObject
 
     private int? _pendingLinkedAnimalId;
     private int? _linkedAssetId; // set when editing a transaction that already has a linked asset
+    private TransactionMode? _mode; // set by InitNew(TransactionMode), null on edit path
 
     private static readonly System.Collections.Generic.HashSet<string> _imageExtensions =
         new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff" };
@@ -71,6 +72,46 @@ public partial class TransactionFormViewModel : ObservableObject
         new("Other",             "Other"),
     ];
 
+    // Mode-specific category subsets
+    private static readonly IReadOnlyList<CategoryOption> OperatingExpenseCategories =
+    [
+        new("FeedHay",               "Feed & Hay"),
+        new("VeterinaryMedical",     "Veterinary & Medical"),
+        new("BreedingFees",          "Breeding Fees / AI"),
+        new("FarmEquipment",         "Farm Equipment"),
+        new("FuelOil",               "Fuel & Oil"),
+        new("RepairsMaintenance",    "Repairs & Maintenance"),
+        new("Utilities",             "Utilities"),
+        new("LaborContractWork",     "Labor / Contract Work"),
+        new("TruckingTransportation","Trucking / Transportation"),
+        new("Insurance",             "Insurance"),
+        new("PropertyTaxes",         "Property Taxes"),
+        new("MarketingAuction",      "Marketing / Auction Fees"),
+        new("SuppliesMiscellaneous", "Supplies & Miscellaneous"),
+        new("InterestExpense",       "Interest Expense"),
+        new("Other",                 "Other"),
+    ];
+
+    private static readonly IReadOnlyList<CategoryOption> SellAnimalCategory =
+        [ new("LivestockSales", "Livestock Sales") ];
+
+    private static readonly IReadOnlyList<CategoryOption> FarmServicesProductsCategories =
+    [
+        new("CustomWork",       "Custom Work Income"),
+        new("BreedingServices", "Breeding Services"),
+        new("HayCropSales",     "Hay / Crop Sales"),
+    ];
+
+    private static readonly IReadOnlyList<CategoryOption> OtherIncomeCategories =
+    [
+        new("GovernmentPayments",  "Government Payments"),
+        new("InsuranceProceeds",   "Insurance Proceeds"),
+        new("MiscellaneousIncome", "Miscellaneous Income"),
+    ];
+
+    private static readonly IReadOnlyList<CategoryOption> BuyLivestockCategory =
+        [ new("LivestockPurchase", "Livestock Purchase") ];
+
     // Asset category and depreciation options (mirrors AssetFormViewModel)
     public IReadOnlyList<CategoryOption> AssetCategoryOptions { get; } =
     [
@@ -108,6 +149,8 @@ public partial class TransactionFormViewModel : ObservableObject
     [ObservableProperty] private bool _isNew;
     [ObservableProperty] private IReadOnlyList<CategoryOption> _categoryOptions = [];
     [ObservableProperty] private ObservableCollection<AnimalDto> _animalOptions = [];
+    [ObservableProperty] private ObservableCollection<AssetDto> _activeAssets = [];
+    [ObservableProperty] private AssetDto? _selectedDisposalAsset;
 
     // --- Asset purchase fields ---
     [ObservableProperty]
@@ -131,8 +174,19 @@ public partial class TransactionFormViewModel : ObservableObject
 
     public IReadOnlyList<string> TypeOptions { get; } = ["Income", "Expense", "Capital"];
 
-    public string FormTitle => IsNew
-        ? $"Add {TransactionTypeStr} Transaction"
+    public string FormTitle => IsNew && _mode.HasValue
+        ? _mode.Value switch
+        {
+            TransactionMode.SellAnimal           => "Sell Animal",
+            TransactionMode.SellEquipment        => "Sell Equipment",
+            TransactionMode.FarmServicesProducts => "Farm Services / Products",
+            TransactionMode.OtherIncome          => "Other Income",
+            TransactionMode.OperatingExpense     => "Operating Expense",
+            TransactionMode.BuyCapitalAsset      => "Buy Capital Asset",
+            TransactionMode.BuyLivestock         => "Buy Livestock",
+            TransactionMode.CapitalInflux        => "Capital Influx",
+            _                                    => $"Add {TransactionTypeStr} Transaction"
+        }
         : $"Edit {TransactionTypeStr} Transaction";
 
     public bool IsExpenseType => CurrentType == TransactionType.Expense;
@@ -181,6 +235,37 @@ public partial class TransactionFormViewModel : ObservableObject
         OnPropertyChanged(nameof(FormTitle));
     }
 
+    public void InitNew(TransactionMode mode)
+    {
+        _mode = mode;
+
+        (string typeStr, IReadOnlyList<CategoryOption> categories, int defaultIdx) = mode switch
+        {
+            TransactionMode.SellAnimal           => ("Income",  SellAnimalCategory,              0),
+            TransactionMode.SellEquipment        => ("Income",  IncomeCategories,                6), // MiscellaneousIncome
+            TransactionMode.FarmServicesProducts => ("Income",  FarmServicesProductsCategories,  0),
+            TransactionMode.OtherIncome          => ("Income",  OtherIncomeCategories,           0),
+            TransactionMode.OperatingExpense     => ("Expense", OperatingExpenseCategories,      0),
+            TransactionMode.BuyCapitalAsset      => ("Expense", ExpenseCategories,               4), // FarmEquipment
+            TransactionMode.BuyLivestock         => ("Expense", BuyLivestockCategory,            0),
+            TransactionMode.CapitalInflux        => ("Capital", CapitalCategories,               0),
+            _                                    => throw new ArgumentOutOfRangeException(nameof(mode))
+        };
+
+        IsNew              = true;
+        TransactionTypeStr = typeStr;
+        CategoryOptions    = categories;
+        SelectedCategory   = categories.Count > defaultIdx ? categories[defaultIdx] : categories.FirstOrDefault();
+
+        if (mode == TransactionMode.BuyCapitalAsset)
+            IsAssetPurchase = true;
+
+        OnPropertyChanged(nameof(FormTitle));
+        OnPropertyChanged(nameof(IsExpenseType));
+        OnPropertyChanged(nameof(IsIncomeType));
+        OnPropertyChanged(nameof(ShowAssetSection));
+    }
+
     public void InitEdit(TransactionDto dto)
     {
         IsNew               = false;
@@ -204,10 +289,21 @@ public partial class TransactionFormViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
-        var list = await _animals.GetAllAsync();
-        AnimalOptions = new ObservableCollection<AnimalDto>(list.OrderBy(a => a.BarnName));
-        if (_pendingLinkedAnimalId.HasValue)
-            LinkedAnimal = AnimalOptions.FirstOrDefault(a => a.AnimalId == _pendingLinkedAnimalId.Value);
+        bool needsAnimals = _mode is TransactionMode.SellAnimal or TransactionMode.BuyLivestock || !IsNew;
+        if (needsAnimals)
+        {
+            var list = await _animals.GetAllAsync();
+            AnimalOptions = new ObservableCollection<AnimalDto>(list.OrderBy(a => a.BarnName));
+            if (_pendingLinkedAnimalId.HasValue)
+                LinkedAnimal = AnimalOptions.FirstOrDefault(a => a.AnimalId == _pendingLinkedAnimalId.Value);
+        }
+
+        if (_mode == TransactionMode.SellEquipment)
+        {
+            var all = await _assets.GetAllAsync();
+            ActiveAssets = new ObservableCollection<AssetDto>(
+                all.Where(a => a.IsActive).OrderBy(a => a.AssetName));
+        }
 
         // For edit: load linked asset if one exists for this transaction
         if (!IsNew && TransactionId > 0)
@@ -319,6 +415,8 @@ public partial class TransactionFormViewModel : ObservableObject
         await UpdateLinkedAnimalAsync(saved);
         await SyncLinkedAssetAsync(saved);
         if (IsNew) await TryGenerateBillOfSaleAsync(saved);
+        if (_mode == TransactionMode.SellEquipment && SelectedDisposalAsset is not null)
+            await DisposeSelectedEquipmentAsync(saved, SelectedDisposalAsset);
         _nav.GoBack();
     }
 
@@ -392,6 +490,9 @@ public partial class TransactionFormViewModel : ObservableObject
 
     private string? Validate()
     {
+        if (_mode == TransactionMode.SellAnimal && LinkedAnimal is null)
+            return "You must select the animal being sold.";
+
         if (!decimal.TryParse(AmountText, out var amount) || amount <= 0)
             return "Amount must be greater than zero.";
         if (string.IsNullOrWhiteSpace(Description))
@@ -400,6 +501,8 @@ public partial class TransactionFormViewModel : ObservableObject
             return "Category is required.";
         if (IsAssetPurchase && IsExpenseType)
         {
+            if (_mode == TransactionMode.BuyCapitalAsset && string.IsNullOrWhiteSpace(AssetName))
+                return "Asset name is required.";
             if (SelectedAssetCategory is null)
                 return "Asset category is required.";
             if (SelectedAssetDepreciation is null)
@@ -449,6 +552,20 @@ public partial class TransactionFormViewModel : ObservableObject
             animal.Status     = AnimalStatus.Sold;
             await _animals.UpdateAsync(animal);
             await DisposeLinkedAssetAsync(animal);
+        }
+    }
+
+    private async Task DisposeSelectedEquipmentAsync(TransactionDto tx, AssetDto asset)
+    {
+        try
+        {
+            asset.DisposedDate  = tx.Date;
+            asset.DisposalPrice = tx.Amount;
+            await _assets.UpdateAsync(asset);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Equipment asset disposal failed for asset {AssetId} — non-fatal", asset.AssetId);
         }
     }
 
