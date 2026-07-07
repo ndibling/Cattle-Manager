@@ -58,6 +58,10 @@
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
+                            <TextBlock Text="{Binding CurrentLoanBalanceDisplay}"
+                                       FontSize="15" FontWeight="SemiBold" Margin="0,8,0,0"
+                                       Foreground="#E65100"
+                                       Visibility="{Binding CurrentLoanBalance, Converter={StaticResource NullToVisibility}}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>

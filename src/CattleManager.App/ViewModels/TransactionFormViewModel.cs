@@ -158,6 +158,29 @@ public partial class TransactionFormViewModel : ObservableObject
     [ObservableProperty] private LoanDto? _selectedLoan;
     [ObservableProperty] private string _principalText = "0.00";
     [ObservableProperty] private string _interestText  = "0.00";
+    [ObservableProperty] private decimal? _currentLoanBalance;
+
+    public string CurrentLoanBalanceDisplay => _currentLoanBalance.HasValue
+        ? $"Current Balance: {_currentLoanBalance.Value:C}"
+        : string.Empty;
+
+    partial void OnSelectedLoanChanged(LoanDto? value)
+    {
+        CurrentLoanBalance = null;
+        if (value is not null)
+            _ = LoadCurrentLoanBalanceAsync(value);
+    }
+
+    partial void OnCurrentLoanBalanceChanged(decimal? value) =>
+        OnPropertyChanged(nameof(CurrentLoanBalanceDisplay));
+
+    private async Task LoadCurrentLoanBalanceAsync(LoanDto loan)
+    {
+        var payments = await _loans.GetPaymentsAsync(loan.LoanId);
+        CurrentLoanBalance = payments.Count > 0
+            ? payments.OrderByDescending(p => p.PaymentDate).First().RemainingBalance
+            : loan.OriginalPrincipal;
+    }
 
     public decimal TotalPaymentAmount =>
         (decimal.TryParse(PrincipalText, out var p) ? p : 0m) +
