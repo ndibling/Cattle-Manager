@@ -34,8 +34,18 @@ public class HerdService
                 (a.Status == AnimalStatus.Healthy || a.Status == AnimalStatus.Pregnant)),
             BreedingMales = animals.Count(a =>
                 a.IsBreeding && a.Gender == Gender.Male && a.Status == AnimalStatus.Healthy),
-            DueForHusbandry = animals.Count(a => a.Gender == Gender.Female && a.Status != AnimalStatus.Calf && a.Status != AnimalStatus.Deceased && _healthService.IsOverdueForHusbandry(a)),
-            PregnantAnimals = animals.Count(a => a.IsPregnant)
+            DueForHusbandry = animals.Count(a =>
+                a.Gender == Gender.Female &&
+                a.Status != AnimalStatus.Calf &&
+                a.Status != AnimalStatus.Deceased &&
+                a.Status != AnimalStatus.Sold &&
+                a.Status != AnimalStatus.Inactive &&
+                _healthService.IsOverdueForHusbandry(a)),
+            PregnantAnimals = animals.Count(a =>
+                a.IsPregnant &&
+                a.Status != AnimalStatus.Sold &&
+                a.Status != AnimalStatus.Deceased &&
+                a.Status != AnimalStatus.Inactive)
         };
     }
 

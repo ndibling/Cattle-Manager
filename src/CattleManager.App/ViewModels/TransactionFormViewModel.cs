@@ -293,7 +293,13 @@ public partial class TransactionFormViewModel : ObservableObject
         if (needsAnimals)
         {
             var list = await _animals.GetAllAsync();
-            AnimalOptions = new ObservableCollection<AnimalDto>(list.OrderBy(a => a.BarnName));
+            // SellAnimal: only offer animals still in the herd (not already sold/deceased/inactive)
+            var filtered = _mode == TransactionMode.SellAnimal
+                ? list.Where(a => a.Status != AnimalStatus.Sold &&
+                                  a.Status != AnimalStatus.Deceased &&
+                                  a.Status != AnimalStatus.Inactive)
+                : list;
+            AnimalOptions = new ObservableCollection<AnimalDto>(filtered.OrderBy(a => a.BarnName));
             if (_pendingLinkedAnimalId.HasValue)
                 LinkedAnimal = AnimalOptions.FirstOrDefault(a => a.AnimalId == _pendingLinkedAnimalId.Value);
         }
