@@ -50,11 +50,11 @@
                                       ui:ControlHelper.PlaceholderText="Select the loan being paid">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock>
-                                            <Run Text="{Binding LenderName}"/>
-                                            <Run Text=" — "/>
-                                            <Run Text="{Binding LoanTypeDisplay}"/>
-                                        </TextBlock>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding LenderName}"/>
+                                            <TextBlock Text=" — "/>
+                                            <TextBlock Text="{Binding LoanTypeDisplay}"/>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
