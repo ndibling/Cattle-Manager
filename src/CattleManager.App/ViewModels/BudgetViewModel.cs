@@ -23,12 +23,17 @@ public partial class BudgetMonthViewModel : ObservableObject
     public int Month { get; init; }
     public string MonthName { get; init; } = string.Empty;
     public int BudgetEntryId { get; set; }
+    public bool IsIncome { get; init; }
 
     [ObservableProperty] private decimal _budgetAmount;
     public decimal ActualAmount { get; init; }
 
-    public decimal Variance    => BudgetAmount - ActualAmount;
-    public bool IsOverBudget   => ActualAmount > BudgetAmount && BudgetAmount > 0;
+    // Income: positive variance = earned more than planned (good).
+    // Expense: positive variance = spent less than planned (good).
+    public decimal Variance    => IsIncome ? ActualAmount - BudgetAmount : BudgetAmount - ActualAmount;
+    public bool IsOverBudget   => IsIncome
+        ? ActualAmount < BudgetAmount && BudgetAmount > 0   // income shortfall = bad
+        : ActualAmount > BudgetAmount && BudgetAmount > 0;  // expense overage = bad
     public string ActualDisplay   => ActualAmount.ToString("C");
     public string VarianceDisplay => Variance.ToString("C");
 
@@ -45,12 +50,15 @@ public partial class BudgetCategoryViewModel : ObservableObject
     public string Category        { get; init; } = string.Empty;
     public string CategoryDisplay { get; init; } = string.Empty;
     public string TypeDisplay     { get; init; } = string.Empty;
+    public bool   IsIncome        => TypeDisplay == "Income";
     public ObservableCollection<BudgetMonthViewModel> Months { get; } = [];
 
     public decimal AnnualBudget   => Months.Sum(m => m.BudgetAmount);
     public decimal AnnualActual   => Months.Sum(m => m.ActualAmount);
-    public decimal AnnualVariance => AnnualBudget - AnnualActual;
-    public bool    IsOverBudget   => AnnualActual > AnnualBudget && AnnualBudget > 0;
+    public decimal AnnualVariance => IsIncome ? AnnualActual - AnnualBudget : AnnualBudget - AnnualActual;
+    public bool    IsOverBudget   => IsIncome
+        ? AnnualActual < AnnualBudget && AnnualBudget > 0
+        : AnnualActual > AnnualBudget && AnnualBudget > 0;
     public string  AnnualBudgetDisplay   => AnnualBudget.ToString("C");
     public string  AnnualActualDisplay   => AnnualActual.ToString("C");
     public string  AnnualVarianceDisplay => AnnualVariance.ToString("C");
@@ -184,11 +192,12 @@ public partial class BudgetViewModel : ObservableObject
             var actual = actualByMonth.GetValueOrDefault((cat.Key, m), 0m);
             var monthVm = new BudgetMonthViewModel
             {
-                Month        = m,
-                MonthName    = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m),
+                Month         = m,
+                MonthName     = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m),
                 BudgetEntryId = entry?.BudgetEntryId ?? 0,
-                BudgetAmount = entry?.BudgetAmount ?? 0m,
-                ActualAmount = actual,
+                BudgetAmount  = entry?.BudgetAmount ?? 0m,
+                ActualAmount  = actual,
+                IsIncome      = cat.TypeDisplay == "Income",
             };
             monthVm.PropertyChanged += (_, _) => catVm.RefreshTotals();
             catVm.Months.Add(monthVm);
