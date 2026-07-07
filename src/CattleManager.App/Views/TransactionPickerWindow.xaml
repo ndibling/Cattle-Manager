@@ -149,6 +149,16 @@
                                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
                 </StackPanel>
             </Button>
+
+            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource ChoiceCard}"
+                    HorizontalAlignment="Stretch" Click="LoanPayment_Click">
+                <StackPanel>
+                    <TextBlock Text="&#x1F3E6;" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="Loan Payment" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Principal &amp; interest payment" FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Button>
         </Grid>
 
         <!-- CAPITAL -->

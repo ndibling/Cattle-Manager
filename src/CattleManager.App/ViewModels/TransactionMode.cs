@@ -15,4 +15,7 @@ public enum TransactionMode
 
     // Capital
     CapitalInflux,        // Grant / EquityInvestment / SharePurchase / Other
+
+    // Loan
+    LoanPayment,          // Records principal + interest portions, updates loan balance
 }

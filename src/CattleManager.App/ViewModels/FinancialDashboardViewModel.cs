@@ -99,6 +99,7 @@ public partial class FinancialDashboardViewModel : ObservableObject
             TransactionMode.BuyCapitalAsset      => new BuyCapitalAssetFormPage(vm),
             TransactionMode.BuyLivestock         => new BuyLivestockFormPage(vm),
             TransactionMode.CapitalInflux        => new CapitalInfluxFormPage(vm),
+            TransactionMode.LoanPayment          => new LoanPaymentFormPage(vm),
             _                                    => new OperatingExpenseFormPage(vm),
         };
         _nav.NavigateTo(page);

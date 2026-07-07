@@ -17,6 +17,7 @@ public partial class TransactionFormViewModel : ObservableObject
     private readonly ITransactionRepository _transactions;
     private readonly IAssetRepository       _assets;
     private readonly IAnimalRepository      _animals;
+    private readonly ILoanRepository        _loans;
     private readonly NavigationService      _nav;
     private readonly DialogService          _dialog;
     private readonly ExportService          _export;
@@ -152,6 +153,29 @@ public partial class TransactionFormViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<AssetDto> _activeAssets = [];
     [ObservableProperty] private AssetDto? _selectedDisposalAsset;
 
+    // --- Loan payment fields ---
+    [ObservableProperty] private ObservableCollection<LoanDto> _activeLoans = [];
+    [ObservableProperty] private LoanDto? _selectedLoan;
+    [ObservableProperty] private string _principalText = "0.00";
+    [ObservableProperty] private string _interestText  = "0.00";
+
+    public decimal TotalPaymentAmount =>
+        (decimal.TryParse(PrincipalText, out var p) ? p : 0m) +
+        (decimal.TryParse(InterestText,  out var i) ? i : 0m);
+
+    public string TotalPaymentDisplay => TotalPaymentAmount.ToString("C");
+
+    partial void OnPrincipalTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(TotalPaymentAmount));
+        OnPropertyChanged(nameof(TotalPaymentDisplay));
+    }
+    partial void OnInterestTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(TotalPaymentAmount));
+        OnPropertyChanged(nameof(TotalPaymentDisplay));
+    }
+
     // --- Asset purchase fields ---
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowAssetSection))]
@@ -185,6 +209,7 @@ public partial class TransactionFormViewModel : ObservableObject
             TransactionMode.BuyCapitalAsset      => "Buy Capital Asset",
             TransactionMode.BuyLivestock         => "Buy Livestock",
             TransactionMode.CapitalInflux        => "Capital Influx",
+            TransactionMode.LoanPayment          => "Record Loan Payment",
             _                                    => $"Add {TransactionTypeStr} Transaction"
         }
         : $"Edit {TransactionTypeStr} Transaction";
@@ -205,13 +230,14 @@ public partial class TransactionFormViewModel : ObservableObject
     };
 
     public TransactionFormViewModel(ITransactionRepository transactions,
-        IAssetRepository assets, IAnimalRepository animals,
+        IAssetRepository assets, IAnimalRepository animals, ILoanRepository loans,
         NavigationService nav, DialogService dialog,
         ExportService export, IFarmRepository farms)
     {
         _transactions = transactions;
         _assets       = assets;
         _animals      = animals;
+        _loans        = loans;
         _nav          = nav;
         _dialog       = dialog;
         _export       = export;
@@ -249,6 +275,7 @@ public partial class TransactionFormViewModel : ObservableObject
             TransactionMode.BuyCapitalAsset      => ("Expense", ExpenseCategories,               4), // FarmEquipment
             TransactionMode.BuyLivestock         => ("Expense", BuyLivestockCategory,            0),
             TransactionMode.CapitalInflux        => ("Capital", CapitalCategories,               0),
+            TransactionMode.LoanPayment          => ("Expense", OperatingExpenseCategories,      0),
             _                                    => throw new ArgumentOutOfRangeException(nameof(mode))
         };
 
@@ -309,6 +336,12 @@ public partial class TransactionFormViewModel : ObservableObject
             var all = await _assets.GetAllAsync();
             ActiveAssets = new ObservableCollection<AssetDto>(
                 all.Where(a => a.IsActive).OrderBy(a => a.AssetName));
+        }
+
+        if (_mode == TransactionMode.LoanPayment)
+        {
+            var loans = await _loans.GetActiveAsync();
+            ActiveLoans = new ObservableCollection<LoanDto>(loans.OrderBy(l => l.LenderName));
         }
 
         // For edit: load linked asset if one exists for this transaction
@@ -407,6 +440,12 @@ public partial class TransactionFormViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAsync()
     {
+        if (_mode == TransactionMode.LoanPayment)
+        {
+            await SaveLoanPaymentAsync();
+            return;
+        }
+
         var error = Validate();
         if (error is not null) { ValidationError = error; return; }
         ValidationError = null;
@@ -428,6 +467,73 @@ public partial class TransactionFormViewModel : ObservableObject
 
     [RelayCommand]
     private void Cancel() => _nav.GoBack();
+
+    private async Task SaveLoanPaymentAsync()
+    {
+        if (SelectedLoan is null)            { ValidationError = "You must select a loan."; return; }
+        if (!decimal.TryParse(PrincipalText, out var principal) || principal < 0)
+                                             { ValidationError = "Principal must be zero or greater."; return; }
+        if (!decimal.TryParse(InterestText,  out var interest)  || interest < 0)
+                                             { ValidationError = "Interest must be zero or greater."; return; }
+        if (principal == 0 && interest == 0) { ValidationError = "Principal and interest cannot both be zero."; return; }
+        ValidationError = null;
+
+        var loan  = SelectedLoan;
+        var base_ = string.IsNullOrWhiteSpace(Description)
+            ? $"Loan payment — {loan.LenderName}"
+            : Description.Trim();
+        var payee  = string.IsNullOrWhiteSpace(PayeePayer)    ? null : PayeePayer.Trim();
+        var method = string.IsNullOrWhiteSpace(PaymentMethod) ? null : PaymentMethod.Trim();
+        var notes  = string.IsNullOrWhiteSpace(Notes)         ? null : Notes.Trim();
+
+        if (interest > 0)
+            await _transactions.AddAsync(new TransactionDto
+            {
+                TransactionType = TransactionType.Expense,
+                Category        = "InterestExpense",
+                Date            = Date,
+                Amount          = interest,
+                Description     = $"{base_} – interest",
+                PayeePayer      = payee,
+                PaymentMethod   = method,
+                Notes           = notes,
+                AttachmentPath  = AttachmentPath,
+            });
+
+        if (principal > 0)
+            await _transactions.AddAsync(new TransactionDto
+            {
+                TransactionType = TransactionType.Expense,
+                Category        = "LoanPayments",
+                Date            = Date,
+                Amount          = principal,
+                Description     = $"{base_} – principal",
+                PayeePayer      = payee,
+                PaymentMethod   = method,
+                Notes           = notes,
+                AttachmentPath  = AttachmentPath,
+            });
+
+        // Compute remaining balance from last recorded payment, or from original principal
+        var existing = await _loans.GetPaymentsAsync(loan.LoanId);
+        var currentBalance = existing.Count > 0
+            ? existing.OrderByDescending(p => p.PaymentDate).First().RemainingBalance
+            : loan.OriginalPrincipal;
+        var newBalance = Math.Max(0m, currentBalance - principal);
+
+        await _loans.AddPaymentAsync(new LoanPaymentDto
+        {
+            LoanId           = loan.LoanId,
+            PaymentDate      = Date,
+            TotalPayment     = principal + interest,
+            PrincipalPortion = principal,
+            InterestPortion  = interest,
+            RemainingBalance = newBalance,
+            Notes            = notes,
+        });
+
+        _nav.GoBack();
+    }
 
     private async Task SyncLinkedAssetAsync(TransactionDto tx)
     {

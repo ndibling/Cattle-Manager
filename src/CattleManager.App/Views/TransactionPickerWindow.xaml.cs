@@ -25,6 +25,7 @@ public partial class TransactionPickerWindow : Window
     private void OperatingExpense_Click(object sender, RoutedEventArgs e)     => Pick(TransactionMode.OperatingExpense);
     private void BuyCapitalAsset_Click(object sender, RoutedEventArgs e)      => Pick(TransactionMode.BuyCapitalAsset);
     private void BuyLivestock_Click(object sender, RoutedEventArgs e)         => Pick(TransactionMode.BuyLivestock);
+    private void LoanPayment_Click(object sender, RoutedEventArgs e)          => Pick(TransactionMode.LoanPayment);
     private void CapitalInflux_Click(object sender, RoutedEventArgs e)        => Pick(TransactionMode.CapitalInflux);
     private void Cancel_Click(object sender, RoutedEventArgs e)               => DialogResult = false;
 }
