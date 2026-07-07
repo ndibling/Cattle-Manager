@@ -123,7 +123,7 @@
                 Visibility="{Binding HasNoCategories, Converter={StaticResource InverseBoolToVisibility}}"/>
 
             <!-- Empty state -->
-            <TextBlock Text="No categories in this budget yet. Click '+ Add Category' above to get started."
+            <TextBlock Text="No budget lines yet. Click '+ Add Budget Line' above to get started."
                        FontSize="14" Margin="24,24" TextWrapping="Wrap"
                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                        Visibility="{Binding HasNoCategories, Converter={StaticResource BoolToVisibility}}"/>

@@ -238,7 +238,7 @@ public partial class BudgetViewModel : ObservableObject
     {
         if (_availableToAdd.Count == 0)
         {
-            _dialog.ShowInfo("All available categories have already been added to this budget.", "All Categories Added");
+            _dialog.ShowInfo("All available budget lines have already been added for this year.", "All Lines Added");
             return;
         }
 
